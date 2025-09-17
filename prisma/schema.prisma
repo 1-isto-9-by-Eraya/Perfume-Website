@@ -1,0 +1,134 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")   // pooled (runtime)
+  directUrl = env("DIRECT_URL")     // direct (migrate/studio)
+}
+
+enum UserRole {
+  UPLOADER  // Can only create posts
+  REVIEWER  // Can create posts AND review/approve posts
+}
+
+enum PostStatus {
+  DRAFT     // Being created
+  PENDING   // Submitted for review
+  APPROVED  // Approved and visible to public
+  REJECTED  // Rejected by reviewer
+}
+
+enum PostType {
+  BLOG
+  INSTAGRAM
+  VLOG
+}
+
+model Post {
+  id          String     @id @default(cuid())
+  title       String                 // blog title (hero heading)
+  slug        String     @unique
+  heroImage   String?                // main/hero image URL
+  coverImage  String?                // cover image for blog cards/previews
+  sections    Json                   // structured content (see below)
+  
+  // New fields for role system and post types
+  status      PostStatus @default(PENDING)
+  postType    PostType   @default(BLOG)
+  
+  // Type-specific fields
+  instagramUrl     String?           // For Instagram posts
+  instagramPostId  String?           // Instagram post ID for API
+  videoUrl         String?           // For vlog posts
+  embedCode        String?           // For embedded content
+  
+  // Approval system
+  reviewedAt       DateTime?         // When reviewed
+  reviewedById     String?           // Who reviewed it
+  reviewedBy       User?    @relation("ReviewedPosts", fields: [reviewedById], references: [id])
+  reviewComments   String?           // Optional feedback from reviewer
+  
+  // Likes functionality
+  likesCount       Int      @default(0)  // Cached count for performance
+  likes            PostLike[]             // Individual likes
+  
+  published   Boolean  @default(false) // Now controlled by approval
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  authorId String
+  author   User @relation("AuthoredPosts", fields: [authorId], references: [id], onDelete: Cascade)
+
+  @@index([createdAt, published, status])
+  @@index([status, postType])
+  @@index([likesCount]) // For sorting by popularity
+}
+
+// New model for tracking likes without user authentication
+model PostLike {
+  id              String   @id @default(cuid())
+  postId          String
+  post            Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  
+  // Anonymous user identification
+  fingerprint     String   // Browser fingerprint
+  ipAddress       String?  // IP address (optional, for additional validation)
+  userAgent       String?  // User agent string (optional)
+  
+  createdAt       DateTime @default(now())
+
+  // Prevent duplicate likes from same fingerprint on same post
+  @@unique([postId, fingerprint])
+  @@index([postId])
+  @@index([fingerprint])
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  image         String?
+  emailVerified DateTime?
+  
+  // New role field
+  role          UserRole  @default(UPLOADER)
+  
+  accounts      Account[]
+  sessions      Session[]
+  
+  // Updated relations
+  authoredPosts Post[]    @relation("AuthoredPosts")
+  reviewedPosts Post[]    @relation("ReviewedPosts")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id])
+}
