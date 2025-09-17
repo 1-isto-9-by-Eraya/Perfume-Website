@@ -5,12 +5,16 @@ import React from "react";
 // New component for Related Posts Section with Carousel
 export function RelatedPostsSection({ posts }: { posts: any[] }) {
   
-  if (posts.length === 0) return null;
-
+  
   const [currentIndex, setCurrentIndex] = React.useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = React.useState(true);
   const intervalRef = React.useRef<NodeJS.Timeout | null>(null);
   const containerRef = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    if (posts.length === 0) return;
+
+  }, [posts.length]);
   
   // Limit to 5 posts for carousel
   const carouselPosts = posts.slice(0, 5);
