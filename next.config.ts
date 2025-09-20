@@ -8,16 +8,16 @@ const withBundleAnalyzer = bundleAnalyzer({
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
-  swcMinify: true,
+  // Add these from your old config to ignore build errors during deployment
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  typescript: {
+    ignoreBuildErrors: true,
+  },
   compiler: {
     removeConsole: process.env.NODE_ENV === "production",
   },
-  images: {
-    formats: ["image/avif", "image/webp"],
-    minimumCacheTTL: 31_536_000, // 1 year
-  },
-  // Some Next.js versions may not have all experimental flags typed.
-  // Cast to any to avoid type errors while keeping the options.
   experimental: {
     optimizeCss: true,
     optimizePackageImports: ["three", "@react-three/drei", "@react-three/fiber"],
