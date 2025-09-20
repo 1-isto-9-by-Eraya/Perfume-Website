@@ -122,6 +122,7 @@ function InstagramEmbed({ url, post }: { url: string; post: any }) {
                 alt="Instagram post preview"
                 className="w-full h-96 object-cover"
               />
+              
               <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
             </div>
           )}

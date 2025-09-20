@@ -97,7 +97,7 @@ export default function ManagePosts() {
   const deletePost = async (postId: string) => {
     try {
       setDeleteLoading(postId);
-      const response = await fetch(`/api/posts/${postId}`, {
+      const response = await fetch(`/api/posts/manage/${postId}`, {
         method: 'DELETE',
       });
 
