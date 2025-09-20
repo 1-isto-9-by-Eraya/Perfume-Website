@@ -27,6 +27,36 @@ if (typeof window !== 'undefined') {
   });
 }
 
+// MOBILE ANIMATION CONFIGURATION - Customize these values
+const MOBILE_ANIMATION_CONFIG = {
+  initial: {
+    bottleY: -20,              // Starting Y position
+    bottleX: 0,                // Starting X position
+    bottleRotationX: 0,        // Starting X rotation
+    bottleRotationY: Math.PI/4, // Starting Y rotation
+    bottleRotationZ: 0,        // Starting Z rotation
+    bottleScale: 0.7,          // Starting scale
+    capOffsetX: 0,             // Cap X offset from bottle
+    capOffsetY: 0,             // Cap Y offset from bottle
+    capOffsetZ: 0,             // Cap Z offset from bottle
+    capRotationOffset: Math.PI/2, // Cap rotation offset
+  },
+  final: {
+    bottleY: -2,               // Final Y position
+    bottleX: 1,                // Final X position
+    bottleRotationX: 0.1,      // Final X rotation
+    bottleRotationY: Math.PI * 1.5, // Final Y rotation
+    bottleRotationZ: 0,        // Final Z rotation
+    bottleScale: 0.5,          // Final scale
+    capOffsetX: 0,             // Cap X offset at end
+    capOffsetY: 0.5,           // Cap Y offset at end
+    capOffsetZ: 0,             // Cap Z offset at end
+    capRotationOffset: Math.PI, // Cap rotation offset at end
+  },
+  smoothness: 0.1,            // Lerp factor (0.01 = very smooth, 0.2 = snappy)
+  updateFrequency: 2,         // Update every N frames (higher = better performance)
+};
+
 interface ScrollAnimationProps {
   bottleRef: React.RefObject<Bottle3DRef>;
   containerRef: React.RefObject<HTMLDivElement>;
@@ -39,47 +69,125 @@ const ScrollAnimation = memo(({ bottleRef, containerRef, enabled, isMobile }: Sc
   const tlRef = useRef<gsap.core.Timeline | null>(null);
   const stRef = useRef<ScrollTrigger | null>(null);
   const frameCount = useRef(0);
+  const lastScrollY = useRef(0);
+  const scrollVelocity = useRef(0);
 
-  // Mobile: Use RAF-based animation instead of GSAP for better performance
+  // Mobile: Use RAF-based animation with manual config
   useFrame((state, delta) => {
     if (!enabled || !isMobile || !bottleRef.current) return;
     
     // Throttle updates on mobile
     frameCount.current++;
-    if (frameCount.current % 2 !== 0) return; // Update every other frame
+    if (frameCount.current % MOBILE_ANIMATION_CONFIG.updateFrequency !== 0) return;
     
-    const scrollProgress = window.scrollY / (document.documentElement.scrollHeight - window.innerHeight);
+    const scrollY = window.scrollY;
+    const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+    const scrollProgress = Math.min(Math.max(scrollY / maxScroll, 0), 1);
+    
+    // Calculate velocity for adaptive smoothness
+    scrollVelocity.current = Math.abs(scrollY - lastScrollY.current);
+    lastScrollY.current = scrollY;
+    
+    // Adaptive smoothness based on scroll speed
+    const smoothness = scrollVelocity.current > 50 
+      ? MOBILE_ANIMATION_CONFIG.smoothness * 1.5  // Faster response when scrolling fast
+      : MOBILE_ANIMATION_CONFIG.smoothness;
+    
     const bottleGroup = bottleRef.current.bottleGroup;
     const capGroup = bottleRef.current.capGroup;
     
     if (!bottleGroup || !capGroup) return;
     
-    // Simple lerp for smooth animation
-    const targetY = -35 + (scrollProgress * 34.5);
-    const targetRotation = Math.PI/2 + (scrollProgress * Math.PI);
-    const targetScale = 0.8 - (scrollProgress * 0.3);
+    const config = MOBILE_ANIMATION_CONFIG;
     
-    bottleGroup.position.y += (targetY - bottleGroup.position.y) * 0.1;
-    bottleGroup.rotation.y += (targetRotation - bottleGroup.rotation.y) * 0.1;
-    bottleGroup.scale.setScalar(bottleGroup.scale.x + (targetScale - bottleGroup.scale.x) * 0.1);
+    // Interpolate bottle position
+    const targetX = config.initial.bottleX + (config.final.bottleX - config.initial.bottleX) * scrollProgress;
+    const targetY = config.initial.bottleY + (config.final.bottleY - config.initial.bottleY) * scrollProgress;
     
-    capGroup.position.copy(bottleGroup.position);
-    capGroup.rotation.y = bottleGroup.rotation.y + Math.PI/2;
+    // Interpolate bottle rotation
+    const targetRotX = config.initial.bottleRotationX + (config.final.bottleRotationX - config.initial.bottleRotationX) * scrollProgress;
+    const targetRotY = config.initial.bottleRotationY + (config.final.bottleRotationY - config.initial.bottleRotationY) * scrollProgress;
+    const targetRotZ = config.initial.bottleRotationZ + (config.final.bottleRotationZ - config.initial.bottleRotationZ) * scrollProgress;
+    
+    // Interpolate scale
+    const targetScale = config.initial.bottleScale + (config.final.bottleScale - config.initial.bottleScale) * scrollProgress;
+    
+    // Apply smooth lerping to bottle
+    bottleGroup.position.x += (targetX - bottleGroup.position.x) * smoothness;
+    bottleGroup.position.y += (targetY - bottleGroup.position.y) * smoothness;
+    
+    bottleGroup.rotation.x += (targetRotX - bottleGroup.rotation.x) * smoothness;
+    bottleGroup.rotation.y += (targetRotY - bottleGroup.rotation.y) * smoothness;
+    bottleGroup.rotation.z += (targetRotZ - bottleGroup.rotation.z) * smoothness;
+    
+    const currentScale = bottleGroup.scale.x;
+    const newScale = currentScale + (targetScale - currentScale) * smoothness;
+    bottleGroup.scale.setScalar(newScale);
+    
+    // Cap follows bottle with configurable offset
+    const capOffsetX = config.initial.capOffsetX + (config.final.capOffsetX - config.initial.capOffsetX) * scrollProgress;
+    const capOffsetY = config.initial.capOffsetY + (config.final.capOffsetY - config.initial.capOffsetY) * scrollProgress;
+    const capOffsetZ = config.initial.capOffsetZ + (config.final.capOffsetZ - config.initial.capOffsetZ) * scrollProgress;
+    const capRotationOffset = config.initial.capRotationOffset + (config.final.capRotationOffset - config.initial.capRotationOffset) * scrollProgress;
+    
+    capGroup.position.x = bottleGroup.position.x + capOffsetX;
+    capGroup.position.y = bottleGroup.position.y + capOffsetY;
+    capGroup.position.z = bottleGroup.position.z + capOffsetZ;
+    capGroup.rotation.y = bottleGroup.rotation.y + capRotationOffset;
+    capGroup.rotation.x = bottleGroup.rotation.x;
+    capGroup.rotation.z = bottleGroup.rotation.z;
     capGroup.scale.copy(bottleGroup.scale);
   });
 
   useEffect(() => {
-    if (!enabled || !bottleRef.current || !containerRef.current || isMobile) return;
+    if (!enabled || !bottleRef.current || !containerRef.current) return;
 
-    // Desktop animation setup (unchanged)
     const bottleGroup = bottleRef.current.bottleGroup;
     const capGroup = bottleRef.current.capGroup;
+    
+    if (!bottleGroup || !capGroup) return;
+
+    // Mobile: Set initial positions from config
+    if (isMobile) {
+      const config = MOBILE_ANIMATION_CONFIG;
+      
+      bottleGroup.position.set(
+        config.initial.bottleX, 
+        config.initial.bottleY, 
+        0
+      );
+      bottleGroup.rotation.set(
+        config.initial.bottleRotationX,
+        config.initial.bottleRotationY,
+        config.initial.bottleRotationZ
+      );
+      bottleGroup.scale.setScalar(config.initial.bottleScale);
+      
+      capGroup.position.set(
+        config.initial.bottleX + config.initial.capOffsetX,
+        config.initial.bottleY + config.initial.capOffsetY,
+        config.initial.capOffsetZ
+      );
+      capGroup.rotation.set(
+        config.initial.bottleRotationX,
+        config.initial.bottleRotationY + config.initial.capRotationOffset,
+        config.initial.bottleRotationZ
+      );
+      capGroup.scale.setScalar(config.initial.bottleScale);
+      capGroup.visible = true;
+      
+      return; // Skip GSAP setup for mobile
+    }
+
+    // Desktop animation setup (unchanged)
+    // const bottleGroup = bottleRef.current.bottleGroup;
+    // const capGroup = bottleRef.current.capGroup;
     
     if (!bottleGroup || !capGroup) return;
 
     // Initial setup
     const initialScale = 0.8;
-    const initialY = -5.5 * 65;
+    const initialY = -5.5*65;
     
     gsap.set([bottleGroup, capGroup], {
       immediateRender: true,
@@ -108,7 +216,7 @@ const ScrollAnimation = memo(({ bottleRef, containerRef, enabled, isMobile }: Sc
       trigger: containerRef.current,
       start: "top top",
       end: "50% top",
-      scrub: 1.5,
+      scrub: 1,
       invalidateOnRefresh: true,
       animation: tl
     });
@@ -210,7 +318,7 @@ interface PerfumeCanvasProps {
 }
 
 export default function PerfumeCanvas({ containerRef, config }: PerfumeCanvasProps) {
-  const bottleRef = useRef<Bottle3DRef>(null);
+  const bottleRef = useRef<Bottle3DRef>(null!);
   const [isMobile, setIsMobile] = useState(false);
   const [quality, setQuality] = useState<'low' | 'medium' | 'high'>('high');
 
@@ -288,7 +396,7 @@ export default function PerfumeCanvas({ containerRef, config }: PerfumeCanvasPro
         className="w-full h-full"
         shadows={settings.shadows}
         style={{ background: 'transparent' }}
-        dpr={[1, 2]}
+        dpr={[1,2]}
         frameloop={settings.frameloop}
         camera={{ 
           position: [0, 0, 5],
@@ -399,14 +507,14 @@ export default function PerfumeCanvas({ containerRef, config }: PerfumeCanvasPro
             <ScrollAnimation 
               bottleRef={bottleRef} 
               containerRef={containerRef}
-              enabled={config?.enableAnimation !== false}
+              enabled={config?.enableAnimation ?? true}
               isMobile={isMobile}
             />
           )}
         </Suspense>
 
         {/* Performance monitor for development */}
-        {process.env.NODE_ENV === 'development' && !isMobile && (
+        {/* {process.env.NODE_ENV === 'development' && !isMobile && (
           <PerformanceMonitor
             onDecline={() => {
               console.warn('Performance declining');
@@ -416,7 +524,7 @@ export default function PerfumeCanvas({ containerRef, config }: PerfumeCanvasPro
             averages={2}
             factor={0.5}
           />
-        )}
+        )} */}
       </Canvas>
     </div>
   );
