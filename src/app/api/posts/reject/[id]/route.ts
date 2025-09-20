@@ -13,7 +13,8 @@ export async function POST(
   try {
     const session = await getServerSession(authOptions) as ExtendedSession;
     
-    if (!session || !isReviewer(session.user?.role)) {
+    // Enhanced session validation to ensure user exists
+    if (!session || !session.user || !isReviewer(session.user.role)) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -36,6 +37,7 @@ export async function POST(
     }
 
     // Log the rejection (optional - you might want to keep a record)
+    // Now we can safely access session.user.email since we validated it above
     console.log(`Post "${post.title}" by ${post.author.email} rejected by ${session.user.email}. Reason: ${reason}`);
 
     // Delete the post completely

@@ -34,8 +34,9 @@ if (typeof window !== 'undefined') {
 }
 
 export default function ScrollTriggerProvider({ children }: PropsWithChildren) {
-  const refreshTimeoutRef = useRef<NodeJS.Timeout>();
-  const resizeTimeoutRef = useRef<NodeJS.Timeout>();
+  // Fixed useRef with proper initialization
+  const refreshTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
+  const resizeTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
   const isRefreshingRef = useRef(false);
   const lastRefreshRef = useRef(0);
   
@@ -48,7 +49,9 @@ export default function ScrollTriggerProvider({ children }: PropsWithChildren) {
     
     // Rate limit refreshes to once per 100ms minimum
     if (timeSinceLastRefresh < 100) {
-      clearTimeout(refreshTimeoutRef.current);
+      if (refreshTimeoutRef.current) {
+        clearTimeout(refreshTimeoutRef.current);
+      }
       refreshTimeoutRef.current = setTimeout(() => {
         debouncedRefresh();
       }, 100 - timeSinceLastRefresh);
@@ -69,7 +72,9 @@ export default function ScrollTriggerProvider({ children }: PropsWithChildren) {
   useEffect(() => {
     // Handle resize with debouncing and performance optimization
     const handleResize = () => {
-      clearTimeout(resizeTimeoutRef.current);
+      if (resizeTimeoutRef.current) {
+        clearTimeout(resizeTimeoutRef.current);
+      }
       
       // Add class to stop animations during resize
       document.body.classList.add('resize-animation-stopper');
@@ -194,8 +199,12 @@ export default function ScrollTriggerProvider({ children }: PropsWithChildren) {
     // Cleanup function
     return () => {
       clearTimeout(initTimer);
-      clearTimeout(refreshTimeoutRef.current);
-      clearTimeout(resizeTimeoutRef.current);
+      if (refreshTimeoutRef.current) {
+        clearTimeout(refreshTimeoutRef.current);
+      }
+      if (resizeTimeoutRef.current) {
+        clearTimeout(resizeTimeoutRef.current);
+      }
       
       window.removeEventListener("resize", handleResize);
       window.removeEventListener("orientationchange", handleOrientationChange);

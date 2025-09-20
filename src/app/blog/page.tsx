@@ -3,31 +3,32 @@ import { prisma } from "@/lib/db";
 import BlogIndexClient from "@/components/BlogIndexClient";
 import { UnauthorizedPopup } from "@/components/UnauthorisedPopup";
 
-export const revalidate = 60; // keep ISR
+export const revalidate = 60;
+
+type SearchParams = Record<string, string | string[] | undefined>;
 
 export default async function BlogIndex({
   searchParams,
 }: {
-  searchParams?: { unauthorized?: string };
+  // In Next 15, searchParams is a Promise
+  searchParams?: Promise<SearchParams>;
 }) {
-  // Fetch posts on the server
+  // Resolve the promise from Next
+  const sp = (await searchParams) ?? {};
+  const u = Array.isArray(sp.unauthorized) ? sp.unauthorized[0] : sp.unauthorized;
+  const unauthorized = u === "1";
+
   const posts = await prisma.post.findMany({
     where: { status: "APPROVED", published: true },
     orderBy: { createdAt: "desc" },
     include: {
-      author: {
-        select: { id: true, name: true, image: true, role: true, email: true },
-      },
+      author: { select: { id: true, name: true, image: true, role: true, email: true } },
     },
   });
-
-  const resolvedSearchParams = await searchParams;
-  const unauthorized = resolvedSearchParams?.unauthorized === "1";
 
   return (
     <div className="min-h-screen bg-black text-white">
       {unauthorized && <UnauthorizedPopup />}
-      {/* All interactive UI lives in the client child */}
       <BlogIndexClient posts={posts} />
     </div>
   );

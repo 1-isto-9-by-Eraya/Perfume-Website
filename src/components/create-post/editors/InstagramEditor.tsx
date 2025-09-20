@@ -4,7 +4,7 @@ import { LinkIcon, PhotoIcon, ExclamationTriangleIcon, PencilIcon, MinusIcon } f
 import { UploadButton } from '@/lib/uploadthing';
 import { useUploadThing } from '@/lib/uploadthing';
 import ImageEditor from './ImageEditor';
-import type { CreatePostData, CreatePostFormErrors } from '@/types/createPost';
+import type { CreatePostData, CreatePostFormErrors, PostSection } from '@/types/createPost';
 
 interface InstagramEditorProps {
   postData: CreatePostData;
@@ -347,16 +347,18 @@ export default function InstagramEditor({
                   )
                 });
               } else {
-                // Add new section
+                // Add new section - properly handle the PostSection interface
+                const newSection: PostSection = {
+                  id: 'description-1',
+                  type: 'paragraph' as const,
+                  content: e.target.value,
+                  heading: '',
+                  images: (() => null) as any, // Function placeholder to satisfy interface
+                  paragraphs: []
+                };
+                
                 onUpdateData({
-                  sections: [{
-                    id: 'description-1',
-                    type: 'paragraph' as const,
-                    content: e.target.value,
-                    heading: undefined,
-                    images: undefined,
-                    paragraphs: undefined
-                  }]
+                  sections: [newSection]
                 });
               }
             }}

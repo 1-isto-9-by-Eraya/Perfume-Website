@@ -13,7 +13,8 @@ export async function PATCH(
   try {
     const session = await getServerSession(authOptions) as ExtendedSession;
     
-    if (!session || !isUploader(session.user?.role)) {
+    // Enhanced session validation to ensure user exists
+    if (!session || !session.user || !isUploader(session.user.role)) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -30,6 +31,7 @@ export async function PATCH(
       return NextResponse.json({ error: 'Post not found' }, { status: 404 });
     }
 
+    // Now we can safely access session.user.id since we validated it above
     if (existingPost.authorId !== session.user.id) {
       return NextResponse.json({ error: 'Not authorized to edit this post' }, { status: 403 });
     }
@@ -115,7 +117,8 @@ export async function PATCH(
   } catch (error) {
     console.error('Error updating post:', error);
     
-    if (error.code === 'P2002') {
+    // Proper error type handling for Prisma errors
+    if (error && typeof error === 'object' && 'code' in error && error.code === 'P2002') {
       return NextResponse.json(
         { error: 'A post with this slug already exists' },
         { status: 409 }
@@ -137,7 +140,8 @@ export async function GET(
   try {
     const session = await getServerSession(authOptions) as ExtendedSession;
     
-    if (!session) {
+    // Enhanced session validation
+    if (!session || !session.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -168,8 +172,8 @@ export async function GET(
       return NextResponse.json({ error: 'Post not found' }, { status: 404 });
     }
 
-    // Users can only see their own posts unless they're reviewers
-    if (post.authorId !== session.user.id && !isReviewer(session.user?.role)) {
+    // Now we can safely access session.user.id and session.user.role
+    if (post.authorId !== session.user.id && !isReviewer(session.user.role)) {
       return NextResponse.json({ error: 'Not authorized to view this post' }, { status: 403 });
     }
 

@@ -7,18 +7,23 @@ import BlogEditor from '@/components/create-post/editors/BlogEditor';
 import InstagramEditor from '@/components/create-post/editors/InstagramEditor';
 import VlogEditor from '@/components/create-post/editors/VlogEditor';
 import PreviewStep from '@/components/create-post/steps/PreviewStep';
-import type { CreatePostData, CreatePostFormErrors } from '@/types/createPost';
+import type { CreatePostData, CreatePostFormErrors, PostSection } from '@/types/createPost';
 import type { PostWithDetails } from '@/types/auth';
 
 interface EditPostFormProps {
   post: PostWithDetails;
 }
 
+// Extended form errors interface to include slug
+interface ExtendedCreatePostFormErrors extends CreatePostFormErrors {
+  slug?: string;
+}
+
 export default function EditPostForm({ post }: EditPostFormProps) {
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [errors, setErrors] = useState<CreatePostFormErrors>({});
+  const [errors, setErrors] = useState<ExtendedCreatePostFormErrors>({});
 
   // Initialize form data from existing post
   const [postData, setPostData] = useState<CreatePostData>(() => ({
@@ -49,7 +54,7 @@ export default function EditPostForm({ post }: EditPostFormProps) {
     setErrors(prev => {
       const newErrors = { ...prev };
       Object.keys(updates).forEach(key => {
-        delete newErrors[key as keyof CreatePostFormErrors];
+        delete newErrors[key as keyof ExtendedCreatePostFormErrors];
       });
       return newErrors;
     });
@@ -71,8 +76,48 @@ export default function EditPostForm({ post }: EditPostFormProps) {
     }
   }, [postData.title, post.title, postData.slug]);
 
+  // Placeholder functions for section management (VlogEditor compatibility)
+  const handleAddSection = (section: Omit<PostSection, 'id'>) => {
+    const newSection: PostSection = {
+      ...section,
+      id: `section-${Date.now()}`,
+    };
+    updatePostData({
+      sections: [...(postData.sections || []), newSection]
+    });
+  };
+
+  const handleUpdateSection = (sectionId: string, updates: Partial<PostSection>) => {
+    updatePostData({
+      sections: (postData.sections || []).map(section =>
+        section.id === sectionId ? { ...section, ...updates } : section
+      )
+    });
+  };
+
+  const handleRemoveSection = (sectionId: string) => {
+    updatePostData({
+      sections: (postData.sections || []).filter(section => section.id !== sectionId)
+    });
+  };
+
+  const handleMoveSection = (sectionId: string, direction: 'up' | 'down') => {
+    const sections = [...(postData.sections || [])];
+    const currentIndex = sections.findIndex(section => section.id === sectionId);
+    
+    if (currentIndex === -1) return;
+    
+    const newIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
+    
+    if (newIndex < 0 || newIndex >= sections.length) return;
+    
+    [sections[currentIndex], sections[newIndex]] = [sections[newIndex], sections[currentIndex]];
+    
+    updatePostData({ sections });
+  };
+
   const validateStep = (step: number): boolean => {
-    const newErrors: CreatePostFormErrors = {};
+    const newErrors: ExtendedCreatePostFormErrors = {};
 
     if (step === 0) {
       // Validate basic fields
@@ -169,13 +214,17 @@ export default function EditPostForm({ post }: EditPostFormProps) {
               <VlogEditor
                 postData={postData}
                 onUpdateData={updatePostData}
+                onAddSection={handleAddSection}
+                onUpdateSection={handleUpdateSection}
+                onRemoveSection={handleRemoveSection}
+                onMoveSection={handleMoveSection}
                 errors={errors}
               />
             );
           default:
             return (
               <BlogEditor
-                postData={postData as any}
+                postData={postData}
                 onUpdateData={updatePostData}
                 errors={errors}
               />
@@ -183,7 +232,7 @@ export default function EditPostForm({ post }: EditPostFormProps) {
         }
       case 1:
         // Preview step
-        return <PreviewStep postData={postData as any} />;
+        return <PreviewStep postData={postData} />;
       default:
         return null;
     }

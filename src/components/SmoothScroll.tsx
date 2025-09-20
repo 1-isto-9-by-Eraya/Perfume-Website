@@ -12,17 +12,15 @@ export default function SmoothScrollProvider({ children }: PropsWithChildren) {
   const lenisRef = useRef<Lenis | null>(null);
 
   useEffect(() => {
-    // Initialize Lenis with fixed settings for full scroll
+    // Initialize Lenis with updated API settings
     const lenis = new Lenis({
       duration: 1.2,
       easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      direction: "vertical",
-      gestureDirection: "vertical",
-      smooth: true,
-      mouseMultiplier: 1,
-      smoothTouch: false,
-      touchMultiplier: 2,
+      orientation: "vertical", // Updated from 'direction' to 'orientation'
+      gestureOrientation: "vertical", // Updated from 'gestureDirection' to 'gestureOrientation'
+      smoothWheel: true,
       wheelMultiplier: 1,
+      touchMultiplier: 2,
       infinite: false,
       autoResize: true,
     });
@@ -53,7 +51,8 @@ export default function SmoothScrollProvider({ children }: PropsWithChildren) {
     const forceRefresh = () => {
       // Force Lenis to recalculate the total scroll height
       lenis.resize();
-      lenis.emit();
+      // Removed lenis.emit() as it's private - use alternative approach
+      lenis.scrollTo(lenis.scroll, { immediate: true });
       
       // Refresh ScrollTrigger
       ScrollTrigger.refresh(true);

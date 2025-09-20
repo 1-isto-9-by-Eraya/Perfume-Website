@@ -1,4 +1,7 @@
-import ImageUploader from "./ImageUploader";
+// src/components/Editor/PostDetailsSection.tsx
+import React from 'react';
+// Import from the correct path - assuming ImageUploader is in the uploadthing library or create-post directory
+import { UploadButton } from '@/lib/uploadthing';
 
 interface PostDetailsSectionProps {
   title: string;
@@ -10,6 +13,33 @@ interface PostDetailsSectionProps {
   invalidTitle: boolean;
   onTitleBlur: () => void;
 }
+
+// Simple ImageUploader component replacement
+interface ImageUploaderProps {
+  label: string;
+  onUploaded: (url: string) => void;
+}
+
+const ImageUploader: React.FC<ImageUploaderProps> = ({ label, onUploaded }) => {
+  return (
+    <UploadButton
+      endpoint="imageUploader"
+      onClientUploadComplete={(res) => {
+        if (res?.[0]) {
+          onUploaded(res[0].url);
+        }
+      }}
+      onUploadError={(error) => {
+        console.error('Upload error:', error);
+        alert('Upload failed. Please try again.');
+      }}
+      appearance={{
+        button: "bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors text-sm font-medium",
+        allowedContent: "text-gray-400 text-xs mt-1"
+      }}
+    />
+  );
+};
 
 export function PostDetailsSection({
   title,
@@ -75,7 +105,7 @@ export function PostDetailsSection({
           </div>
           <ImageUploader
             label="Upload Hero"
-            onUploaded={(url) => setHeroImage(url)}
+            onUploaded={(url: string) => setHeroImage(url)}
           />
         </div>
 
@@ -113,7 +143,7 @@ export function PostDetailsSection({
           </div>
           <ImageUploader
             label="Upload Cover"
-            onUploaded={(url) => setCoverImage(url)}
+            onUploaded={(url: string) => setCoverImage(url)}
           />
         </div>
 

@@ -3,6 +3,15 @@
 import { Perf } from "r3f-perf"
 import { useEffect, useState } from "react";
 
+// Extend the Performance interface to include memory (Chrome-specific)
+interface PerformanceWithMemory extends Performance {
+  memory?: {
+    usedJSHeapSize: number;
+    totalJSHeapSize: number;
+    jsHeapSizeLimit: number;
+  };
+}
+
 export default function PerformanceDebugger() {
   const [showDebug, setShowDebug] = useState(false);
   
@@ -20,6 +29,9 @@ export default function PerformanceDebugger() {
   
   if (!showDebug) return null;
   
+  // Type assertion to access memory property
+  const performanceWithMemory = performance as PerformanceWithMemory;
+  
   return (
     <>
       <Perf 
@@ -33,9 +45,15 @@ export default function PerformanceDebugger() {
         <h3 className="font-bold mb-2">Debug Info</h3>
         <p>FPS Target: 60</p>
         <p>Device: {navigator.userAgent.includes('Mobile') ? 'Mobile' : 'Desktop'}</p>
-        <p>Memory: {performance.memory ? 
-          `${Math.round(performance.memory.usedJSHeapSize / 1048576)}MB` : 
+        <p>Memory: {performanceWithMemory.memory ? 
+          `${Math.round(performanceWithMemory.memory.usedJSHeapSize / 1048576)}MB` : 
           'N/A'}</p>
+        <button 
+          onClick={() => setShowDebug(false)}
+          className="mt-2 px-2 py-1 bg-red-600 hover:bg-red-700 rounded text-sm transition-colors"
+        >
+          Close (Ctrl+Shift+D)
+        </button>
       </div>
     </>
   );

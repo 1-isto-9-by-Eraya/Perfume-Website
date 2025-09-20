@@ -1,4 +1,6 @@
-import ImageUploader from "./ImageUploader";
+// src/components/Editor/SectionCard.tsx
+import React from 'react';
+import { UploadButton } from '@/lib/uploadthing';
 import type { Section, ImageSpec } from "./useEditorState";
 
 interface SectionCardProps {
@@ -16,6 +18,33 @@ interface SectionCardProps {
   onUpdateImage: (imgIdx: number, patch: Partial<ImageSpec>) => void;
   canRemove: boolean;
 }
+
+// ImageUploader component replacement
+interface ImageUploaderProps {
+  label: string;
+  onUploaded: (url: string) => void;
+}
+
+const ImageUploader: React.FC<ImageUploaderProps> = ({ label, onUploaded }) => {
+  return (
+    <UploadButton
+      endpoint="imageUploader"
+      onClientUploadComplete={(res) => {
+        if (res?.[0]) {
+          onUploaded(res[0].url);
+        }
+      }}
+      onUploadError={(error) => {
+        console.error('Upload error:', error);
+        alert('Upload failed. Please try again.');
+      }}
+      appearance={{
+        button: "bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg transition-colors text-sm font-medium",
+        allowedContent: "text-gray-400 text-xs mt-1"
+      }}
+    />
+  );
+};
 
 export function SectionCard({
   section,
@@ -133,7 +162,7 @@ export function SectionCard({
                       />
                       <ImageUploader
                         label="Upload"
-                        onUploaded={(url) => onUpdateImage(imgIdx, { url })}
+                        onUploaded={(url: string) => onUpdateImage(imgIdx, { url })}
                       />
                     </div>
                     

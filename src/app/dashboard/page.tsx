@@ -7,14 +7,20 @@ import ReviewerDashboard from "@/components/dashboard/ReviewerDashboard";
 import type { ExtendedSession } from "@/types/auth";
 import { UnauthorizedPopup } from "@/components/UnauthorisedPopup";
 
+type SearchParams = Record<string, string | string[] | undefined>;
+
 export default async function Dashboard({
   searchParams,
 }: {
-  searchParams?: { [k: string]: string | undefined };
+  // Next 15: searchParams is a Promise
+  searchParams?: Promise<SearchParams>;
 }) {
+  // Resolve and normalize ?unauthorized
+  const sp = (await searchParams) ?? {};
+  const unauthorizedParam = Array.isArray(sp.unauthorized) ? sp.unauthorized[0] : sp.unauthorized;
+  const unauthorized = unauthorizedParam === "1";
+
   // If middleware flagged unauthorized, show the popup
-  const params = await searchParams;
-  const unauthorized = params?.unauthorized === "1";
   if (unauthorized) return <UnauthorizedPopup />;
 
   const session = (await getServerSession(authOptions)) as ExtendedSession | null;
@@ -29,9 +35,7 @@ export default async function Dashboard({
     <div className="min-h-screen bg-black">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-[#ffffff]">
-            Welcome back, {userName}!
-          </h1>
+          <h1 className="text-3xl font-bold text-[#ffffff]">Welcome back, {userName}!</h1>
           <p className="mt-2 text-[#fffff2]">
             {isReviewer(userRole)
               ? "Manage content and review posts from other creators."

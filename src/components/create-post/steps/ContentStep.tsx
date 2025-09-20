@@ -32,10 +32,6 @@ export default function ContentStep({
           <BlogEditor
             postData={postData}
             onUpdateData={onUpdateData}
-            onAddSection={onAddSection}
-            onUpdateSection={onUpdateSection}
-            onRemoveSection={onRemoveSection}
-            onMoveSection={onMoveSection}
             errors={errors}
           />
         );

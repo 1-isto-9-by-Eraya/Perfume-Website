@@ -16,12 +16,12 @@ export default async function EditPostPage({
   const resolvedParams = await params;
   const postId = resolvedParams.id;
 
-  // Check authentication
-  if (!session || !isUploader(session.user?.role)) {
+  // Enhanced session validation to ensure user exists
+  if (!session || !session.user || !isUploader(session.user.role)) {
     redirect('/blog?unauthorized=1');
   }
 
-  // Fetch the post
+  // Fetch the post with role included in author selection
   const post = await prisma.post.findUnique({
     where: { id: postId },
     include: {
@@ -30,6 +30,7 @@ export default async function EditPostPage({
           id: true,
           name: true,
           email: true,
+          role: true, // Added role field to match PostWithDetails type
         },
       },
       reviewedBy: {
@@ -37,6 +38,7 @@ export default async function EditPostPage({
           id: true,
           name: true,
           email: true,
+          role: true, // Added role field for consistency
         },
       },
     },
@@ -46,8 +48,8 @@ export default async function EditPostPage({
     notFound();
   }
 
-  // Check if user owns this post
-  if (post.authorId !== session.user?.id) {
+  // Check if user owns this post - now safely accessing session.user.id
+  if (post.authorId !== session.user.id) {
     redirect('/dashboard?error=not-your-post');
   }
 

@@ -24,7 +24,7 @@ const inter = Inter({
 });
 
 export default function HomePage() {
-  const wrapperRef = useRef<HTMLDivElement>(null);
+  const wrapperRef = useRef<HTMLDivElement>(null!);
 
   return (
     <>

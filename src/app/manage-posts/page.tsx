@@ -188,7 +188,7 @@ export default function ManagePosts() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             {/* Search Bar */}
             <div className="md:col-span-2 relative">
-              <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <MagnifyingGlassIcon className="absolute left-3 top-3 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
               <input
                 type="text"
                 placeholder="Search by title, author name, or email..."

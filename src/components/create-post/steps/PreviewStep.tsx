@@ -16,9 +16,7 @@ type Section = {
 };
 
 interface PreviewStepProps {
-  postData: CreatePostData & {
-    sections?: Section[];
-  };
+  postData: CreatePostData;
 }
 
 export default function PreviewStep({ postData }: PreviewStepProps) {
@@ -37,8 +35,8 @@ export default function PreviewStep({ postData }: PreviewStepProps) {
     );
   }
 
-  // Ensure sections is always an array
-  const sections = postData.sections || [];
+  // Ensure sections is always an array with proper type handling
+  const sections = Array.isArray(postData.sections) ? (postData.sections as unknown as Section[]) : [];
 
   // Function to extract description from sections
   const getDescription = () => {
@@ -52,14 +50,14 @@ export default function PreviewStep({ postData }: PreviewStepProps) {
   };
 
   // Function to render images based on position
-  const renderImagesAtPosition = (images: ImageSpec[], position: "above" | "below", paragraphIndex?: number) => {
+  const renderImagesAtPosition = (images: ImageSpec[] | undefined, position: "above"| "between" | "below", paragraphIndex?: number) => {
     if (!Array.isArray(images)) return null;
     
     return images
       .filter(img => {
         if (position === "above") return img.position === "above";
         if (position === "below") return img.position === "below";
-        return img.position === "between" && img.betweenIndex === paragraphIndex;
+        return position === "between" && img.betweenIndex === paragraphIndex;
       })
       .map((img, index) => (
         img.url && (

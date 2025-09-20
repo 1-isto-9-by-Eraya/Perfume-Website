@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { PlusIcon, MinusIcon, ArrowUpIcon, ArrowDownIcon, PencilIcon } from '@heroicons/react/24/outline';
 import { UploadButton } from '@/lib/uploadthing';
 import ImageEditor from './ImageEditor';
-import type { CreatePostData, CreatePostFormErrors } from '@/types/createPost';
+import type { CreatePostData, CreatePostFormErrors, PostSection } from '@/types/createPost';
 
 // Types matching the schema and post page
 type ImageSpec = {
@@ -12,16 +12,21 @@ type ImageSpec = {
   betweenIndex?: number;
 };
 
-type Section = {
+// Define a working section type that matches what we actually need
+type WorkingSection = {
+  id: string;
+  type: 'paragraph' | 'heading' | 'image' | 'divider';
   heading: string;
   paragraphs: string[];
   images: ImageSpec[];
+  content?: string;
+  url?: string;
+  caption?: string;
+  level?: number;
 };
 
 interface BlogEditorProps {
-  postData: CreatePostData & {
-    sections: Section[];
-  };
+  postData: CreatePostData;
   onUpdateData: (updates: Partial<CreatePostData>) => void;
   errors: CreatePostFormErrors;
 }
@@ -46,46 +51,81 @@ export default function BlogEditor({
     type: 'hero'
   });
 
-  const updateSections = (newSections: Section[]) => {
-    onUpdateData({ sections: newSections });
+  // Convert PostSection to WorkingSection for internal use
+  const convertToWorkingSections = (sections: PostSection[]): WorkingSection[] => {
+    return sections.map((section, index) => ({
+      id: section.id || `section-${index}`,
+      type: section.type || 'paragraph',
+      heading: typeof section.heading === 'string' ? section.heading : '',
+      paragraphs: Array.isArray(section.paragraphs) ? section.paragraphs : [],
+      // Safe conversion of images - handle both array and function types
+      images: Array.isArray(section.images) ? section.images as unknown as ImageSpec[] : [],
+      content: section.content,
+      url: section.url,
+      caption: section.caption,
+      level: section.level,
+    }));
+  };
+
+  // Convert WorkingSection back to PostSection for saving
+  const convertToPostSections = (sections: WorkingSection[]): PostSection[] => {
+    return sections.map((section) => ({
+      id: section.id,
+      type: section.type,
+      heading: section.heading,
+      paragraphs: section.paragraphs,
+      images: section.images as any, // Type assertion needed due to PostSection interface issues
+      content: section.content,
+      url: section.url,
+      caption: section.caption,
+      level: section.level,
+    }));
+  };
+
+  const workingSections = convertToWorkingSections(postData.sections || []);
+
+  const updateSections = (newSections: WorkingSection[]) => {
+    onUpdateData({ sections: convertToPostSections(newSections) });
   };
 
   const addSection = () => {
-    const newSection: Section = {
+    const newSection: WorkingSection = {
+      id: `section-${Date.now()}`,
+      type: 'paragraph',
       heading: '',
       paragraphs: [''],
       images: []
     };
     
-    updateSections([...postData.sections, newSection]);
+    updateSections([...workingSections, newSection]);
   };
 
   const removeSection = (index: number) => {
-    const newSections = postData.sections.filter((_, i) => i !== index);
+    const newSections = workingSections.filter((_, i) => i !== index);
     updateSections(newSections);
   };
 
-  const updateSection = (index: number, updates: Partial<Section>) => {
-    const newSections = postData.sections.map((section, i) => 
+  const updateSection = (index: number, updates: Partial<WorkingSection>) => {
+    const newSections = workingSections.map((section, i) => 
       i === index ? { ...section, ...updates } : section
     );
     updateSections(newSections);
   };
 
   const addParagraph = (sectionIndex: number) => {
-    const newSections = [...postData.sections];
+    const newSections = [...workingSections];
     newSections[sectionIndex].paragraphs.push('');
     updateSections(newSections);
   };
 
   const removeParagraph = (sectionIndex: number, paragraphIndex: number) => {
-    const newSections = [...postData.sections];
-    newSections[sectionIndex].paragraphs = newSections[sectionIndex].paragraphs.filter((_, i) => i !== paragraphIndex);
+    const newSections = [...workingSections];
+    newSections[sectionIndex].paragraphs = newSections[sectionIndex].paragraphs.filter((_, i: number) => i !== paragraphIndex);
     updateSections(newSections);
   };
 
   const updateParagraph = (sectionIndex: number, paragraphIndex: number, content: string) => {
-    const newSections = [...postData.sections];
+    const newSections = [...workingSections];
     newSections[sectionIndex].paragraphs[paragraphIndex] = content;
     updateSections(newSections);
   };
@@ -96,28 +136,28 @@ export default function BlogEditor({
       position: 'below'
     };
     
-    const newSections = [...postData.sections];
+    const newSections = [...workingSections];
     newSections[sectionIndex].images.push(newImage);
     updateSections(newSections);
   };
 
   const removeImage = (sectionIndex: number, imageIndex: number) => {
-    const newSections = [...postData.sections];
-    newSections[sectionIndex].images = newSections[sectionIndex].images.filter((_, i) => i !== imageIndex);
+    const newSections = [...workingSections];
+    newSections[sectionIndex].images = newSections[sectionIndex].images.filter((_, i: number) => i !== imageIndex);
     updateSections(newSections);
   };
 
   const updateImage = (sectionIndex: number, imageIndex: number, updates: Partial<ImageSpec>) => {
-    const newSections = [...postData.sections];
+    const newSections = [...workingSections];
     newSections[sectionIndex].images[imageIndex] = { ...newSections[sectionIndex].images[imageIndex], ...updates };
     updateSections(newSections);
   };
 
   const moveSection = (index: number, direction: 'up' | 'down') => {
     const newIndex = direction === 'up' ? index - 1 : index + 1;
-    if (newIndex < 0 || newIndex >= postData.sections.length) return;
+    if (newIndex < 0 || newIndex >= workingSections.length) return;
 
-    const newSections = [...postData.sections];
+    const newSections = [...workingSections];
     [newSections[index], newSections[newIndex]] = [newSections[newIndex], newSections[index]];
     updateSections(newSections);
   };
@@ -302,16 +342,16 @@ export default function BlogEditor({
           </div>
 
           {/* Sections List */}
-          {postData.sections.length === 0 ? (
+          {workingSections.length === 0 ? (
             <div className="text-center py-8 border-2 border-dashed border-gray-600 rounded-lg">
               <PlusIcon className="w-8 h-8 mx-auto mb-2 text-gray-500" />
               <p className="text-gray-400">No content sections yet. Add your first section above.</p>
             </div>
           ) : (
             <div className="space-y-6">
-              {postData.sections.map((section, sectionIndex) => (
+              {workingSections.map((section, sectionIndex) => (
                 <div
-                  key={sectionIndex}
+                  key={section.id}
                   className={`
                     border border-gray-600 rounded-lg transition-colors
                     ${activeSection === sectionIndex ? 'ring-2 ring-blue-500 border-blue-500' : 'hover:border-gray-500'}
@@ -334,7 +374,7 @@ export default function BlogEditor({
                       </button>
                       <button
                         onClick={() => moveSection(sectionIndex, 'down')}
-                        disabled={sectionIndex === postData.sections.length - 1}
+                        disabled={sectionIndex === workingSections.length - 1}
                         className="p-1 hover:bg-gray-600 rounded disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         <ArrowDownIcon className="w-4 h-4 text-gray-400" />
@@ -381,7 +421,7 @@ export default function BlogEditor({
                       </div>
                       
                       <div className="space-y-3">
-                        {section.paragraphs.map((paragraph, paragraphIndex) => (
+                        {section.paragraphs.map((paragraph: string, paragraphIndex: number) => (
                           <div key={paragraphIndex} className="flex gap-2">
                             <textarea
                               value={paragraph}
@@ -418,7 +458,7 @@ export default function BlogEditor({
                       </div>
                       
                       <div className="space-y-3">
-                        {section.images.map((image, imageIndex) => (
+                        {section.images.map((image: ImageSpec, imageIndex: number) => (
                           <div key={imageIndex} className="p-3 bg-[#2a2a2a67] rounded-lg border border-gray-600">
                             <div className="grid gap-3 md:grid-cols-[1fr_auto_auto_auto] items-end">
                               {/* Image URL / Upload */}
@@ -491,7 +531,7 @@ export default function BlogEditor({
                                   className="px-3 py-2 bg-[#1a1a1a] border border-gray-600 rounded text-[#fffff2] text-sm focus:ring-2 focus:ring-blue-500"
                                 >
                                   <option value="">Select position</option>
-                                  {section.paragraphs.map((_, pIndex) => (
+                                  {section.paragraphs.map((_: string, pIndex: number) => (
                                     <option key={pIndex} value={pIndex}>
                                       After paragraph {pIndex + 1}
                                     </option>

@@ -38,7 +38,6 @@ export default function VideoUploader({
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { startUpload, routeConfig } = useUploadThing('videoUploader', {
-    skipPolling: true,
     onClientUploadComplete: (res) => {
       if (res?.[0]) {
         onUploadComplete(res[0].url);
