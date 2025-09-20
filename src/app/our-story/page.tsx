@@ -226,7 +226,8 @@ export default function OurStoryPage() {
 
               {/* small label with hairline */}
               <div className="mb-4 flex items-center gap-4">
-                <span className="h-[1px] w-16 bg-gradient-to-r from-[#9A8E2B] to-[#F5F287]" />
+                <span className="h-[1px] w-16 bg-gradient-to-r from-[#EB9C1C] to-[#EB9C1C]" />
+                {/* <span className="h-[1px] w-16 bg-gradient-to-r from-[#9A8E2B] to-[#F5F287]" /> */}
                 <span
                   className={`text-[16px] md:text-[20px] font-medium tracking-[0.2em] text-white/70 ${playfair.className}`}
                 >
@@ -239,14 +240,15 @@ export default function OurStoryPage() {
                 className={`text-[36px] md:text-[64px] sm:text-5xl lg:text-6xl font-semibold text-white leading-[1.15] ${playfair.className}`}
               >
                 Our{" "}
-                <span className="italic relative z-10  pr-4 bg-gradient-to-r bg-clip-text text-transparent from-[#9A8E2B] to-[#F5F287]">
+                <span className="italic relative z-10  pr-4 bg-gradient-to-r bg-clip-text text-transparent from-[#EB9C1C] to-[#EB9C1C]">
+                {/* <span className="italic relative z-10  pr-4 bg-gradient-to-r bg-clip-text text-transparent from-[#9A8E2B] to-[#F5F287]"> */}
                   Brand Story
                 </span>
               </h1>
 
               {/* paragraph */}
               <p
-                className={`mt-16 max-w-2xl md:text-[22px] font-light text-justify leading-snug md:leading-relaxed text-white/80 ${inter.className}`}
+                className={`mt-16 max-w-2xl md:text-[16px] font-light text-justify leading-snug md:leading-relaxed text-white/80 ${inter.className}`}
               >
                 Lorem ipsum dolor sit amet consectetur adipisicing elit. Ratione
                 eum veritatis cumque delectus voluptatem maiores molestiae

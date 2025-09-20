@@ -1,539 +1,422 @@
-// components/PerfumeCanvas.tsx
+// components/PerfumeCanvas.tsx - Mobile Optimized Version
 "use client";
 
-import React, { Suspense, useLayoutEffect, useRef, useEffect } from "react";
+import React, { Suspense, useRef, useEffect, useState, useCallback, memo } from "react";
 import * as THREE from "three";
 import { Canvas, useThree, useFrame } from "@react-three/fiber";
-import { Environment, Lightformer, Float, useTexture } from "@react-three/drei";
+import { Environment, Lightformer, PerformanceMonitor, AdaptiveDpr, AdaptiveEvents } from "@react-three/drei";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Bottle3D, { Bottle3DRef } from "@/components/Bottle";
 
-gsap.registerPlugin(ScrollTrigger);
+// Register plugins once at module level
+if (typeof window !== 'undefined') {
+  gsap.registerPlugin(ScrollTrigger);
+  
+  // Mobile-specific GSAP config
+  gsap.config({
+    force3D: true,
+    nullTargetWarn: false,
+  });
+  
+  // Mobile ScrollTrigger config
+  ScrollTrigger.config({
+    limitCallbacks: true,
+    syncInterval: 40, // Reduced frequency for mobile
+    ignoreMobileResize: true
+  });
+}
 
 interface ScrollAnimationProps {
   bottleRef: React.RefObject<Bottle3DRef>;
   containerRef: React.RefObject<HTMLDivElement>;
+  enabled: boolean;
+  isMobile: boolean;
 }
+
+const ScrollAnimation = memo(({ bottleRef, containerRef, enabled, isMobile }: ScrollAnimationProps) => {
+  const { invalidate, gl } = useThree();
+  const tlRef = useRef<gsap.core.Timeline | null>(null);
+  const stRef = useRef<ScrollTrigger | null>(null);
+  const frameCount = useRef(0);
+
+  // Mobile: Use RAF-based animation instead of GSAP for better performance
+  useFrame((state, delta) => {
+    if (!enabled || !isMobile || !bottleRef.current) return;
+    
+    // Throttle updates on mobile
+    frameCount.current++;
+    if (frameCount.current % 2 !== 0) return; // Update every other frame
+    
+    const scrollProgress = window.scrollY / (document.documentElement.scrollHeight - window.innerHeight);
+    const bottleGroup = bottleRef.current.bottleGroup;
+    const capGroup = bottleRef.current.capGroup;
+    
+    if (!bottleGroup || !capGroup) return;
+    
+    // Simple lerp for smooth animation
+    const targetY = -35 + (scrollProgress * 34.5);
+    const targetRotation = Math.PI/2 + (scrollProgress * Math.PI);
+    const targetScale = 0.8 - (scrollProgress * 0.3);
+    
+    bottleGroup.position.y += (targetY - bottleGroup.position.y) * 0.1;
+    bottleGroup.rotation.y += (targetRotation - bottleGroup.rotation.y) * 0.1;
+    bottleGroup.scale.setScalar(bottleGroup.scale.x + (targetScale - bottleGroup.scale.x) * 0.1);
+    
+    capGroup.position.copy(bottleGroup.position);
+    capGroup.rotation.y = bottleGroup.rotation.y + Math.PI/2;
+    capGroup.scale.copy(bottleGroup.scale);
+  });
+
+  useEffect(() => {
+    if (!enabled || !bottleRef.current || !containerRef.current || isMobile) return;
+
+    // Desktop animation setup (unchanged)
+    const bottleGroup = bottleRef.current.bottleGroup;
+    const capGroup = bottleRef.current.capGroup;
+    
+    if (!bottleGroup || !capGroup) return;
+
+    // Initial setup
+    const initialScale = 0.8;
+    const initialY = -5.5 * 65;
+    
+    gsap.set([bottleGroup, capGroup], {
+      immediateRender: true,
+      overwrite: 'auto'
+    });
+    
+    bottleGroup.position.set(0, initialY, 0);
+    bottleGroup.rotation.set(0, Math.PI/2, 0);
+    bottleGroup.scale.setScalar(initialScale);
+    
+    capGroup.position.copy(bottleGroup.position);
+    capGroup.rotation.set(0, Math.PI, 0);
+    capGroup.scale.setScalar(initialScale);
+    capGroup.visible = true;
+    
+    const tl = gsap.timeline({
+      defaults: { 
+        ease: "power2.inOut",
+        overwrite: 'auto'
+      }
+    });
+
+    tlRef.current = tl;
+
+    stRef.current = ScrollTrigger.create({
+      trigger: containerRef.current,
+      start: "top top",
+      end: "50% top",
+      scrub: 1.5,
+      invalidateOnRefresh: true,
+      animation: tl
+    });
+
+    // Desktop animation
+    const finalX = 3;
+    const finalY = -0.5;
+    const finalScale = 0.7;
+
+    tl.to([bottleGroup.position, capGroup.position], {
+      y: initialY + 2,
+      duration: 0.3,
+    }, 0)
+    .to([bottleGroup.rotation, capGroup.rotation], {
+      y: Math.PI/6,
+      duration: 0.3,
+    }, 0)
+    .to(capGroup.position, {
+      y: initialY + 55,
+      x: finalX * 0.3,
+      duration: 0.3,
+    }, 0.3)
+    .to(capGroup.rotation, {
+      y: Math.PI * 2,
+      z: 0.2,
+      duration: 0.3,
+    }, 0.3)
+    .to(bottleGroup.position, {
+      x: finalX,
+      y: finalY,
+      duration: 0.4,
+    }, 0.6)
+    .to(bottleGroup.rotation, {
+      x: 0.3,
+      y: Math.PI * 2.1,
+      z: 0.1,
+      duration: 0.4,
+    }, 0.6)
+    .to(bottleGroup.scale, {
+      x: finalScale,
+      y: finalScale,
+      z: finalScale,
+      duration: 0.4,
+    }, 0.6)
+    .to(capGroup.position, {
+      x: finalX,
+      y: 100.5,
+      duration: 0.4,
+    }, 0.6)
+    .to(capGroup.scale, {
+      x: finalScale * 0.9,
+      y: finalScale * 0.9,
+      z: finalScale * 0.9,
+      duration: 0.4,
+    }, 0.6)
+    .to(bottleGroup.position, {
+      x: 35 * 5,
+      y: -30 * 5,
+      duration: 0.4,
+    }, 1)
+    .to(bottleGroup.rotation, {
+      x: 0.05, 
+      z: -0.2, 
+      duration: 0.4,
+    }, 1)
+
+    invalidate();
+
+    return () => {
+      if (stRef.current) {
+        stRef.current.kill();
+        stRef.current = null;
+      }
+      if (tlRef.current) {
+        tlRef.current.kill();
+        tlRef.current = null;
+      }
+    };
+  }, [enabled, bottleRef, containerRef, invalidate, isMobile]);
+
+  return null;
+});
+
+ScrollAnimation.displayName = 'ScrollAnimation';
+
+// Simplified loading fallback for mobile
+const LoadingFallback = () => (
+  <mesh>
+    <boxGeometry args={[0.5, 0.5, 0.5]} />
+    <meshBasicMaterial color="#666" />
+  </mesh>
+);
 
 interface PerfumeCanvasProps {
   containerRef: React.RefObject<HTMLDivElement>;
   config?: {
-    position?: [number, number, number];
-    rotation?: [number, number, number];
-    scale?: number;
     enableAnimation?: boolean;
   };
 }
 
-// function ScrollAnimation({ bottleRef, containerRef }: ScrollAnimationProps) {
-//   const { invalidate, camera, viewport, size } = useThree();
-//   const tlRef = useRef<gsap.core.Timeline | null>(null);
-//   const ctxRef = useRef<gsap.Context | null>(null);
-
-//   useLayoutEffect(() => {
-//     if (!bottleRef.current || !containerRef.current) return;
-
-//     // Clean up any existing timeline and context
-//     if (tlRef.current) {
-//       tlRef.current.kill();
-//       tlRef.current = null;
-//     }
-    
-//     if (ctxRef.current) {
-//       ctxRef.current.revert();
-//       ctxRef.current = null;
-//     }
-
-//     // Kill all existing ScrollTriggers to prevent conflicts
-//     ScrollTrigger.getAll().forEach(st => st.kill());
-    
-//     // Get references to bottle and cap groups
-//     const bottleGroup = bottleRef.current.bottleGroup;
-//     const capGroup = bottleRef.current.capGroup;
-    
-//     if (!bottleGroup || !capGroup) {
-//       console.warn("Bottle or cap group not found");
-//       return;
-//     }
-
-//     // Calculate responsive positions
-//     const vp = viewport.getCurrentViewport(camera, new THREE.Vector3(0, 0, 0));
-//     const isMobile = size.width < 1024;
-    
-//     // Initial position: bottom-center (only top half visible)
-//     const initialY = -3; // Adjust this to show only top half
-//     const initialX = 0; // Center
-    
-//     // Final position: right side of second section
-//     const finalX = isMobile ? 0 : 4; 
-//     const finalY = 0;
-
-//     // Set initial positions
-//     bottleGroup.position.set(initialX, initialY, 0);
-//     bottleGroup.rotation.set(0, 0, 0);
-//     bottleGroup.scale.set(1, 1, 1);
-    
-//     capGroup.position.set(0, 0, 0);
-//     capGroup.rotation.set(0, 0, 0);
-//     capGroup.scale.set(1, 1, 1);
-//     capGroup.visible = true;
-    
-//     // Force a render update
-//     invalidate();
-
-//     // Create GSAP context for proper cleanup
-//     const ctx = gsap.context(() => {
-//       // Set initial positions using GSAP
-//       gsap.set(bottleGroup.position, { x: initialX, y: initialY, z: 0 });
-//       gsap.set(bottleGroup.rotation, { x: 0, y: 0, z: 0 });
-//       gsap.set(bottleGroup.scale, { x: 1, y: 1, z: 1 });
-      
-//       gsap.set(capGroup.position, { x: 0, y: 0, z: 0 });
-//       gsap.set(capGroup.rotation, { x: 0, y: 0, z: 0 });
-//       gsap.set(capGroup.scale, { x: 1, y: 1, z: 1 });
-
-//       // Create master timeline
-//       const tl = gsap.timeline({
-//         scrollTrigger: {
-//           trigger: containerRef.current!,
-//           start: "top top",
-//           end: "bottom top",
-//           scrub: 1.5,
-//           invalidateOnRefresh: true,
-//           onUpdate: () => invalidate(),
-//           onRefresh: () => {
-//             // Recalculate positions on refresh
-//             const vp = viewport.getCurrentViewport(camera, new THREE.Vector3(0, 0, 0));
-//             invalidate();
-//           },
-//         },
-//       });
-
-//       tlRef.current = tl;
-
-//       // Animation Sequence:
-      
-//       // Phase 1: Bottle rises and rotates 180° (0-30%)
-//       tl.to(bottleGroup.position, {
-//         y: 0, // Rise to center
-//         duration: 0.3,
-//         ease: "power2.out",
-//       }, 0)
-//       .to([bottleGroup.rotation, capGroup.rotation], {
-//         y: Math.PI, // 180° rotation
-//         duration: 0.3,
-//         ease: "power2.inOut",
-//       }, 0);
-
-//       // Phase 2: Cap detaches spirally and exits from top (30-60%)
-//       tl.to(capGroup.position, {
-//         y: vp.height * 0.8, // Move cap up and out of screen
-//         duration: 0.3,
-//         ease: "power2.in",
-//       }, 0.3)
-//       .to(capGroup.rotation, {
-//         y: Math.PI * 3, // Spiral rotation (540°)
-//         z: Math.PI * 0.2, // Slight tilt for spiral effect
-//         duration: 0.3,
-//         ease: "power2.in",
-//       }, 0.3)
-//       .to(capGroup.scale, {
-//         x: 0.7,
-//         y: 0.7,
-//         z: 0.7,
-//         duration: 0.3,
-//         ease: "power2.in",
-//       }, 0.3);
-
-//       // Phase 3: Bottle moves to right side (50-100%)
-//       tl.to(bottleGroup.position, {
-//         x: finalX,
-//         y: finalY,
-//         duration: 0.5,
-//         ease: "power3.inOut",
-//       }, 0.5)
-//       .to(bottleGroup.rotation, {
-//         y: Math.PI * 1.5, // Additional rotation for final position
-//         duration: 0.5,
-//         ease: "power2.out",
-//       }, 0.5)
-//       .to(bottleGroup.scale, {
-//         x: 0.85,
-//         y: 0.85,
-//         z: 0.85,
-//         duration: 0.5,
-//         ease: "power2.out",
-//       }, 0.5);
-
-//       // Refresh ScrollTrigger after a short delay
-//       setTimeout(() => {
-//         ScrollTrigger.refresh();
-//         invalidate();
-//       }, 100);
-//     });
-
-//     ctxRef.current = ctx;
-
-//     // Handle resize
-//     const handleResize = () => {
-//       ScrollTrigger.refresh();
-//       invalidate();
-//     };
-
-//     window.addEventListener("resize", handleResize);
-
-//     // Cleanup function
-//     return () => {
-//       window.removeEventListener("resize", handleResize);
-      
-//       // Kill all tweens
-//       if (bottleGroup) {
-//         gsap.killTweensOf(bottleGroup.position);
-//         gsap.killTweensOf(bottleGroup.rotation);
-//         gsap.killTweensOf(bottleGroup.scale);
-//       }
-      
-//       if (capGroup) {
-//         gsap.killTweensOf(capGroup.position);
-//         gsap.killTweensOf(capGroup.rotation);
-//         gsap.killTweensOf(capGroup.scale);
-//       }
-      
-//       // Clean up timeline
-//       if (tlRef.current) {
-//         tlRef.current.kill();
-//       }
-      
-//       // Revert context
-//       if (ctxRef.current) {
-//         ctxRef.current.revert();
-//       }
-      
-//       // Kill all ScrollTriggers
-//       ScrollTrigger.getAll().forEach(st => st.kill());
-//     };
-//   }, [bottleRef, containerRef, invalidate, camera, viewport, size]);
-
-//   // Additional effect to handle visibility on mount
-//   useEffect(() => {
-//     if (bottleRef.current?.capGroup) {
-//       bottleRef.current.capGroup.visible = true;
-      
-//       // Also check all children of capGroup
-//       bottleRef.current.capGroup.traverse((child) => {
-//         child.visible = true;
-//       });
-      
-//       invalidate();
-//     }
-//   }, [bottleRef, invalidate]);
-
-//   return null;
-// }
-
-
-// In PerfumeCanvas.tsx - Update the ScrollAnimation function
-
-
-
-
-function ScrollAnimation({ bottleRef, containerRef }: ScrollAnimationProps) {
-  const { invalidate, camera, viewport, size } = useThree();
-  const tlRef = useRef<gsap.core.Timeline | null>(null);
-  const ctxRef = useRef<gsap.Context | null>(null);
-
-  useLayoutEffect(() => {
-    if (!bottleRef.current || !containerRef.current) return;
-
-    // Clean up any existing timeline and context
-    if (tlRef.current) {
-      tlRef.current.kill();
-      tlRef.current = null;
-    }
-    
-    if (ctxRef.current) {
-      ctxRef.current.revert();
-      ctxRef.current = null;
-    }
-
-    ScrollTrigger.getAll().forEach(st => st.kill());
-    
-    const bottleGroup = bottleRef.current.bottleGroup;
-    const capGroup = bottleRef.current.capGroup;
-    
-    if (!bottleGroup || !capGroup) {
-      console.warn("Bottle or cap group not found");
-      return;
-    }
-
-    // Make sure cap is visible
-    capGroup.visible = true;
-    capGroup.traverse((child) => {
-      child.visible = true;
-    });
-    
-    // Force a render update
-    invalidate();
-
-    // Create GSAP context for proper cleanup
-    const ctx = gsap.context(() => {
-      // Set initial positions INSIDE the context to prevent teleporting
-      gsap.set(bottleGroup.position, { x: 0, y: -4, z: 0 });
-      gsap.set(bottleGroup.rotation, { x: 0, y: 0, z: 0 });
-      gsap.set(bottleGroup.scale, { x: 0.01, y: 0.01, z: 0.01 });
-      
-      // Cap starts with bottle
-      gsap.set(capGroup.position, { x: 0, y: -4, z: 0 });
-      gsap.set(capGroup.rotation, { x: 0, y: 0, z: 0 });
-      gsap.set(capGroup.scale, { x: 0.01, y: 0.01, z: 0.01 });
-
-      // Create master timeline
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: containerRef.current!,
-          start: "top top",
-          end: "center top",
-          scrub: 1,
-          markers: false, // Set to true to debug positions
-          invalidateOnRefresh: true,
-          onUpdate: () => invalidate(),
-        },
-      });
-
-      tlRef.current = tl;
-
-      const isMobile = size.width < 1024;
-      const targetX = isMobile ? 0 : 3;
-
-      // Phase 1: Bottle rises and rotates (0-30%)
-      tl.to([bottleGroup.position, capGroup.position], {
-        y: -2.5,
-        duration: 0.3,
-        ease: "power2.out",
-      }, 0)
-      .to([bottleGroup.rotation, capGroup.rotation], {
-        y: Math.PI,
-        duration: 0.3,
-        ease: "power2.inOut",
-      }, 0);
-
-      // Phase 2: Cap separates and spirals up (30-60%)
-      // tl.to(capGroup.position, {
-      //   y: 0.5,
-      //   // y: 5,
-      //   // x: 0.5,
-      //   duration: 0.3,
-      //   ease: "power2.inOut",
-      // }, 0.3)
-      // .to(capGroup.rotation, {
-      //   y: Math.PI * 0.5,
-      //   // y: Math.PI * 3,
-      //   z: Math.PI * 0.1,
-      //   // z: Math.PI * 0.2,
-      //   duration: 0.3,
-      //   ease: "power2.inOut",
-      // }, 0.3)
-      // .to(capGroup.scale, {
-      //   x: 0.7,
-      //   y: 0.7,
-      //   z: 0.7,
-      //   duration: 0.3,
-      //   ease: "power2.in",
-      // }, 0.3);
-
-      tl.to(capGroup.position, {
-        y: 3.5,
-        duration: 0.4,
-        ease: "power3.inOut",
-      }, 0.4)
-      .to(capGroup.rotation, {
-        y: Math.PI * 0.7,
-        z: Math.PI * 0.3,
-        duration: 0.4,
-        ease: "power2.inOut",
-      }, 0.4);
-
-
-      // Phase 3: Bottle moves to right (60-100%)
-      tl.to(bottleGroup.position, {
-        y:0.2,
-        x: targetX,
-        duration: 0.4,
-        ease: "power3.inOut",
-      }, 0.6)
-      .to(bottleGroup.rotation, {
-        // x: Math.PI * -0.2,
-        // y: Math.PI * 2.2,
-        // z: Math.PI * 0.18,
-        x: 2.5,
-        y: 2.3,
-        z: 3.45,
-        duration: 0.4,
-        ease: "power2.out",
-      }, 0.6)
-      .to(bottleGroup.scale, {
-        x: 0.007,
-        y: 0.007,
-        z: 0.007,
-        duration: 0.4,
-        ease: "power2.out",
-      }, 0.6);
-
-      // Refresh after setup
-      setTimeout(() => {
-        ScrollTrigger.refresh();
-        invalidate();
-      }, 100);
-    });
-
-    ctxRef.current = ctx;
-
-    // Handle resize
-    const handleResize = () => {
-      ScrollTrigger.refresh();
-      invalidate();
-    };
-
-    window.addEventListener("resize", handleResize);
-
-    // Cleanup function
-    return () => {
-      window.removeEventListener("resize", handleResize);
-      
-      if (bottleGroup) {
-        gsap.killTweensOf(bottleGroup.position);
-        gsap.killTweensOf(bottleGroup.rotation);
-        gsap.killTweensOf(bottleGroup.scale);
-      }
-      
-      if (capGroup) {
-        gsap.killTweensOf(capGroup.position);
-        gsap.killTweensOf(capGroup.rotation);
-        gsap.killTweensOf(capGroup.scale);
-      }
-      
-      if (tlRef.current) {
-        tlRef.current.kill();
-      }
-      
-      if (ctxRef.current) {
-        ctxRef.current.revert();
-      }
-      
-      ScrollTrigger.getAll().forEach(st => st.kill());
-    };
-  }, [bottleRef, containerRef, invalidate, camera, viewport, size]);
-
-  // Debug: Log cap visibility
-  useEffect(() => {
-    if (bottleRef.current?.capGroup) {
-      console.log("Cap group exists:", bottleRef.current.capGroup);
-      console.log("Cap visible:", bottleRef.current.capGroup.visible);
-      console.log("Cap children:", bottleRef.current.capGroup.children.length);
-    }
-  }, [bottleRef]);
-
-  return null;
-}
-
-
 export default function PerfumeCanvas({ containerRef, config }: PerfumeCanvasProps) {
   const bottleRef = useRef<Bottle3DRef>(null);
+  const [isMobile, setIsMobile] = useState(false);
+  const [quality, setQuality] = useState<'low' | 'medium' | 'high'>('high');
+
+  useEffect(() => {
+    const checkDevice = () => {
+      const width = window.innerWidth;
+      const mobile = width < 768;
+      setIsMobile(mobile);
+      
+      // Auto-detect quality based on device
+      if (mobile) {
+        // Check device performance hints
+        const connection = (navigator as any).connection;
+        const memory = (navigator as any).deviceMemory;
+        
+        if (connection?.saveData || connection?.effectiveType === '2g') {
+          setQuality('low');
+        } else if (memory && memory < 4) {
+          setQuality('medium');
+        } else {
+          setQuality('medium'); // Default medium for most mobiles
+        }
+      } else {
+        setQuality('high');
+      }
+    };
+    
+    checkDevice();
+    window.addEventListener('resize', checkDevice);
+    
+    return () => window.removeEventListener('resize', checkDevice);
+  }, []);
+
+  // Quality-based settings
+  const getQualitySettings = useCallback(() => {
+    switch (quality) {
+      case 'low':
+        return {
+          dpr: [0.5, 0.75],
+          shadows: false,
+          antialias: false,
+          frameloop: 'demand' as const,
+          envResolution: 64,
+          lightCount: 1,
+          powerPreference: 'low-power' as WebGLPowerPreference,
+        };
+      case 'medium':
+        return {
+          dpr: [0.75, 1],
+          shadows: false,
+          antialias: false,
+          frameloop: 'always' as const,
+          envResolution: 128,
+          lightCount: 2,
+          powerPreference: 'default' as WebGLPowerPreference,
+        };
+      default:
+        return {
+          dpr: [1, 2],
+          shadows: true,
+          antialias: true,
+          frameloop: 'always' as const,
+          envResolution: 256,
+          lightCount: 3,
+          powerPreference: 'high-performance' as WebGLPowerPreference,
+        };
+    }
+  }, [quality]);
+
+  const settings = getQualitySettings();
 
   return (
     <div className="w-full h-full relative" style={{ pointerEvents: 'none', zIndex: 1 }}>
       <Canvas
         className="w-full h-full"
-        shadows
+        shadows={settings.shadows}
         style={{ background: 'transparent' }}
         dpr={[1, 2]}
-        frameloop="demand"
-        camera={{ position: [2, 1.6, 3], fov: 50 }}
+        frameloop={settings.frameloop}
+        camera={{ 
+          position: [0, 0, 5],
+          fov: isMobile ? 50 : 45,
+          near: 0.1,
+          far: isMobile ? 30 : 50
+        }}
         gl={{ 
-          antialias: true, 
-          logarithmicDepthBuffer: true,
+          antialias: settings.antialias,
           alpha: true,
           premultipliedAlpha: false,
-          powerPreference: "high-performance",
+          powerPreference: settings.powerPreference,
+          toneMapping: THREE.NoToneMapping,
+          outputColorSpace: THREE.SRGBColorSpace,
+          preserveDrawingBuffer: false,
         }}
         onCreated={({ gl, scene }) => {
-          gl.toneMapping = THREE.ACESFilmicToneMapping;
-          gl.outputColorSpace = THREE.SRGBColorSpace;
           scene.background = null;
           gl.setClearAlpha(0);
+          
+          // Mobile-specific optimizations
+          if (isMobile) {
+            gl.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+            gl.shadowMap.enabled = false;
+          }
         }}
       >
-        {/* Optimized lighting */}
-        <ambientLight intensity={0.4} />
-        <spotLight
-          position={[-4, 4, 4]}
-          angle={0.3}
-          penumbra={0.8}
-          intensity={1.0}
-          castShadow
-          shadow-mapSize={[1024, 1024]}
-        />
-        <spotLight
-          position={[4, 4, 4]}
-          angle={0.3}
-          penumbra={0.8}
-          intensity={1.0}
-          castShadow
-          shadow-mapSize={[1024, 1024]}
-        />
-        <directionalLight 
-          position={[0, 5, 3]} 
-          intensity={0.6} 
-          castShadow 
-        />
+        {/* Adaptive performance components */}
+        {isMobile && (
+          <>
+            <AdaptiveDpr pixelated />
+            <AdaptiveEvents />
+          </>
+        )}
 
-        <Suspense fallback={null}>
+        {/* Minimal lighting for mobile */}
+        <ambientLight intensity={isMobile ? 0.8 : 0.4} />
+        
+        {!isMobile && settings.lightCount > 1 && (
+          <>
+            <spotLight
+              position={[-4, 4, 4]}
+              angle={0.3}
+              penumbra={0.8}
+              intensity={1.0}
+              castShadow={settings.shadows}
+              shadow-mapSize={[512, 512]}
+            />
+            <spotLight
+              position={[4, 4, 4]}
+              angle={0.3}
+              penumbra={0.8}
+              intensity={1.0}
+              castShadow={settings.shadows}
+              shadow-mapSize={[512, 512]}
+            />
+          </>
+        )}
+        
+        {settings.lightCount > 0 && (
+          <directionalLight 
+            position={[0, 5, 3]} 
+            intensity={0.6} 
+            castShadow={!isMobile && settings.shadows}
+          />
+        )}
+
+        <Suspense fallback={<LoadingFallback />}>
           <Bottle3D
             ref={bottleRef}
-            position={config?.position || [0, -0.6, 0]}
-            rotation={config?.rotation || [0, 0, 0]}
-            scale={config?.scale || 0.7}
+            position={[0, 0, 0]}
+            rotation={[0, 0, 0]}
+            scale={0.01}
             enableAnimation={config?.enableAnimation !== false}
+            deviceType={isMobile ? 'mobile' : 'desktop'}
+            adaptiveQuality={quality !== 'low'}
           />
 
-          <Environment preset="studio" resolution={512}>
-            <group>
-              <Lightformer
-                form="rect"
-                intensity={8}
-                scale={[4, 2, 1]}
-                position={[-5, 3, 2]}
-                rotation={[0, Math.PI * 0.1, 0]}
-              />
-              <Lightformer
-                form="rect"
-                intensity={8}
-                scale={[4, 2, 1]}
-                position={[5, 3, 2]}
-                rotation={[0, -Math.PI * 0.1, 0]}
-              />
-              <Lightformer
-                form="rect"
-                intensity={3}
-                scale={[3, 1, 1]}
-                position={[0, 6, 0]}
-                rotation={[Math.PI / 2, 0, 0]}
-              />
-              <Lightformer
-                form="circle"
-                intensity={4}
-                scale={2}
-                position={[0, 0, 5]}
-                color="#FFD54A"
-              />
-            </group>
-          </Environment>
+          {/* Simplified environment for mobile */}
+          {quality !== 'low' && (
+            <Environment 
+              preset={isMobile ? "city" : "studio"}
+              resolution={settings.envResolution as 64 | 128 | 256}
+              background={false}
+            >
+              {!isMobile && (
+                <group>
+                  <Lightformer
+                    form="rect"
+                    intensity={4}
+                    scale={[4, 2, 1]}
+                    position={[-5, 3, 2]}
+                    rotation={[0, Math.PI * 0.1, 0]}
+                  />
+                  <Lightformer
+                    form="rect"
+                    intensity={4}
+                    scale={[4, 2, 1]}
+                    position={[5, 3, 2]}
+                    rotation={[0, -Math.PI * 0.1, 0]}
+                  />
+                </group>
+              )}
+            </Environment>
+          )}
 
           {config?.enableAnimation !== false && (
-            <ScrollAnimation bottleRef={bottleRef} containerRef={containerRef} />
+            <ScrollAnimation 
+              bottleRef={bottleRef} 
+              containerRef={containerRef}
+              enabled={config?.enableAnimation !== false}
+              isMobile={isMobile}
+            />
           )}
         </Suspense>
+
+        {/* Performance monitor for development */}
+        {process.env.NODE_ENV === 'development' && !isMobile && (
+          <PerformanceMonitor
+            onDecline={() => {
+              console.warn('Performance declining');
+              setQuality('medium');
+            }}
+            flipflops={3}
+            averages={2}
+            factor={0.5}
+          />
+        )}
       </Canvas>
     </div>
   );

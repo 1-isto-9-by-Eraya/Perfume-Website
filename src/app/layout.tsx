@@ -1,12 +1,13 @@
+// app/layout.tsx
 import type { Metadata } from "next";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import { Playfair_Display, Inter } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
 import Providers from "@/components/Providers";
-import SmoothScrollProvider from "@/components/SmoothScroll";
 import Footer from "@/components/Footer";
-import Preloader from "@/components/Preloader"; // 👈 import
+import Preloader from "@/components/Preloader";
+import ScrollTriggerProvider from "@/components/ScrollTriggerProvider";
 
 export const metadata: Metadata = {
   title: "1:9 by Eraya",
@@ -36,15 +37,16 @@ export default function RootLayout({
       className={`${playfairDisplay.variable} ${inter.variable} bg-[#000000]`}
     >
       <body>
-         <SmoothScrollProvider> 
+        <ScrollTriggerProvider>
           <Providers>
             <Preloader>
               <Navbar />
               <main className="mx-0 max-w-full relative z-10">{children}</main>
               <Footer />
+              <Analytics />
             </Preloader>
           </Providers>
-        </SmoothScrollProvider>
+        </ScrollTriggerProvider>
       </body>
     </html>
   );

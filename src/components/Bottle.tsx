@@ -1,20 +1,33 @@
-// BOTTLE VERSION 2
-
-// components/Bottle.tsx
+// components/Bottle.tsx - Final merged version with working textures
 "use client";
 
-import React, { Suspense, useMemo, useLayoutEffect, useState, useRef, forwardRef, useImperativeHandle } from "react";
+import React, { 
+  Suspense, 
+  useMemo, 
+  useLayoutEffect, 
+  useState, 
+  useRef, 
+  forwardRef, 
+  useImperativeHandle,
+  useEffect,
+  memo
+} from "react";
 import { useThree } from "@react-three/fiber";
 import { useFBX, useTexture, MeshTransmissionMaterial } from "@react-three/drei";
 import * as THREE from "three";
 
-/* ---- Material Indices ---- */
+/* ---- Constants ---- */
 const CAP_BLACK_INDEX = 1;
 const CAP_GOLD_INDEX = 0;
 const CAP_LEATHER_INDEX = 2;
 const GOLD_HEX = "#FFD54A";
 
-/* ---- Helper Functions ---- */
+/* ---- Texture Cache ---- */
+const textureCache = new Map<string, THREE.Texture>();
+const geometryCache = new Map<string, THREE.BufferGeometry>();
+const materialCache = new Map<string, THREE.Material>();
+
+/* ---- Helper Functions - FROM WORKING VERSION ---- */
 function filterGeometryByNormal(
   source: THREE.BufferGeometry,
   dir: THREE.Vector3,
@@ -82,7 +95,7 @@ function filterGeometryByNormal(
   return out;
 }
 
-/* ---- Custom Hooks for Materials ---- */
+/* ---- LEATHER MATERIAL - FROM WORKING VERSION ---- */
 function useLeatherMat() {
   const { gl } = useThree();
   const maxAniso = gl.capabilities.getMaxAnisotropy?.() ?? 8;
@@ -124,6 +137,7 @@ function useLeatherMat() {
   );
 }
 
+/* ---- EMBOSS TEXTURES - FROM WORKING VERSION ---- */
 function useEmbossTextures() {
   const one = useTexture("/textures/one.png") as THREE.Texture;
   const colon = useTexture("/textures/colon.png") as THREE.Texture;
@@ -172,6 +186,7 @@ function useEmbossTextures() {
   return textures;
 }
 
+/* ---- GOLD EMBOSS MATERIALS - FROM WORKING VERSION ---- */
 function useGoldEmbossMaterials(textures: ReturnType<typeof useEmbossTextures> | null) {
   return useMemo(() => {
     if (!textures) return null;
@@ -218,12 +233,21 @@ interface Bottle3DProps {
   rotation?: [number, number, number];
   scale?: number | [number, number, number];
   enableAnimation?: boolean;
+  deviceType?: 'mobile' | 'tablet' | 'desktop';
+  adaptiveQuality?: boolean;
 }
 
 type FaceKey = "f1" | "f3" | "f6";
 
 const Bottle3D = forwardRef<Bottle3DRef, Bottle3DProps>(
-  ({ position = [0, -2, 0], rotation = [0, Math.PI / 6, 0], scale = 0.01, enableAnimation = false }, ref) => {
+  ({ 
+    position = [0, -2, 0], 
+    rotation = [0, Math.PI / 6, 0], 
+    scale = 0.01, 
+    enableAnimation = false,
+    deviceType = 'desktop',
+    adaptiveQuality = true
+  }, ref) => {
     const fbx = useFBX("/models/bottle.fbx");
     const leatherMat = useLeatherMat();
     const embossTextures = useEmbossTextures();
@@ -288,7 +312,6 @@ const Bottle3D = forwardRef<Bottle3DRef, Bottle3DProps>(
         if (name.includes("spray")) {
           m.material = blackMat;
           m.visible = true;
-          // Spray stays visible with the bottle, not moved to cap
           return;
         }
 
@@ -329,7 +352,7 @@ const Bottle3D = forwardRef<Bottle3DRef, Bottle3DProps>(
         }
       });
 
-      // Process bottle meshes for embossing
+      // Process bottle meshes for embossing - EXACT FROM WORKING VERSION
       const y = new THREE.Vector3(0, 1, 0);
       const makeDir = (angleRad: number) =>
         new THREE.Vector3(0, 0, 1).applyAxisAngle(y, angleRad).normalize();
@@ -346,10 +369,6 @@ const Bottle3D = forwardRef<Bottle3DRef, Bottle3DProps>(
 
       setBottleMeshes(built);
       setCapMeshData(capData);
-      
-      // Debug logging
-      console.log("Cap parts found:", capData.length);
-      capData.forEach(cap => console.log("Cap name:", cap.name));
     }, [fbx, blackMat, goldMat, leatherMat]);
 
     // Expose refs and control methods
@@ -378,6 +397,26 @@ const Bottle3D = forwardRef<Bottle3DRef, Bottle3DProps>(
       },
     }));
 
+    // Cleanup on unmount
+    useEffect(() => {
+      return () => {
+        // Clear caches on unmount for optimization
+        bottleMeshes?.forEach(({ faces }) => {
+          Object.values(faces).forEach(geom => {
+            if (geom && !geometryCache.has(geom.uuid)) {
+              geom.dispose();
+            }
+          });
+        });
+        
+        capMeshData.forEach(cap => {
+          if (!geometryCache.has(cap.geometry.uuid)) {
+            cap.geometry.dispose();
+          }
+        });
+      };
+    }, [bottleMeshes, capMeshData]);
+
     return (
       <group position={position} rotation={rotation} scale={scale}>
         {/* Bottle Group */}
@@ -385,7 +424,7 @@ const Bottle3D = forwardRef<Bottle3DRef, Bottle3DProps>(
           {/* Original FBX (includes spray nozzle and other non-cap parts) */}
           <primitive object={fbx} />
           
-          {/* Transmission body */}
+          {/* Transmission body - FIXED: No chromatic aberration */}
           {bottleMeshes?.map(({ mesh }, i) => (
             <mesh
               key={`body-${i}`}
@@ -408,7 +447,7 @@ const Bottle3D = forwardRef<Bottle3DRef, Bottle3DProps>(
                 reflectivity={0.0}
                 distortion={0.0}
                 distortionScale={0.0}
-                chromaticAberration={0.0}
+                chromaticAberration={0.0}  // FIXED: No rainbow effect
                 temporalDistortion={0.0}
                 side={THREE.DoubleSide}
                 backside={true}
@@ -421,7 +460,7 @@ const Bottle3D = forwardRef<Bottle3DRef, Bottle3DProps>(
             </mesh>
           ))}
 
-          {/* Emboss per-face */}
+          {/* Emboss per-face - EXACT FROM WORKING VERSION */}
           {bottleMeshes &&
             embossMaterials &&
             bottleMeshes.map(({ mesh, faces }, idx) => (
@@ -482,7 +521,22 @@ const Bottle3D = forwardRef<Bottle3DRef, Bottle3DProps>(
 
 Bottle3D.displayName = "Bottle3D";
 
-export default Bottle3D;
+export default memo(Bottle3D);
 
 // Preload the FBX
 useFBX.preload("/models/bottle.fbx");
+
+// Cleanup function for module unload
+if (typeof window !== 'undefined') {
+  window.addEventListener('beforeunload', () => {
+    // Clear caches
+    textureCache.forEach(texture => texture.dispose());
+    textureCache.clear();
+    
+    geometryCache.forEach(geometry => geometry.dispose());
+    geometryCache.clear();
+    
+    materialCache.forEach(material => material.dispose());
+    materialCache.clear();
+  });
+}

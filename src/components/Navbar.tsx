@@ -4,6 +4,19 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { signOut } from "next-auth/react";
 import { usePathname } from "next/navigation";
+import { Playfair_Display, Inter } from "next/font/google";
+
+const playfairDisplay = Playfair_Display({
+  subsets: ["latin"],
+  variable: "--font-playfair",
+  display: "swap",
+});
+
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+  display: "swap",
+});
 
 export default function Navbar() {
   const [allowed, setAllowed] = useState<boolean | null>(null);
@@ -79,7 +92,8 @@ export default function Navbar() {
     }`;
 
     const underlineEffect = (
-      <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-[#9A8E2B] to-[#F5F287] transition-all duration-300 group-hover:w-full"></span>
+      <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-[#EB9C1C] to-[#EB9C1C] transition-all duration-300 group-hover:w-full"></span>
+      // <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-[#9A8E2B] to-[#F5F287] transition-all duration-300 group-hover:w-full"></span>
     );
 
     if (isExternal) {
@@ -141,7 +155,8 @@ export default function Navbar() {
             {!allowed && allowed !== null && (
               <a
                 href="https://1-9-by-eraya.myshopify.com/collections/all"
-                className="px-4 py-1.5 bg-gradient-to-r from-[#9A8E2B] to-[#F5F287] text-black font-bold text-sm uppercase tracking-wider hover:shadow-lg hover:shadow-[#9A8E2B]/25 transition-all duration-200 transform hover:scale-105"
+                className={`px-4 py-1.5 bg-gradient-to-r from-[#EB9C1C] to-[#EB9C1C] text-black ${inter.className} font-semibold text-sm uppercase tracking-wider hover:shadow-lg hover:shadow-[#9A8E2B]/25 transition-all duration-200 transform hover:scale-105`}
+                // className={`px-4 py-1.5 bg-gradient-to-r from-[#9A8E2B] to-[#F5F287] text-black ${inter.className} font-bold text-sm uppercase tracking-wider hover:shadow-lg hover:shadow-[#9A8E2B]/25 transition-all duration-200 transform hover:scale-105`}
                 rel="noopener noreferrer"
               >
                 Shop Now
@@ -151,7 +166,7 @@ export default function Navbar() {
             {/* Sign out button for authenticated users */}
             {allowed && (
               <button
-                className="rounded px-3 py-1 border border-white/30 text-sm opacity-60 hover:opacity-80 hover:border-white/50 transition-all duration-200"
+                className={`rounded px-3 py-1 border border-white/30 text-sm ${inter.className} opacity-60 hover:opacity-80 hover:border-white/50 transition-all duration-200`}
                 onClick={() => {
                   signOut()
                     .then(() => {
@@ -182,7 +197,7 @@ export default function Navbar() {
           </div>
 
           {/* Navigation Items on Right */}
-          <div className="flex gap-8 items-center text-base font-medium font-inter uppercase">
+          <div className={`flex gap-8 items-center text-base font-medium ${inter.className} uppercase`}>
             <NavLink href="/">Home</NavLink>
             <NavLink href="/our-story">Our Story</NavLink>
             <NavLink href="/blog">Journal</NavLink>
@@ -195,7 +210,7 @@ export default function Navbar() {
             {!allowed && allowed !== null && (
               <a
                 href="https://1-9-by-eraya.myshopify.com/collections/all"
-                className="px-6 py-2 bg-gradient-to-r from-[#9A8E2B] to-[#F5F287] text-black font-bold uppercase tracking-wider hover:shadow-lg hover:shadow-[#9A8E2B]/30 transition-all duration-300 transform hover:scale-105 hover:-translate-y-0.5 active:scale-95"
+                className="px-6 py-2 bg-[#EB9C1C] text-black font-semibold uppercase tracking-wider hover:shadow-lg hover:shadow-[#9A8E2B]/30 transition-all duration-300 transform hover:scale-105 hover:-translate-y-0.5 active:scale-95"
                 rel="noopener noreferrer"
               >
                 Shop Now
@@ -262,7 +277,7 @@ export default function Navbar() {
           </div>
 
           {/* Sidebar Navigation */}
-          <div className="flex flex-col">
+          <div className={`flex flex-col ${inter.className}`}>
             <Link
               href="/"
               className={`${mobileLinkStyles} ${

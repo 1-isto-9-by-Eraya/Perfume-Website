@@ -2,6 +2,19 @@
 "use client";
 
 import React from "react";
+import { Playfair_Display, Inter } from "next/font/google";
+
+const playfairDisplay = Playfair_Display({
+  subsets: ["latin"],
+  variable: "--font-playfair",
+  display: "swap",
+});
+
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+  display: "swap",
+});
 
 export default function PreOrderPage() {
   return (
@@ -37,20 +50,20 @@ export default function PreOrderPage() {
           <section className="flex flex-col justify-between rounded-xl p-6 md:p-8 lg:p-10">
             <div>
               <div className="mb-4">
-                <span className="text-xs font-inter tracking-[0.2em] uppercase text-[#FF8F00]">
+                <span className={`text-xs ${inter.className} tracking-[0.2em] uppercase text-[#FF8F00]`}>
                   Limited Edition
                 </span>
               </div>
               
-              <h1 className="text-3xl md:text-4xl lg:text-5xl font-playfair text-white mb-4">
+              <h1 className={`text-3xl md:text-4xl lg:text-5xl ${playfairDisplay.className} text-white mb-4`}>
                 1:9 Signature
               </h1>
               
-              <p className="text-sm font-inter text-gray-400 mb-6">
+              <p className={`text-sm ${inter.className} text-gray-400 mb-6`}>
                 Eau de Parfum · 100ml
               </p>
 
-              <div className="space-y-3 text-gray-300 text-sm md:text-base leading-relaxed font-inter">
+              <div className={`space-y-3 text-gray-300 text-sm md:text-base leading-relaxed ${inter.className}`}>
                 <p>
                   An extraordinary composition that defies convention. 1:9 Signature opens with 
                   rare Himalayan bergamot and black pepper, evolving through a heart of iris 
@@ -67,10 +80,10 @@ export default function PreOrderPage() {
               
 
               <div className="mt-8">
-                <p className="text-3xl md:text-4xl font-semibold text-white font-playfair">
+                <p className={`text-3xl md:text-4xl font-semibold text-white ${inter.className}`}>
                   $3,500.00
                 </p>
-                <p className="text-sm text-gray-400 mt-2 font-inter">
+                <p className={`text-sm text-gray-400 mt-2 ${inter.className}`}>
                   Expected delivery: March 2025
                 </p>
               </div>
@@ -95,15 +108,11 @@ export default function PreOrderPage() {
                 </div>
               </div> */}
               
-              <button className="w-full bg-[#FF8F00] hover:bg-[#FF8F00]/90 text-[#191919] font-semibold py-4 px-6 rounded transition-all duration-300 hover:scale-[1.02] font-inter tracking-wide uppercase">
+              <button className={`w-full bg-[#EB9C1C] hover:bg-[#FF8F00]/90 text-[#191919] font-semibold py-4 px-6 rounded transition-all duration-300 hover:scale-[1.02] ${inter.className} tracking-wide uppercase`}>
                 Pre-Order Now
               </button>
               
-              {/* <button className="w-full bg-transparent border border-gray-600 hover:border-[#FF8F00] hover:text-[#FF8F00] text-gray-200 py-4 px-6 rounded transition-all duration-300 font-inter">
-                Add to Wishlist
-              </button> */}
-              
-              <p className="text-xs text-gray-500 text-center font-inter">
+              <p className={`text-xs text-gray-500 text-center ${inter.className}`}>
                 Limited to 500 pieces worldwide
               </p>
             </div>
