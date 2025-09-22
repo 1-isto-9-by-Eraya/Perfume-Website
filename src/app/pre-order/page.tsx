@@ -20,37 +20,24 @@ export default function PreOrderPage() {
   return (
     <main className="min-h-screen bg-[#000000]">
       <div className="container mx-auto px-4 py-8 pt-24">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
-          {/* Product Image (left) */}
+        {/* Single column on tablets, two columns on large screens */}
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 items-stretch max-w-7xl mx-auto">
+          {/* Product Image */}
           <div className="rounded-xl overflow-hidden bg-[#0a0a0a]">
-            <div className="h-[50vh] sm:h-[60vh] md:h-[70vh] lg:h-[80vh] relative flex items-center justify-center">
-              {/* Replace this div with your actual image */}
-              {/* <div className="w-full h-full bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center">
-                <div className="text-center">
-                  <div className="w-32 h-48 mx-auto bg-gradient-to-b from-amber-200 to-amber-600 rounded-lg mb-4 shadow-2xl relative">
-                    <div className="absolute inset-2 bg-gradient-to-b from-amber-100 to-amber-500 rounded opacity-80"></div>
-                    <div className="absolute top-4 left-1/2 transform -translate-x-1/2 w-6 h-8 bg-gray-800 rounded-sm"></div>
-                  </div>
-                  <p className="text-gray-400 text-sm font-inter">1:9 Signature Bottle</p>
-                </div>
-              </div> */}
-              
-              {/* Uncomment and use this when you have an actual image */}
-              
+            <div className="h-[50vh] sm:h-[60vh] md:h-[500px] lg:h-[600px] xl:h-[70vh] relative flex items-center justify-center">
               <img 
                 src="/images/our-story-bottle.png" 
                 alt="1:9 Signature Eau de Parfum"
-                className="w-full h-full object-contain"
+                className="w-full h-full object-contain p-4 md:p-8"
               />
-             
             </div>
           </div>
 
-          {/* Product Details (right) */}
+          {/* Product Details */}
           <section className="flex flex-col justify-between rounded-xl p-6 md:p-8 lg:p-10">
             <div>
               <div className="mb-4">
-                <span className={`text-xs ${inter.className} tracking-[0.2em] uppercase text-[#FF8F00]`}>
+                <span className={`text-xs md:text-sm ${inter.className} tracking-[0.2em] uppercase text-[#FF8F00]`}>
                   Limited Edition
                 </span>
               </div>
@@ -59,11 +46,11 @@ export default function PreOrderPage() {
                 1:9 Signature
               </h1>
               
-              <p className={`text-sm ${inter.className} text-gray-400 mb-6`}>
+              <p className={`text-sm md:text-base ${inter.className} text-gray-400 mb-6`}>
                 Eau de Parfum · 100ml
               </p>
 
-              <div className={`space-y-3 text-gray-300 text-sm md:text-base leading-relaxed ${inter.className}`}>
+              <div className={`space-y-4 text-gray-300 text-sm md:text-base lg:text-lg leading-relaxed ${inter.className} text-justify`}>
                 <p>
                   An extraordinary composition that defies convention. 1:9 Signature opens with 
                   rare Himalayan bergamot and black pepper, evolving through a heart of iris 
@@ -77,46 +64,34 @@ export default function PreOrderPage() {
                 </p>
               </div>
 
-              
-
               <div className="mt-8">
                 <p className={`text-3xl md:text-4xl font-semibold text-white ${inter.className}`}>
                   $3,500.00
                 </p>
-                <p className={`text-sm text-gray-400 mt-2 ${inter.className}`}>
+                <p className={`text-sm md:text-base text-gray-400 mt-2 ${inter.className}`}>
                   Expected delivery: March 2025
                 </p>
               </div>
             </div>
 
             <div className="mt-8 space-y-4">
-              {/* <div className="flex items-center gap-4">
-                <label className="text-gray-300 text-sm font-inter">Quantity:</label>
-                <div className="flex items-center border border-gray-600 rounded">
-                  <button className="px-3 py-1 text-gray-300 hover:bg-gray-700 transition-colors">
-                    -
-                  </button>
-                  <input 
-                    type="number" 
-                    value="1" 
-                    readOnly
-                    className="w-12 text-center bg-transparent text-white border-x border-gray-600"
-                  />
-                  <button className="px-3 py-1 text-gray-300 hover:bg-gray-700 transition-colors">
-                    +
-                  </button>
-                </div>
-              </div> */}
-              
-              <button className={`w-full bg-[#EB9C1C] hover:bg-[#FF8F00]/90 text-[#191919] font-semibold py-4 px-6 rounded transition-all duration-300 hover:scale-[1.02] ${inter.className} tracking-wide uppercase`}>
+              <button className={`w-full bg-[#EB9C1C] hover:bg-[#FF8F00]/90 text-[#191919] font-semibold py-4 px-6 rounded transition-all duration-300 hover:scale-[1.02] ${inter.className} tracking-wide uppercase text-sm md:text-base`}>
                 Pre-Order Now
               </button>
               
-              <p className={`text-xs text-gray-500 text-center ${inter.className}`}>
+              <p className={`text-xs md:text-sm text-gray-500 text-center ${inter.className}`}>
                 Limited to 500 pieces worldwide
               </p>
             </div>
           </section>
+        </div>
+
+        {/* Optional: Additional details section for tablets */}
+        <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto xl:hidden">
+          <div className="text-center p-4">
+            <h3 className={`text-lg font-semibold text-white mb-2 ${inter.className}`}>Limited Edition</h3>
+            <p className={`text-sm text-gray-400 ${inter.className}`}>Only 500 pieces available worldwide</p>
+          </div>
         </div>
       </div>
     </main>
