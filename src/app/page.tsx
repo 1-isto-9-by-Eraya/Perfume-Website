@@ -6,7 +6,7 @@ import dynamic from "next/dynamic";
 import { Playfair_Display, Inter } from "next/font/google";
 import SmoothScrollProvider from "@/components/SmoothScroll";
 
-const PerfumeCanvas = dynamic(() => import("@/components/PerfumeCanvas"), {
+const PerfumeCanvas = dynamic(() => import("@/components/PerfumeCanvas").then((m) => m.default), {
   ssr: false,
   loading: () => <div className="w-full h-full animate-pulse" />,
 });

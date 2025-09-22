@@ -1,20 +1,24 @@
-// components/Bottle.tsx - Final merged version with working textures
+// components/Bottle.tsx - FBX with KTX2 leather textures (production-ready)
 "use client";
 
-import React, { 
-  Suspense, 
-  useMemo, 
-  useLayoutEffect, 
-  useState, 
-  useRef, 
-  forwardRef, 
+import React, {
+  useMemo,
+  useLayoutEffect,
+  useState,
+  useRef,
+  forwardRef,
   useImperativeHandle,
   useEffect,
-  memo
+  memo,
 } from "react";
-import { useThree } from "@react-three/fiber";
-import { useFBX, useTexture, MeshTransmissionMaterial } from "@react-three/drei";
+import { useThree, useLoader } from "@react-three/fiber";
+import {
+  useFBX,
+  useTexture,
+  MeshTransmissionMaterial,
+} from "@react-three/drei";
 import * as THREE from "three";
+import { KTX2Loader } from "three/examples/jsm/loaders/KTX2Loader.js";
 
 /* ---- Constants ---- */
 const CAP_BLACK_INDEX = 1;
@@ -22,12 +26,17 @@ const CAP_GOLD_INDEX = 0;
 const CAP_LEATHER_INDEX = 2;
 const GOLD_HEX = "#FFD54A";
 
-/* ---- Texture Cache ---- */
+/* ---- Optional caches ---- */
 const textureCache = new Map<string, THREE.Texture>();
 const geometryCache = new Map<string, THREE.BufferGeometry>();
 const materialCache = new Map<string, THREE.Material>();
 
-/* ---- Helper Functions - FROM WORKING VERSION ---- */
+/* ---- Local types for initial pose ---- */
+type Vec3 = [number, number, number];
+type Transform = { position: Vec3; rotation: Vec3; scale: number | Vec3 };
+type InitialPose = { bottle?: Transform; cap?: Transform };
+
+/* ---- Helper: filter by normal ---- */
 function filterGeometryByNormal(
   source: THREE.BufferGeometry,
   dir: THREE.Vector3,
@@ -35,7 +44,9 @@ function filterGeometryByNormal(
 ) {
   const nonIndexed = source.index ? source.toNonIndexed() : source.clone();
   const pos = nonIndexed.getAttribute("position") as THREE.BufferAttribute;
-  const nrm = nonIndexed.getAttribute("normal") as THREE.BufferAttribute | undefined;
+  const nrm = nonIndexed.getAttribute("normal") as
+    | THREE.BufferAttribute
+    | undefined;
 
   const triCount = pos.count / 3;
   const kept: number[] = [];
@@ -68,15 +79,14 @@ function filterGeometryByNormal(
       n.copy(ab).cross(ac).normalize();
     }
 
-    if (n.dot(dir) >= cosThreshold) {
-      kept.push(i0, i1, i2);
-    }
+    if (n.dot(dir) >= cosThreshold) kept.push(i0, i1, i2);
   }
 
   const out = new THREE.BufferGeometry();
-
   const copySubset = (name: string) => {
-    const attr = nonIndexed.getAttribute(name) as THREE.BufferAttribute | undefined;
+    const attr = nonIndexed.getAttribute(name) as
+      | THREE.BufferAttribute
+      | undefined;
     if (!attr) return;
     const itemSize = attr.itemSize;
     const array = new Float32Array(kept.length * itemSize);
@@ -88,34 +98,42 @@ function filterGeometryByNormal(
     }
     out.setAttribute(name, new THREE.BufferAttribute(array, itemSize));
   };
-
   copySubset("position");
   copySubset("normal");
   copySubset("uv");
   return out;
 }
 
-/* ---- LEATHER MATERIAL - FROM WORKING VERSION ---- */
-function useLeatherMat() {
+/* ---- KTX2 Leather Material ---- */
+function useLeatherMatKTX2() {
   const { gl } = useThree();
-  const maxAniso = gl.capabilities.getMaxAnisotropy?.() ?? 8;
 
-  const tex = useTexture({
-    map: "/textures/leather_albedo1.png",
-    normalMap: "/textures/leather_normal.jpg",
-    roughnessMap: "/textures/leather-roughness.png",
-  }) as Record<string, THREE.Texture | undefined>;
+  const [albedo, normal, roughness] = useLoader(
+    KTX2Loader as any,
+    [
+      "/textures/leather_albedo1.ktx2",
+      "/textures/leather_normal.ktx2",
+      "/textures/leather-roughness.ktx2",
+    ],
+    (loader: KTX2Loader) => {
+      loader.setTranscoderPath("/basis/").detectSupport(gl);
+    }
+  ) as [
+    THREE.CompressedTexture,
+    THREE.CompressedTexture,
+    THREE.CompressedTexture
+  ];
 
-  if (tex.map) tex.map.colorSpace = THREE.SRGBColorSpace;
-  if (tex.normalMap) tex.normalMap.colorSpace = THREE.LinearSRGBColorSpace;
-  if (tex.roughnessMap) tex.roughnessMap.colorSpace = THREE.LinearSRGBColorSpace;
+  if (albedo) albedo.colorSpace = THREE.SRGBColorSpace;
+  if (normal) normal.colorSpace = THREE.LinearSRGBColorSpace;
+  if (roughness) roughness.colorSpace = THREE.LinearSRGBColorSpace;
 
-  [tex.map, tex.normalMap, tex.roughnessMap].forEach((t) => {
+  const maxAniso = gl.capabilities.getMaxAnisotropy?.() ?? 16;
+  [albedo, normal, roughness].forEach((t) => {
     if (!t) return;
-    t.flipY = false;
     t.wrapS = t.wrapT = THREE.RepeatWrapping;
-    t.repeat.set(0.3, 0.3);
-    t.anisotropy = Math.min(8, maxAniso);
+    t.repeat.set(0.22, 0.22);
+    t.anisotropy = Math.min(16, maxAniso);
     t.needsUpdate = true;
   });
 
@@ -123,21 +141,25 @@ function useLeatherMat() {
     () =>
       new THREE.MeshPhysicalMaterial({
         color: "#1a1a1a",
-        map: tex.map ?? null,
-        normalMap: tex.normalMap ?? null,
-        roughnessMap: tex.roughnessMap ?? null,
-        metalness: 0.2,
-        roughness: 0.35,
-        clearcoat: 0.15,
-        clearcoatRoughness: 0.4,
-        envMapIntensity: 1.2,
-        normalScale: new THREE.Vector2(3, 3),
+        map: albedo ?? null,
+        roughnessMap: roughness ?? null,
+        bumpMap: normal ?? null,
+        bumpScale: 2,
+        metalness: 0.12,
+        roughness: 0.55,
+        clearcoat: 0.0,
+        clearcoatRoughness: 0.0,
+        envMapIntensity: 1.0,
+        normalScale: new THREE.Vector2(1, 1),
+        polygonOffset: true,
+        polygonOffsetFactor: 1,
+        polygonOffsetUnits: 1,
       }),
-    [tex.map, tex.normalMap, tex.roughnessMap]
+    [albedo, normal, roughness]
   );
 }
 
-/* ---- EMBOSS TEXTURES - FROM WORKING VERSION ---- */
+/* ---- Emboss textures ---- */
 function useEmbossTextures() {
   const one = useTexture("/textures/one.png") as THREE.Texture;
   const colon = useTexture("/textures/colon.png") as THREE.Texture;
@@ -159,8 +181,12 @@ function useEmbossTextures() {
       ctx.fillStyle = "black";
       ctx.fillRect(0, 0, W, H);
 
-      const img = (charTex.image as HTMLImageElement) || 
-                  (charTex.source?.data as HTMLImageElement | HTMLCanvasElement | ImageBitmap);
+      const img =
+        (charTex.image as HTMLImageElement) ||
+        (charTex.source?.data as
+          | HTMLImageElement
+          | HTMLCanvasElement
+          | ImageBitmap);
       if (img) {
         const charSize = Math.min(W, H) * 0.3;
         const x = (W - charSize) / 2;
@@ -173,6 +199,8 @@ function useEmbossTextures() {
       tex.wrapS = tex.wrapT = THREE.ClampToEdgeWrapping;
       tex.minFilter = THREE.LinearFilter;
       tex.magFilter = THREE.LinearFilter;
+      tex.generateMipmaps = false;
+      tex.needsUpdate = true;
       return tex;
     };
 
@@ -186,8 +214,10 @@ function useEmbossTextures() {
   return textures;
 }
 
-/* ---- GOLD EMBOSS MATERIALS - FROM WORKING VERSION ---- */
-function useGoldEmbossMaterials(textures: ReturnType<typeof useEmbossTextures> | null) {
+/* ---- Gold emboss materials ---- */
+function useGoldEmbossMaterials(
+  textures: ReturnType<typeof useEmbossTextures> | null
+) {
   return useMemo(() => {
     if (!textures) return null;
 
@@ -202,7 +232,6 @@ function useGoldEmbossMaterials(textures: ReturnType<typeof useEmbossTextures> |
         alphaMap: texture,
         transparent: true,
         alphaTest: 0.05,
-        reflectivity: 0.005,
         side: THREE.DoubleSide,
       });
       material.bumpMap = texture;
@@ -218,7 +247,7 @@ function useGoldEmbossMaterials(textures: ReturnType<typeof useEmbossTextures> |
   }, [textures]);
 }
 
-/* ---- Bottle3D Component ---- */
+/* ---- Types ---- */
 export interface Bottle3DRef {
   bottleGroup: THREE.Group | null;
   capGroup: THREE.Group | null;
@@ -229,32 +258,64 @@ export interface Bottle3DRef {
 }
 
 interface Bottle3DProps {
+  /** keep wrapper neutral — the rig controls inner groups */
   position?: [number, number, number];
   rotation?: [number, number, number];
   scale?: number | [number, number, number];
   enableAnimation?: boolean;
-  deviceType?: 'mobile' | 'tablet' | 'desktop';
+  deviceType?: "mobile" | "tablet" | "desktop";
   adaptiveQuality?: boolean;
+  /** apply before first paint to avoid flash */
+  initialPose?: InitialPose;
+  /** notify when FBX is processed and groups are ready (after initial pose applied) */
+  onReady?: () => void;
 }
 
 type FaceKey = "f1" | "f3" | "f6";
 
+/* ---- Small helper ---- */
+function applyTransformImmediate(
+  g: THREE.Group | null | undefined,
+  t?: Transform
+) {
+  if (!g || !t) return;
+  const [px, py, pz] = t.position;
+  const [rx, ry, rz] = t.rotation;
+  g.position.set(px, py, pz);
+  g.rotation.set(rx, ry, rz);
+  if (Array.isArray(t.scale)) {
+    const [sx, sy, sz] = t.scale;
+    g.scale.set(sx, sy, sz);
+  } else {
+    g.scale.setScalar(t.scale);
+  }
+}
+
+/* ---- Component ---- */
 const Bottle3D = forwardRef<Bottle3DRef, Bottle3DProps>(
-  ({ 
-    position = [0, -2, 0], 
-    rotation = [0, Math.PI / 6, 0], 
-    scale = 0.01, 
-    enableAnimation = false,
-    deviceType = 'desktop',
-    adaptiveQuality = true
-  }, ref) => {
+  (
+    {
+      position,
+      rotation,
+      scale,
+      enableAnimation = false,
+      deviceType = "desktop",
+      adaptiveQuality = true,
+      initialPose,
+      onReady,
+    },
+    ref
+  ) => {
     const fbx = useFBX("/models/bottle.fbx");
-    const leatherMat = useLeatherMat();
+    const leatherMat = useLeatherMatKTX2();
     const embossTextures = useEmbossTextures();
     const embossMaterials = useGoldEmbossMaterials(embossTextures);
 
     const bottleGroupRef = useRef<THREE.Group>(null);
     const capGroupRef = useRef<THREE.Group>(null);
+
+    // Hide groups until initial pose is applied to prevent any flash
+    const [posed, setPosed] = useState(false);
 
     const { goldMat, blackMat } = useMemo(() => {
       const goldMat = new THREE.MeshPhysicalMaterial({
@@ -266,7 +327,7 @@ const Bottle3D = forwardRef<Bottle3DRef, Bottle3DProps>(
         envMapIntensity: 2.0,
       });
       const blackMat = new THREE.MeshPhysicalMaterial({
-        color: "#0a0a0a",
+        color: "#000000",
         metalness: 1,
         roughness: 0.05,
         clearcoat: 1,
@@ -276,20 +337,25 @@ const Bottle3D = forwardRef<Bottle3DRef, Bottle3DProps>(
       return { goldMat, blackMat };
     }, []);
 
-    const [bottleMeshes, setBottleMeshes] = useState<{
-      mesh: THREE.Mesh;
-      faces: Partial<Record<FaceKey, THREE.BufferGeometry>>;
-    }[]>();
+    const [bottleMeshes, setBottleMeshes] =
+      useState<
+        {
+          mesh: THREE.Mesh;
+          faces: Partial<Record<FaceKey, THREE.BufferGeometry>>;
+        }[]
+      >();
+    const [capMeshData, setCapMeshData] = useState<
+      Array<{
+        geometry: THREE.BufferGeometry;
+        material: THREE.Material | THREE.Material[];
+        position: THREE.Vector3;
+        rotation: THREE.Euler;
+        scale: THREE.Vector3;
+        name: string;
+      }>
+    >([]);
 
-    const [capMeshData, setCapMeshData] = useState<Array<{
-      geometry: THREE.BufferGeometry;
-      material: THREE.Material | THREE.Material[];
-      position: THREE.Vector3;
-      rotation: THREE.Euler;
-      scale: THREE.Vector3;
-      name: string;
-    }>>([]);
-
+    // Process FBX (materials split etc.)
     useLayoutEffect(() => {
       const bodies: THREE.Mesh[] = [];
       const capData: Array<{
@@ -303,28 +369,35 @@ const Bottle3D = forwardRef<Bottle3DRef, Bottle3DProps>(
 
       fbx.traverse((o) => {
         if (!(o as any).isMesh) return;
-        const m = o as THREE.Mesh<THREE.BufferGeometry, THREE.Material | THREE.Material[]>;
+        const m = o as THREE.Mesh<
+          THREE.BufferGeometry,
+          THREE.Material | THREE.Material[]
+        >;
         m.castShadow = m.receiveShadow = true;
 
         const name = (m.name || "").toLowerCase();
 
-        // Spray parts - stays with bottle body, not cap
         if (name.includes("spray")) {
           m.material = blackMat;
           m.visible = true;
           return;
         }
 
-        // Main glass/body
-        if (name.includes("glass") || name.includes("bottle") || name.includes("body")) {
+        if (
+          name.includes("glass") ||
+          name.includes("bottle") ||
+          name.includes("body")
+        ) {
           bodies.push(m);
           m.visible = false;
           return;
         }
 
-        // Cap materials - only actual cap parts
         if (name.includes("cap") || name.includes("lid")) {
-          if (Array.isArray(m.material)) {
+          const isLeatherOval = /(oval|circle_2|leather)/i.test(name);
+          if (isLeatherOval) {
+            m.material = leatherMat;
+          } else if (Array.isArray(m.material)) {
             const slots = m.material as THREE.Material[];
             m.material = slots.map((slot, i) => {
               if (i === CAP_BLACK_INDEX) return blackMat;
@@ -335,24 +408,46 @@ const Bottle3D = forwardRef<Bottle3DRef, Bottle3DProps>(
           } else {
             m.material = goldMat;
           }
-          
-          // Store cap data for separate rendering
+
+          // capData.push({
+          //   geometry: m.geometry.clone(),
+          //   material: m.material,
+          //   position: m.position.clone(),
+          //   rotation: m.rotation.clone(),
+          //   scale: m.scale.clone(),
+          //   name: m.name,
+          // });
+
+          // m.visible = false;
+          // return;
+          // 1) Ensure world matrices are up to date
+          m.updateWorldMatrix(true, false);
+          fbx.updateWorldMatrix(true, false);
+
+          // 2) Bake the mesh's full transform relative to the FBX root into the geometry
+          const baked = m.geometry.clone();
+          const rootInv = new THREE.Matrix4().copy(fbx.matrixWorld).invert();
+          const meshToRoot = new THREE.Matrix4()
+            .copy(m.matrixWorld)
+            .premultiply(rootInv);
+          baked.applyMatrix4(meshToRoot);
+
+          // 3) After baking, the mesh itself can be identity TRS (all zeros / ones)
           capData.push({
-            geometry: m.geometry.clone(),
+            geometry: baked,
             material: m.material,
-            position: m.position.clone(),
-            rotation: m.rotation.clone(),
-            scale: m.scale.clone(),
-            name: m.name
+            position: new THREE.Vector3(0, 0, 0),
+            rotation: new THREE.Euler(0, 0, 0),
+            scale: new THREE.Vector3(1, 1, 1),
+            name: m.name,
           });
-          
-          // Hide original cap in FBX
+
+          // Hide the original cap mesh in the FBX
           m.visible = false;
           return;
         }
       });
 
-      // Process bottle meshes for embossing - EXACT FROM WORKING VERSION
       const y = new THREE.Vector3(0, 1, 0);
       const makeDir = (angleRad: number) =>
         new THREE.Vector3(0, 0, 1).applyAxisAngle(y, angleRad).normalize();
@@ -371,60 +466,62 @@ const Bottle3D = forwardRef<Bottle3DRef, Bottle3DProps>(
       setCapMeshData(capData);
     }, [fbx, blackMat, goldMat, leatherMat]);
 
-    // Expose refs and control methods
+    // Apply initial pose BEFORE first paint & then reveal
+    useLayoutEffect(() => {
+      if (posed) return;
+      const bottle = bottleGroupRef.current;
+      const cap = capGroupRef.current;
+      if (!bottle || !cap) return;
+
+      // apply synchronously to avoid any flash of default FBX transforms
+      applyTransformImmediate(bottle, initialPose?.bottle);
+      applyTransformImmediate(cap, initialPose?.cap);
+
+      setPosed(true); // reveal on next commit
+    }, [initialPose, posed]);
+
+    // Let parent control the groups
     useImperativeHandle(ref, () => ({
       bottleGroup: bottleGroupRef.current,
       capGroup: capGroupRef.current,
-      setBottleRotation: (rotation: THREE.Euler) => {
-        if (bottleGroupRef.current) {
-          bottleGroupRef.current.rotation.copy(rotation);
-        }
-      },
-      setCapRotation: (rotation: THREE.Euler) => {
-        if (capGroupRef.current) {
-          capGroupRef.current.rotation.copy(rotation);
-        }
-      },
-      setBottlePosition: (position: THREE.Vector3) => {
-        if (bottleGroupRef.current) {
-          bottleGroupRef.current.position.copy(position);
-        }
-      },
-      setCapPosition: (position: THREE.Vector3) => {
-        if (capGroupRef.current) {
-          capGroupRef.current.position.copy(position);
-        }
-      },
+      setBottleRotation: (r: THREE.Euler) =>
+        bottleGroupRef.current?.rotation.copy(r),
+      setCapRotation: (r: THREE.Euler) => capGroupRef.current?.rotation.copy(r),
+      setBottlePosition: (p: THREE.Vector3) =>
+        bottleGroupRef.current?.position.copy(p),
+      setCapPosition: (p: THREE.Vector3) =>
+        capGroupRef.current?.position.copy(p),
     }));
+
+    // Notify when ready AFTER initial pose was applied & groups exist
+    const notified = useRef(false);
+    useEffect(() => {
+      if (notified.current) return;
+      if (posed && bottleGroupRef.current && capGroupRef.current) {
+        notified.current = true;
+        onReady?.();
+      }
+    }, [posed, onReady]);
 
     // Cleanup on unmount
     useEffect(() => {
       return () => {
-        // Clear caches on unmount for optimization
         bottleMeshes?.forEach(({ faces }) => {
-          Object.values(faces).forEach(geom => {
-            if (geom && !geometryCache.has(geom.uuid)) {
-              geom.dispose();
-            }
+          Object.values(faces).forEach((geom) => {
+            if (geom && !geometryCache.has(geom.uuid)) geom.dispose();
           });
         });
-        
-        capMeshData.forEach(cap => {
-          if (!geometryCache.has(cap.geometry.uuid)) {
-            cap.geometry.dispose();
-          }
+        capMeshData.forEach((cap) => {
+          if (!geometryCache.has(cap.geometry.uuid)) cap.geometry.dispose();
         });
       };
     }, [bottleMeshes, capMeshData]);
 
     return (
       <group position={position} rotation={rotation} scale={scale}>
-        {/* Bottle Group */}
-        <group ref={bottleGroupRef}>
-          {/* Original FBX (includes spray nozzle and other non-cap parts) */}
+        {/* Bottle Group (hidden until posed) */}
+        <group ref={bottleGroupRef} visible={posed}>
           <primitive object={fbx} />
-          
-          {/* Transmission body - FIXED: No chromatic aberration */}
           {bottleMeshes?.map(({ mesh }, i) => (
             <mesh
               key={`body-${i}`}
@@ -445,22 +542,20 @@ const Bottle3D = forwardRef<Bottle3DRef, Bottle3DProps>(
                 clearcoatRoughness={0.5}
                 envMapIntensity={1.5}
                 reflectivity={0.0}
+                side={THREE.DoubleSide}
+                transparent
+                opacity={0.95}
+                backside
+                backsideThickness={1}
                 distortion={0.0}
                 distortionScale={0.0}
-                chromaticAberration={0.0}  // FIXED: No rainbow effect
+                chromaticAberration={0.0}
                 temporalDistortion={0.0}
-                side={THREE.DoubleSide}
-                backside={true}
-                backsideThickness={1}
-                // backsideIOR={1.5}
-                transparent={true}
-                opacity={0.95}
                 depthWrite={false}
               />
             </mesh>
           ))}
 
-          {/* Emboss per-face - EXACT FROM WORKING VERSION */}
           {bottleMeshes &&
             embossMaterials &&
             bottleMeshes.map(({ mesh, faces }, idx) => (
@@ -498,8 +593,8 @@ const Bottle3D = forwardRef<Bottle3DRef, Bottle3DProps>(
             ))}
         </group>
 
-        {/* Cap Group - Only actual cap parts for independent animation */}
-        <group ref={capGroupRef}>
+        {/* Cap Group (hidden until posed) */}
+        <group ref={capGroupRef} visible={posed}>
           {capMeshData.map((cap, i) => (
             <mesh
               key={`cap-${i}-${cap.name}`}
@@ -508,7 +603,7 @@ const Bottle3D = forwardRef<Bottle3DRef, Bottle3DProps>(
               position={cap.position}
               rotation={cap.rotation}
               scale={cap.scale}
-              visible={true}
+              visible
               castShadow
               receiveShadow
             />
@@ -520,23 +615,19 @@ const Bottle3D = forwardRef<Bottle3DRef, Bottle3DProps>(
 );
 
 Bottle3D.displayName = "Bottle3D";
-
 export default memo(Bottle3D);
 
 // Preload the FBX
 useFBX.preload("/models/bottle.fbx");
 
-// Cleanup function for module unload
-if (typeof window !== 'undefined') {
-  window.addEventListener('beforeunload', () => {
-    // Clear caches
-    textureCache.forEach(texture => texture.dispose());
+// Optional: cleanup caches on tab close
+if (typeof window !== "undefined") {
+  window.addEventListener("beforeunload", () => {
+    textureCache.forEach((t) => t.dispose());
     textureCache.clear();
-    
-    geometryCache.forEach(geometry => geometry.dispose());
+    geometryCache.forEach((g) => g.dispose());
     geometryCache.clear();
-    
-    materialCache.forEach(material => material.dispose());
+    materialCache.forEach((m) => m.dispose());
     materialCache.clear();
   });
 }
