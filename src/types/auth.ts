@@ -21,6 +21,7 @@ export interface UserWithRole {
 
 // Post with full type information
 export interface PostWithDetails {
+  keywords: any;
   id: string;
   title: string;
   slug: string;

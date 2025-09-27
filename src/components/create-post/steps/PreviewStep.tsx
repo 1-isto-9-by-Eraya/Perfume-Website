@@ -1,5 +1,5 @@
 // src/components/create-post/steps/PreviewStep.tsx
-import { EyeIcon, CalendarIcon, UserIcon, GlobeAltIcon } from '@heroicons/react/24/outline';
+import { EyeIcon, CalendarIcon, UserIcon, GlobeAltIcon, TagIcon } from '@heroicons/react/24/outline';
 import type { CreatePostData } from '@/types/createPost';
 
 // Types matching the schema and post page
@@ -47,6 +47,38 @@ export default function PreviewStep({ postData }: PreviewStepProps) {
       return descriptionItem?.content || null;
     }
     return null;
+  };
+
+  // Function to render keywords
+  const renderKeywords = () => {
+    const keywords = postData.keywords;
+    
+    if (!keywords || !Array.isArray(keywords) || keywords.length === 0) {
+      return null;
+    }
+
+    return (
+      <div className="mb-6">
+        <div className="flex items-center mb-3">
+          <TagIcon className="w-5 h-5 text-blue-400 mr-2" />
+          <h3 className="text-blue-400 font-medium">Keywords & Tags</h3>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {keywords.map((keyword, index) => (
+            <span 
+              key={index}
+              className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium bg-blue-900/30 text-blue-300 border border-blue-500/30 hover:bg-blue-900/40 transition-colors duration-200"
+            >
+              <TagIcon className="w-3 h-3 mr-1.5" />
+              {keyword}
+            </span>
+          ))}
+        </div>
+        <p className="text-gray-400 text-xs mt-2">
+          {keywords.length} keyword{keywords.length !== 1 ? 's' : ''} • These help with SEO and content discovery
+        </p>
+      </div>
+    );
   };
 
   // Function to render images based on position
@@ -246,6 +278,7 @@ export default function PreviewStep({ postData }: PreviewStepProps) {
     return acc + (Array.isArray(section.images) ? section.images.filter(img => img.url).length : 0);
   }, 0) || 0;
   const hasMedia = !!(postData.heroImage || postData.coverImage || postData.videoUrl || postData.instagramUrl || totalImages > 0);
+  const keywordCount = Array.isArray(postData.keywords) ? postData.keywords.length : 0;
 
   return (
     <div className="space-y-6" style={{ backgroundColor: "", color: "#ffffff" }}>
@@ -279,6 +312,9 @@ export default function PreviewStep({ postData }: PreviewStepProps) {
           <h1 className="text-3xl font-bold text-[#ffffff] mb-4">
             {postData.title || 'Untitled Post'}
           </h1>
+
+          {/* Keywords Section */}
+          {renderKeywords()}
 
           {/* Cover Image Preview */}
           {postData.coverImage && (
@@ -361,7 +397,7 @@ export default function PreviewStep({ postData }: PreviewStepProps) {
         </div>
         
         {/* Detailed Stats */}
-        <div className="mt-4 pt-4 border-t border-gray-600 grid grid-cols-4 gap-4 text-sm">
+        <div className="mt-4 pt-4 border-t border-gray-600 grid grid-cols-5 gap-4 text-sm">
           <div>
             <span className="text-gray-400">Hero Image:</span>
             <p className="text-[#fffff2] font-medium">{postData.heroImage ? 'Set' : 'None'}</p>
@@ -378,6 +414,10 @@ export default function PreviewStep({ postData }: PreviewStepProps) {
             <span className="text-gray-400">Images:</span>
             <p className="text-[#fffff2] font-medium">{totalImages}</p>
           </div>
+          <div>
+            <span className="text-gray-400">Keywords:</span>
+            <p className="text-[#fffff2] font-medium">{keywordCount}</p>
+          </div>
         </div>
       </div>
 
@@ -389,6 +429,9 @@ export default function PreviewStep({ postData }: PreviewStepProps) {
           <li>• You'll receive a notification when it's approved or needs changes</li>
           <li>• The post will be accessible at: <span className="font-mono">/blog/{postData?.slug || 'untitled-post'}</span></li>
           <li>• Post type: <strong>{postData?.postType || 'BLOG'}</strong></li>
+          {keywordCount > 0 && (
+            <li>• SEO Keywords: <strong>{keywordCount} keyword{keywordCount !== 1 ? 's' : ''} added</strong></li>
+          )}
         </ul>
       </div>
 

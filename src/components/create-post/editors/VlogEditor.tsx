@@ -1,9 +1,10 @@
-// src/components/create-post/editors/VlogEditor.tsx
+// src/components/create-post/editors/VlogEditor.tsx - Updated with Keywords
 import { useState, useCallback } from 'react';
 import { VideoCameraIcon, CloudArrowUpIcon, LinkIcon, MinusIcon, PencilIcon } from '@heroicons/react/24/outline';
 import { useUploadThing, UploadButton } from '@/lib/uploadthing';
 import ImageEditor from './ImageEditor';
 import VideoUploader from './VideoUploader';
+import KeywordsInput from './KeywordsInput'; // ✅ NEW IMPORT
 import type { CreatePostData, PostSection, CreatePostFormErrors } from '@/types/createPost';
 
 interface VlogEditorProps {
@@ -114,9 +115,22 @@ export default function VlogEditor({
               />
             </div>
           </div>
+
+          {/* ✅ NEW: Keywords/Tags Input */}
+          <div>
+            <label className="block text-sm font-medium text-[#ffffff] mb-2">
+              Keywords & Tags
+            </label>
+            <KeywordsInput
+              keywords={postData.keywords || []}
+              onKeywordsChange={(keywords) => onUpdateData({ keywords })}
+              error={errors.keywords}
+              placeholder="Add keywords like 'vlog', 'video', 'lifestyle', 'tutorial'..."
+            />
+          </div>
         </div>
 
-                    {/* ✅ Cover Image (Optional) — added back */}
+        {/* Cover Image */}
         <div>
           <label className="block text-sm font-medium text-[#ffffff] mb-2">
             Cover Image
@@ -169,7 +183,6 @@ export default function VlogEditor({
             </div>
           )}
         </div>
-
 
         {/* Video Content */}
         <div className="space-y-4">
@@ -290,7 +303,7 @@ export default function VlogEditor({
           )}
         </div>
 
-          {/* ✅ Additional Description (Optional) — added back */}
+        {/* Additional Description */}
         <div>
           <label className="block text-sm font-medium text-[#ffffff] mb-2">
             Additional Description (Optional)
@@ -330,8 +343,6 @@ export default function VlogEditor({
             This will appear below the video on your blog.
           </p>
         </div>
-
-        {/* Additional components remain the same... */}
       </div>
 
       {/* Image Editor Modal */}

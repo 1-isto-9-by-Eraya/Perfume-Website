@@ -34,6 +34,7 @@ const INITIAL_POST_DATA: CreatePostData = {
   title: '',
   slug: '',
   postType: 'BLOG' as PostType,
+  keywords: [], // ✅ NEW: Initialize empty keywords array
   sections: [],
   heroImage: undefined,
   coverImage: undefined,
@@ -41,6 +42,35 @@ const INITIAL_POST_DATA: CreatePostData = {
   instagramPostId: undefined,
   videoUrl: undefined,
   embedCode: undefined,
+};
+
+// ✅ NEW: Keyword validation helper
+const validateKeywords = (keywords: string[]): { isValid: boolean; errors: string[] } => {
+  const errors: string[] = [];
+  
+  if (keywords.length > 10) {
+    errors.push('Maximum 10 keywords allowed');
+  }
+  
+  const invalidKeywords = keywords.filter(keyword => 
+    keyword.length < 2 || 
+    keyword.length > 30 || 
+    !/^[a-zA-Z0-9\s-]+$/.test(keyword)
+  );
+  
+  if (invalidKeywords.length > 0) {
+    errors.push('Keywords must be 2-30 characters and contain only letters, numbers, spaces, and hyphens');
+  }
+  
+  const duplicates = keywords.filter((keyword, index) => keywords.indexOf(keyword) !== index);
+  if (duplicates.length > 0) {
+    errors.push('Duplicate keywords are not allowed');
+  }
+  
+  return {
+    isValid: errors.length === 0,
+    errors
+  };
 };
 
 export function useCreatePost() {
@@ -62,6 +92,7 @@ export function useCreatePost() {
     // Clear related errors
     if (updates.title) setErrors(prev => ({ ...prev, title: undefined }));
     if (updates.postType) setErrors(prev => ({ ...prev, postType: undefined }));
+    if (updates.keywords) setErrors(prev => ({ ...prev, keywords: undefined })); // ✅ NEW
   }, []);
 
   // Add section to post
@@ -141,12 +172,28 @@ export function useCreatePost() {
         if (postData.postType === 'BLOG' && postData.sections.length === 0) {
           newErrors.sections = 'Please add at least one content section';
         }
+
+        // ✅ NEW: Validate keywords
+        if (postData.keywords && postData.keywords.length > 0) {
+          const keywordValidation = validateKeywords(postData.keywords);
+          if (!keywordValidation.isValid) {
+            newErrors.keywords = keywordValidation.errors.join('. ');
+          }
+        }
         break;
         
       case 3:
         // Final validation before submission
         if (!postData.title.trim()) {
           newErrors.title = 'Title is required';
+        }
+        
+        // ✅ NEW: Final keywords validation
+        if (postData.keywords && postData.keywords.length > 0) {
+          const keywordValidation = validateKeywords(postData.keywords);
+          if (!keywordValidation.isValid) {
+            newErrors.keywords = keywordValidation.errors.join('. ');
+          }
         }
         break;
     }
@@ -210,12 +257,25 @@ export function useCreatePost() {
     setIsSubmitting(true);
     
     try {
+      // ✅ NEW: Clean and validate keywords before submission
+      const cleanedKeywords = postData.keywords
+        ? postData.keywords
+            .map(keyword => keyword.trim().toLowerCase())
+            .filter(keyword => keyword.length > 0)
+            .filter((keyword, index, arr) => arr.indexOf(keyword) === index) // Remove duplicates
+        : [];
+
+      const dataToSubmit = {
+        ...postData,
+        keywords: cleanedKeywords,
+      };
+
       const response = await fetch('/api/posts', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(postData),
+        body: JSON.stringify(dataToSubmit),
       });
       
       if (!response.ok) {

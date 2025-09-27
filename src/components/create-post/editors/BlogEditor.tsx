@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { PlusIcon, MinusIcon, ArrowUpIcon, ArrowDownIcon, PencilIcon } from '@heroicons/react/24/outline';
 import { UploadButton } from '@/lib/uploadthing';
 import ImageEditor from './ImageEditor';
+import KeywordsInput from './KeywordsInput'; // ✅ NEW IMPORT
 import type { CreatePostData, CreatePostFormErrors, PostSection } from '@/types/createPost';
 
 // Types matching the schema and post page
@@ -226,6 +227,19 @@ export default function BlogEditor({
                 className="flex-1 px-3 py-2 bg-[#1a1a1a] border border-gray-600 rounded-lg text-[#fffff2] placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
               />
             </div>
+          </div>
+
+          {/* ✅ NEW: Keywords/Tags Input */}
+          <div>
+            <label className="block text-sm font-medium text-[#ffffff] mb-2">
+              Keywords & Tags
+            </label>
+            <KeywordsInput
+              keywords={postData.keywords || []}
+              onKeywordsChange={(keywords) => onUpdateData({ keywords })}
+              error={errors.keywords}
+              placeholder="Add keywords to help readers find your content..."
+            />
           </div>
 
           {/* Hero Image */}

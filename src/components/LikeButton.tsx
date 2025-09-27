@@ -30,7 +30,7 @@ export function LikeButton({
 
   const styles =
     variant === 'compact'
-      ? { container: 'inline-flex items-center space-x-1', button: 'p-1.5', icon: 'w-4 h-4', text: 'text-xs' }
+      ? { container: 'inline-flex items-center space-x-1', button: 'py-1.5 pr-1.5 pl-[5px]', icon: 'w-4 h-4', text: 'text-xs' }
       : variant === 'large'
       ? { container: 'inline-flex items-center space-x-3', button: 'p-4', icon: 'w-7 h-7', text: 'text-lg' }
       : { container: 'inline-flex items-center space-x-2', button: 'p-2.5', icon: 'w-5 h-5', text: 'text-sm' };
@@ -53,15 +53,15 @@ export function LikeButton({
           ${styles.button}
           relative group rounded-full transition-all duration-300
           ${isLiked
-            ? 'bg-red-500/20 text-red-400 hover:bg-red-500/30 border border-red-500/40'
-            : 'bg-gray-700/50 text-gray-400 hover:bg-red-500/20 hover:text-red-400 border border-gray-600/50 hover:border-red-500/40'}
+            ? ' text-red-400 hover:bg-red-500/30 py-1.5 pr-1.5 pl-[7px]'
+            : ' text-gray-400 hover:bg-red-500/20 hover:text-red-400'}
           ${isLoading ? 'opacity-50 cursor-not-allowed' : 'hover:scale-105'}
           active:scale-95
         `}
         aria-label={isLiked ? 'Unlike post' : 'Like post'}
       >
         <svg
-          className={`${styles.icon} transition-all duration-300 ${isAnimating ? 'animate-pulse scale-125' : ''} ${
+          className={`${styles.icon} transition-all duration-300  ${isAnimating ? 'animate-pulse scale-125' : ''} ${
             isLiked ? 'fill-current' : 'fill-none stroke-current stroke-2'
           }`}
           viewBox="0 0 24 24"

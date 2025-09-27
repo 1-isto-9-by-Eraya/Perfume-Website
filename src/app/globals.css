@@ -567,6 +567,18 @@ body {
   }
 }
 
+@media (max-width: 1024px) {
+  .jptbtoc{
+    display: none;
+  }
+}
+
+@media (min-width: 1024px) {
+  .jptbtoc{
+    display: block;
+  }
+  
+}
 
 
 

@@ -41,6 +41,23 @@ export async function POST(req: Request) {
     return new NextResponse("Invalid post type", { status: 400 });
   }
 
+  // Validate and clean keywords
+  let cleanedKeywords: string[] = [];
+  if (Array.isArray(body?.keywords)) {
+    cleanedKeywords = body.keywords
+      .map((keyword: any) => String(keyword).trim().toLowerCase())
+      .filter((keyword: string) => {
+        // Basic validation: 2-30 chars, alphanumeric + spaces + hyphens
+        return keyword.length >= 2 && 
+               keyword.length <= 30 && 
+               /^[a-zA-Z0-9\s-]+$/.test(keyword);
+      })
+      .filter((keyword: string, index: number, arr: string[]) => 
+        arr.indexOf(keyword) === index // Remove duplicates
+      )
+      .slice(0, 10); // Limit to 10 keywords max
+  }
+
   // Validate based on post type
   if (postType === 'BLOG') {
     const sections = body?.sections;
@@ -115,6 +132,7 @@ export async function POST(req: Request) {
         videoUrl,
         // description,
         sections,
+        keywords: cleanedKeywords, // ✅ FIXED: Use cleanedKeywords instead of data.keywords
         authorId: session.user?.id as string,
         status: 'PENDING', // All new posts start as pending review
         published: false,   // Will be set to true when approved

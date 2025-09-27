@@ -7,6 +7,9 @@ export interface CreatePostData {
   slug: string;
   postType: PostType;
   
+  // ✅ NEW: Keywords/Tags field
+  keywords: string[];
+  
   // Content
   heroImage?: string;
   coverImage?: string;
@@ -20,11 +23,11 @@ export interface CreatePostData {
 }
 
 export interface PostSection {
+  id: string;
+  type: 'paragraph' | 'heading' | 'image' | 'divider';
   heading: any;
   images(images: any, arg1: string): import("react").ReactNode;
   paragraphs: any;
-  id: string;
-  type: 'paragraph' | 'heading' | 'image' | 'divider';
   content?: string;
   url?: string;
   caption?: string;
@@ -53,5 +56,40 @@ export interface CreatePostFormErrors {
   sections?: string;
   instagramUrl?: string;
   videoUrl?: string;
+  keywords?: string; // ✅ NEW: Keywords validation errors
   general?: string;
 }
+
+// ✅ NEW: Keyword validation helpers
+export interface KeywordValidationResult {
+  isValid: boolean;
+  errors: string[];
+}
+
+export const validateKeywords = (keywords: string[]): KeywordValidationResult => {
+  const errors: string[] = [];
+  
+  if (keywords.length > 10) {
+    errors.push('Maximum 10 keywords allowed');
+  }
+  
+  const invalidKeywords = keywords.filter(keyword => 
+    keyword.length < 2 || 
+    keyword.length > 30 || 
+    !/^[a-zA-Z0-9\s-]+$/.test(keyword)
+  );
+  
+  if (invalidKeywords.length > 0) {
+    errors.push('Keywords must be 2-30 characters and contain only letters, numbers, spaces, and hyphens');
+  }
+  
+  const duplicates = keywords.filter((keyword, index) => keywords.indexOf(keyword) !== index);
+  if (duplicates.length > 0) {
+    errors.push('Duplicate keywords are not allowed');
+  }
+  
+  return {
+    isValid: errors.length === 0,
+    errors
+  };
+};

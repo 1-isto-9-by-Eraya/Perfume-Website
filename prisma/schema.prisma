@@ -46,6 +46,9 @@ model Post {
   videoUrl         String?           // For vlog posts
   embedCode        String?           // For embedded content
   
+  // ✅ NEW: Keywords/Tags for filtering
+  keywords         String[]          // Array of keyword strings
+  
   // Approval system
   reviewedAt       DateTime?         // When reviewed
   reviewedById     String?           // Who reviewed it
@@ -66,6 +69,7 @@ model Post {
   @@index([createdAt, published, status])
   @@index([status, postType])
   @@index([likesCount]) // For sorting by popularity
+  @@index([keywords]) // For keyword-based filtering
 }
 
 // New model for tracking likes without user authentication

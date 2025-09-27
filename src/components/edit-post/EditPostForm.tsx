@@ -35,6 +35,7 @@ export default function EditPostForm({ post }: EditPostFormProps) {
     instagramUrl: post.instagramUrl || undefined,
     videoUrl: post.videoUrl || undefined,
     sections: post.sections as any || [],
+    keywords: post.keywords || [], // Added keywords property
   }));
 
   const steps = [

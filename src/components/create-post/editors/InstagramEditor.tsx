@@ -1,9 +1,10 @@
-// src/components/create-post/editors/InstagramEditor.tsx - Optimized for new UploadThing config
+// src/components/create-post/editors/InstagramEditor.tsx - Updated with Keywords
 import { useState } from 'react';
 import { LinkIcon, PhotoIcon, ExclamationTriangleIcon, PencilIcon, MinusIcon } from '@heroicons/react/24/outline';
 import { UploadButton } from '@/lib/uploadthing';
 import { useUploadThing } from '@/lib/uploadthing';
 import ImageEditor from './ImageEditor';
+import KeywordsInput from './KeywordsInput'; // ✅ NEW IMPORT
 import type { CreatePostData, CreatePostFormErrors, PostSection } from '@/types/createPost';
 
 interface InstagramEditorProps {
@@ -170,6 +171,19 @@ export default function InstagramEditor({
               />
             </div>
           </div>
+
+          {/* ✅ NEW: Keywords/Tags Input */}
+          <div>
+            <label className="block text-sm font-medium text-[#ffffff] mb-2">
+              Keywords & Tags
+            </label>
+            <KeywordsInput
+              keywords={postData.keywords || []}
+              onKeywordsChange={(keywords) => onUpdateData({ keywords })}
+              error={errors.keywords}
+              placeholder="Add keywords like 'instagram', 'social-media', 'lifestyle'..."
+            />
+          </div>
         </div>
 
         {/* Instagram URL */}
@@ -205,36 +219,6 @@ export default function InstagramEditor({
               <p>Example: https://www.instagram.com/p/ABC123DEF456/</p>
             </div>
           </div>
-
-          {/* Instagram Post Preview
-          {previewData && (
-            <div className="border border-gray-600 rounded-lg p-4 bg-[#1a1a1a]">
-              <h3 className="text-[#ffffff] font-medium mb-3 flex items-center">
-                <PhotoIcon className="w-5 h-5 mr-2 text-pink-400" />
-                Instagram Post Preview
-              </h3>
-              
-              <div className="flex space-x-4">
-                <img 
-                  src={previewData.imageUrl} 
-                  alt="Instagram post" 
-                  className="w-24 h-24 object-cover rounded-lg flex-shrink-0"
-                />
-                
-                <div className="flex-1 space-y-2">
-                  <p className="text-[#fffff2] text-sm line-clamp-3">
-                    {previewData.caption}
-                  </p>
-                  
-                  <div className="flex items-center space-x-4 text-xs text-gray-400">
-                    <span>{previewData.likes} likes</span>
-                    <span>{previewData.comments} comments</span>
-                    <span>{new Date(previewData.date).toLocaleDateString()}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )} */}
         </div>
 
         {/* Cover Image */}

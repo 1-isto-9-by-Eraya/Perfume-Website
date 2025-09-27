@@ -51,6 +51,38 @@ export default function PostPreview({ post, onClose, onStatusChange }: PostPrevi
     };
   }, []);
 
+  // Function to render keywords
+  const renderKeywords = () => {
+    const keywords = post.keywords;
+    
+    if (!keywords || !Array.isArray(keywords) || keywords.length === 0) {
+      return null;
+    }
+
+    return (
+      <div className="mb-6">
+        <div className="flex items-center mb-3">
+          <TagIcon className="w-5 h-5 text-blue-400 mr-2" />
+          <h3 className="text-blue-400 font-medium">Keywords & Tags</h3>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {keywords.map((keyword, index) => (
+            <span 
+              key={index}
+              className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium bg-blue-900/30 text-blue-300 border border-blue-500/30 hover:bg-blue-900/40 transition-colors duration-200"
+            >
+              <TagIcon className="w-3 h-3 mr-1.5" />
+              {keyword}
+            </span>
+          ))}
+        </div>
+        <p className="text-gray-400 text-xs mt-2">
+          {keywords.length} keyword{keywords.length !== 1 ? 's' : ''} • These help with SEO and content discovery
+        </p>
+      </div>
+    );
+  };
+
   // Function to render images based on position
   const renderImagesAtPosition = (images: ImageSpec[], position: "above" | "below", paragraphIndex?: number) => {
     return images
@@ -326,6 +358,9 @@ export default function PostPreview({ post, onClose, onStatusChange }: PostPrevi
                     <span className="text-gray-500">URL:</span>
                     <span className="font-mono text-blue-400">/blog/{post.slug}</span>
                   </div>
+
+                  {/* Keywords Section */}
+                  {renderKeywords()}
 
                   {/* Hero Image - Matching Post Page Style */}
                   {post.heroImage && (
