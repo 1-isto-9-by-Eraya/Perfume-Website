@@ -36,6 +36,7 @@ interface MoodBoardItem {
 export default function OurStoryPage() {
   const [screenSize, setScreenSize] = useState<'mobile' | 'tablet' | 'desktop'>('desktop');
   const [containerHeight, setContainerHeight] = useState("auto");
+  const [isExpanded, setIsExpanded] = useState(false);
 
   useEffect(() => {
     const handleResize = () => {
@@ -266,6 +267,10 @@ export default function OurStoryPage() {
     }
   };
 
+  const handleReadMoreToggle = () => {
+    setIsExpanded(!isExpanded);
+  };
+
   return (
     <main className="bg-black">
       {/* SECTION 1 — "Our Brand Story" - Fully Responsive */}
@@ -337,26 +342,66 @@ export default function OurStoryPage() {
                 </span>
               </h1>
 
-              {/* Paragraph */}
-              <p
-                className={`oss1-paragraph font-light text-justify text-white/80 ${inter.className}`}
-              >
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Ratione
-                eum veritatis cumque delectus voluptatem maiores molestiae
-                dolorem excepturi. Tenetur, aperiam aliquid iste minus facilis
-                ipsam, dolorum doloremque nam unde assumenda officia asperiores
-                iusto culpa rerum deleniti. Voluptates dignissimos architecto
-                voluptatibus nam vero. Expedita, vel? Autem odio ea eius enim
-                nam vel.
-              </p>
+              {/* Expandable Paragraphs */}
+              <div>
+                {/* Paragraph 1 - Always visible */}
+                <p
+                  className={`oss1-paragraph font-light text-justify text-white/80 ${inter.className}`}
+                >
+                  Rooted in the balance between the seen and the unseen, 1:9 Perfumery was born from a belief: 
+                  fragrance is not an accessory — it is an extension of identity, a quiet reflection of who you are 
+                  and the legacy you're building.
+                </p>
+
+                {/* Paragraph 2 - Expandable content */}
+                <div 
+                  className={`transition-all duration-500 ease-in-out overflow-hidden ${
+                    isExpanded 
+                      ? 'max-h-[2000px] opacity-100' 
+                      : 'max-h-0 opacity-0'
+                  }`}
+                  style={{
+                    marginTop: isExpanded ? '0' : '0'
+                  }}
+                >
+                  <p
+                    className={`oss1-paragraph font-light text-justify text-white/80 lg:!mt-4 ${inter.className}`}
+                  >
+                    Our name speaks to our philosophy: one part presence, nine parts essence. We design for those who 
+                    don't need to announce themselves — those who move with intention, who speak volumes without noise, 
+                    and who leave a lasting impression without ever saying a word.
+                  </p>
+                  
+                  <p
+                    className={`oss1-paragraph font-light text-justify text-white/80 !mt-4 ${inter.className}`}
+                  >
+                    You create a path even where none exists. Every step reflects clarity, discipline, and the confidence 
+                    to pursue what truly matters. You are an achiever — not in noise, but in quiet certainty.
+                  </p>
+                  
+                  <p
+                    className={`oss1-paragraph font-light text-justify text-white/80 !mt-4 ${inter.className}`}
+                  >
+                    At 1:9, our fragrances are made for you. Crafted with precision. Rooted in restraint. 
+                    We create with the same purpose that drives you. You are our inspiration!
+                  </p>
+                  
+                  <p
+                    className={`oss1-paragraph font-light text-justify text-white/80 !mt-4 ${inter.className}`}
+                  >
+                    A world where fragrance becomes statement, identity, and art.
+                  </p>
+                </div>
+              </div>
 
               {/* CTA Button */}
               <div className="mt-6 md:mt-8">
                 <button
                   type="button"
+                  onClick={handleReadMoreToggle}
                   className="inline-flex items-center justify-center rounded-sm bg-white px-4 py-2 md:px-6 text-[11px] md:text-[12px] font-semibold tracking-wide text-neutral-900 hover:bg-neutral-200 transition-colors duration-200"
                 >
-                  READ MORE
+                  {isExpanded ? 'READ LESS' : 'READ MORE'}
                 </button>
               </div>
             </div>

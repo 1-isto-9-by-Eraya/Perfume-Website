@@ -127,36 +127,39 @@ export default function Navbar() {
         {/* Mobile Navigation */}
         <div className="mobile-nav">
           {/* Hamburger Menu Button */}
-<button
-  onClick={toggleMobileMenu}
-  aria-label="Toggle mobile menu"
-  aria-expanded={isMobileMenuOpen}
-  className="relative grid place-items-center w-8 h-8 focus:outline-none group"
->
-  <div className="relative w-6 h-6">
-    {/* Top bar */}
-    <span
-      className={`absolute left-1/2 top-1/2 block h-0.5 w-6 rounded bg-white
+          <button
+            onClick={toggleMobileMenu}
+            aria-label="Toggle mobile menu"
+            aria-expanded={isMobileMenuOpen}
+            className="relative grid place-items-center w-8 h-8 focus:outline-none group"
+          >
+            <div className="relative w-6 h-6">
+              {/* Top bar */}
+              <span
+                className={`absolute left-1/2 top-1/2 block h-0.5 w-6 rounded bg-white
         transition-transform duration-300 ease-in-out transform
         group-hover:bg-[#F5F287]
-        ${isMobileMenuOpen
-          ? "rotate-45 -translate-x-1/2 -translate-y-1/2"
-          : "-translate-x-1/2 -mt-1.5"}  /* move UP when closed */
+        ${
+          isMobileMenuOpen
+            ? "rotate-45 -translate-x-1/2 -translate-y-1/2"
+            : "-translate-x-1/2 -mt-1.5"
+        }  /* move UP when closed */
       `}
-    />
-    {/* Bottom bar */}
-    <span
-      className={`absolute left-1/2 top-1/2 block h-0.5 w-6 rounded bg-white
+              />
+              {/* Bottom bar */}
+              <span
+                className={`absolute left-1/2 top-1/2 block h-0.5 w-6 rounded bg-white
         transition-transform duration-300 ease-in-out transform
         group-hover:bg-[#F5F287]
-        ${isMobileMenuOpen
-          ? "-rotate-45 -translate-x-1/2 -translate-y-1/2"
-          : "-translate-x-1/2 mt-1.5"}   /* move DOWN when closed */
+        ${
+          isMobileMenuOpen
+            ? "-rotate-45 -translate-x-1/2 -translate-y-1/2"
+            : "-translate-x-1/2 mt-1.5"
+        }   /* move DOWN when closed */
       `}
-    />
-  </div>
-</button>
-
+              />
+            </div>
+          </button>
 
           {/* Centered Logo */}
           <Link href="/" className="flex-1 flex justify-center">

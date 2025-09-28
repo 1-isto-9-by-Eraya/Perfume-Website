@@ -206,12 +206,11 @@ export default function HomePage() {
                     >
                       View Our Story
                     </button>
-                    "use client";
                     <button
                       onClick={() =>
                         (window.location.href = "https://thehouseoferaya.store/collections/all")
                       }
-                      className={`mt-8 inline-flex items-center justify-center px-8 py-3 w-1/2 rounded-md
+                      className={`inline-flex items-center justify-center px-8 py-3 w-1/2
                         border border-transparent bg-[#EB9C1C] text-[#191919]
                         ${inter.className} text-[12px] md:text-[16px] font-semibold tracking-wide uppercase
                         transition-colors duration-200 cursor-pointer
