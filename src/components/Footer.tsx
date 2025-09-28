@@ -374,7 +374,7 @@ export default function Footer() {
     "idle" | "loading" | "success" | "error"
   >("idle");
 
-  const baseStyles = "text-white/70 hover:text-white focus:text-white";
+  const baseStyles = "text-white/70 hover:text-white focus:text-white text-[14px]";
 
   // You can swap this with your real API call; we wrap it to drive UI states
   const handleNewsletterSubmit = async (e: React.FormEvent) => {
@@ -418,7 +418,7 @@ export default function Footer() {
               >
                 Subscribe to Newsletter
               </h3>
-              <p className="font-inter text-[14px] text-white mb-3">
+              <p className={`${inter.className} text-[14px] text-white mb-3`}>
                 Sign up to discover new collections, exclusive offers, and
                 inspirations from Eraya.
               </p>
@@ -487,76 +487,45 @@ export default function Footer() {
         </div>
 
         {/* Links Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-60 mb-8">
           {/* Customer Care */}
           <div>
-            <h3 className="font-inter text-white text-sm font-medium mb-3">
+            <h3 className="text-white text-md font-medium mb-3">
               Customer Care
             </h3>
             <ul className="space-y-2 text-xs">
               <li>
                 <Link
                   href="/contact"
-                  className={`font-inter ${baseStyles} transition-colors duration-200`}
+                  className={`${baseStyles} transition-colors duration-200`}
                 >
                   Contact Us
                 </Link>
               </li>
               <li>
-                <Link
-                  href="/faqs"
-                  className={`font-inter ${baseStyles} transition-colors duration-200`}
+                <a
+                  href="https://thehouseoferaya.store/pages/faq"
+                  className={`${baseStyles} transition-colors duration-200`}
+                  rel="noopener noreferrer"
                 >
                   FAQs
-                </Link>
+                </a>
               </li>
               <li>
-                <Link
-                  href="/shipping"
-                  className={`font-inter ${baseStyles} transition-colors duration-200`}
+                <a
+                  href="https://thehouseoferaya.store/policies/shipping-policy"
+                  className={`${baseStyles} transition-colors duration-200`}
+                  rel="noopener noreferrer"
                 >
-                  Shipping & Returns
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/track-order"
-                  className={`font-inter ${baseStyles} transition-colors duration-200`}
-                >
-                  Track Order
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* Our Services */}
-          <div>
-            <h3 className="font-inter text-white text-sm font-medium mb-3">
-              Our Services
-            </h3>
-            <ul className="space-y-2 text-xs">
-              <li>
-                <Link
-                  href="/gifting"
-                  className={`font-inter ${baseStyles} transition-colors duration-200`}
-                >
-                  Gifting
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/appointment"
-                  className={`font-inter ${baseStyles} transition-colors duration-200`}
-                >
-                  Book an Appointment
-                </Link>
+                  Shipping Policy
+                </a>
               </li>
             </ul>
           </div>
 
           {/* About Eraya */}
           <div>
-            <h3 className="font-inter text-white text-sm font-medium mb-3">
+            <h3 className="font-inter text-white text-md font-medium mb-3">
               About Eraya
             </h3>
             <ul className="space-y-2 text-xs">
@@ -570,18 +539,10 @@ export default function Footer() {
               </li>
               <li>
                 <Link
-                  href="/craftsmanship"
+                  href="/blog"
                   className={`font-inter ${baseStyles} transition-colors duration-200`}
                 >
-                  Craftsmanship
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/careers"
-                  className={`font-inter ${baseStyles} transition-colors duration-200`}
-                >
-                  Careers
+                  Journal
                 </Link>
               </li>
             </ul>
@@ -589,32 +550,34 @@ export default function Footer() {
 
           {/* Legal */}
           <div>
-            <h3 className="font-inter text-white text-sm font-medium mb-3">
+            <h3 className="font-inter text-white text-base font-medium mb-3">
               Legal
             </h3>
             <ul className="space-y-2 text-xs">
               <li>
-                <Link
-                  href="/terms"
+                <a
+                  href="https://thehouseoferaya.store/policies/terms-of-service"
                   className={`font-inter ${baseStyles} transition-colors duration-200`}
+                  rel="noopener noreferrer"
                 >
                   Terms & Conditions
-                </Link>
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://thehouseoferaya.store/policies/privacy-policy"
+                  className={`font-inter ${baseStyles} transition-colors duration-200`}
+                  rel="noopener noreferrer"
+                >
+                  Privacy Policy
+                </a>
               </li>
               <li>
                 <Link
-                  href="/privacy"
+                  href="https://thehouseoferaya.store/policies/refund-policy"
                   className={`font-inter ${baseStyles} transition-colors duration-200`}
                 >
-                  Privacy & Cookies
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/refund-policy"
-                  className={`font-inter ${baseStyles} transition-colors duration-200`}
-                >
-                  Refund Policy
+                  Return & Refund Policy
                 </Link>
               </li>
             </ul>

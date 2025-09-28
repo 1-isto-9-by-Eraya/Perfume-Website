@@ -43,18 +43,18 @@ export default function Navbar() {
   useEffect(() => {
     if (isMobileMenuOpen) {
       // Lock scroll
-      document.body.style.overflow = 'hidden';
-      document.body.style.paddingRight = 'var(--scrollbar-width, 0px)';
+      document.body.style.overflow = "hidden";
+      document.body.style.paddingRight = "var(--scrollbar-width, 0px)";
     } else {
       // Unlock scroll
-      document.body.style.overflow = '';
-      document.body.style.paddingRight = '';
+      document.body.style.overflow = "";
+      document.body.style.paddingRight = "";
     }
 
     // Cleanup on unmount
     return () => {
-      document.body.style.overflow = '';
-      document.body.style.paddingRight = '';
+      document.body.style.overflow = "";
+      document.body.style.paddingRight = "";
     };
   }, [isMobileMenuOpen]);
 
@@ -73,7 +73,7 @@ export default function Navbar() {
 
   // Mobile menu link styles
   const mobileLinkStyles =
-    "block py-4 px-6 text-lg font-medium uppercase border-b border-neutral-800 hover:bg-neutral-900 transition-colors duration-200";
+    "block py-4 px-6 text-4xl  uppercase border-b border-neutral-800 hover:bg-neutral-900 transition-colors duration-200";
   const mobileActiveLinkStyles = "text-white opacity-100";
   const mobileInactiveLinkStyles = "text-white opacity-70 hover:opacity-100";
 
@@ -82,9 +82,13 @@ export default function Navbar() {
   };
 
   // Enhanced Link Component with Hover Effects
-  const NavLink = ({ href, children, isExternal = false }: { 
-    href: string; 
-    children: React.ReactNode; 
+  const NavLink = ({
+    href,
+    children,
+    isExternal = false,
+  }: {
+    href: string;
+    children: React.ReactNode;
     isExternal?: boolean;
   }) => {
     const linkClasses = `${baseLinkStyles} ${
@@ -121,27 +125,41 @@ export default function Navbar() {
     <>
       <nav className="w-full bg-black text-white backdrop-blur relative top-0 inset-x-0 z-50">
         {/* Mobile Navigation */}
-        <div className="max-[640px]:flex items-center justify-between px-4 py-3 md:hidden">
+        <div className="mobile-nav">
           {/* Hamburger Menu Button */}
-          <button
-            onClick={toggleMobileMenu}
-            className="relative flex flex-col justify-center items-center w-8 h-8 focus:outline-none group"
-            aria-label="Toggle mobile menu"
-          >
-            <span
-              className={`block w-6 h-0.5 bg-white transition-all duration-300 transform group-hover:bg-[#F5F287] ${
-                isMobileMenuOpen ? "rotate-45 absolute" : "mb-1"
-              }`}
-            ></span>
-            <span
-              className={`block w-6 h-0.5 bg-white transition-all duration-300 transform group-hover:bg-[#F5F287] ${
-                isMobileMenuOpen ? "-rotate-45 absolute" : "mt-1"
-              }`}
-            ></span>
-          </button>
+<button
+  onClick={toggleMobileMenu}
+  aria-label="Toggle mobile menu"
+  aria-expanded={isMobileMenuOpen}
+  className="relative grid place-items-center w-8 h-8 focus:outline-none group"
+>
+  <div className="relative w-6 h-6">
+    {/* Top bar */}
+    <span
+      className={`absolute left-1/2 top-1/2 block h-0.5 w-6 rounded bg-white
+        transition-transform duration-300 ease-in-out transform
+        group-hover:bg-[#F5F287]
+        ${isMobileMenuOpen
+          ? "rotate-45 -translate-x-1/2 -translate-y-1/2"
+          : "-translate-x-1/2 -mt-1.5"}  /* move UP when closed */
+      `}
+    />
+    {/* Bottom bar */}
+    <span
+      className={`absolute left-1/2 top-1/2 block h-0.5 w-6 rounded bg-white
+        transition-transform duration-300 ease-in-out transform
+        group-hover:bg-[#F5F287]
+        ${isMobileMenuOpen
+          ? "-rotate-45 -translate-x-1/2 -translate-y-1/2"
+          : "-translate-x-1/2 mt-1.5"}   /* move DOWN when closed */
+      `}
+    />
+  </div>
+</button>
+
 
           {/* Centered Logo */}
-          <Link href="/" className="absolute left-40 transition-transform duration-200 hover:scale-105">
+          <Link href="/" className="flex-1 flex justify-center">
             <img
               src="/images/Final_Logo_Navbar.png"
               alt="Eraya Logo"
@@ -184,10 +202,13 @@ export default function Navbar() {
         </div>
 
         {/* Desktop Navigation */}
-        <div className="deskV flex min-[1024px]:items-center min-[1024px]:justify-between min-[1024px]:px-6 min-[1024px]:py-4">
+        <div className="desktop-nav">
           {/* Logo on Left */}
           <div className="flex-shrink-0">
-            <Link href="/" className="transition-transform duration-300 ease-out hover:scale-105">
+            <Link
+              href="/"
+              className="transition-transform duration-300 ease-out hover:scale-105"
+            >
               <img
                 src="/images/Final_Logo_Navbar.png"
                 alt="Eraya Logo"
@@ -197,11 +218,16 @@ export default function Navbar() {
           </div>
 
           {/* Navigation Items on Right */}
-          <div className={`flex gap-8 items-center text-base font-medium ${inter.className} uppercase`}>
+          <div
+            className={`flex gap-8 items-center text-base font-medium ${inter.className} uppercase`}
+          >
             <NavLink href="/">Home</NavLink>
             <NavLink href="/our-story">Our Story</NavLink>
             <NavLink href="/blog">Journal</NavLink>
-            <NavLink href="https://thehouseoferaya.store/collections/all" isExternal>
+            <NavLink
+              href="https://thehouseoferaya.store/collections/all"
+              isExternal
+            >
               Store
             </NavLink>
             <NavLink href="/pre-order">Pre Order</NavLink>
@@ -242,42 +268,21 @@ export default function Navbar() {
       </nav>
 
       {/* Mobile Sidebar Overlay */}
+
       <div
-        className={`fixed inset-0 bg-black/50 z-40 md:hidden transition-opacity duration-300 ease-in-out ${
+        className={`fixed inset-0 bg-black/80 backdrop-blur-sm z-40 lg:hidden transition-opacity duration-300 ease-in-out ${
           isMobileMenuOpen ? "opacity-100" : "opacity-0 pointer-events-none"
         }`}
         onClick={toggleMobileMenu}
       >
-        {/* Mobile Sidebar */}
         <div
-          className={`fixed top-0 left-0 h-full w-80 bg-black border-neutral-800 transform transition-transform duration-300 ease-in-out z-50 md:hidden ${
-            isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
-          }`}
+          className={`fixed top-0 left-0 h-full bg-black transform transition-transform duration-300 ease-in-out z-50 lg:hidden
+      w-[85%] max-w-xs sm:w-[70%] sm:max-w-sm md:w-[50%] md:max-w-md ${
+        isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
+      }`}
+          onClick={(e) => e.stopPropagation()}
         >
-          {/* Sidebar Header */}
-          <div className="flex items-center justify-between p-2">
-            <button
-              onClick={toggleMobileMenu}
-              className="p-2 hover:bg-neutral-900 rounded transition-colors duration-200"
-            >
-              <svg
-                className="w-6 h-6 text-white"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
-          </div>
-
-          {/* Sidebar Navigation */}
-          <div className={`flex flex-col ${inter.className}`}>
+          <div className={`flex flex-col ${inter.className} mt-10 py-4`}>
             <Link
               href="/"
               className={`${mobileLinkStyles} ${
@@ -325,7 +330,6 @@ export default function Navbar() {
             >
               Pre Order
             </Link>
-
             {/* Dashboard link for authenticated users */}
             {allowed && (
               <Link

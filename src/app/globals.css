@@ -37,39 +37,6 @@ body,
   transition: opacity 0.8s ease-out;
 }
 
-/* .border-box {
-  border: 20px solid transparent;
-  border-color: linear-gradient(to right, #9a8e2b, #f5f287);
-} */
-
-.gradient-button-container {
-  background: #EB9C1C;
-  /* background: linear-gradient(to right, #9A8E2B, #F5F287); */
-  padding: 2px;
-  transition: all 300ms;
-  width: 50%;
-}
-
-.gradient-button-container:hover {
-  background: linear-gradient(to right, black, #716B10);
-}
-
-/* Button element */
-.gradient-button {
-  background-color: black;
-  color: white;
-  font-weight: 600;
-  padding: 0.75rem 0rem;
-  transition: all 300ms;
-  width: 100%;
-  border: none;
-  cursor: pointer;
-}
-
-.gradient-button-container:hover .gradient-button {
-  background-color: transparent;
-  color: white;
-}
 
 /* Mobile First Approach - Default styles for mobile (0-767px) */
 @media (max-width: 767px) {
@@ -481,11 +448,6 @@ body,
   transition-delay: 0s !important;
 }
 
-/* Optimize scrolling performance */
-/* html {
-  scroll-behavior: auto; 
-} */
-
 body {
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
@@ -580,10 +542,32 @@ body {
   
 }
 
+.desktop-nav {
+  display: none;
+}
 
+.mobile-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+}
+
+@media (min-width: 1024px) {
+  .desktop-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.5rem;
+  }
+
+  .mobile-nav {
+    display: none;
+  }
+}
 
 
 /* ensure in-page anchors (section ids) don't hide under the navbar */
-[id^="s-"] {
+/* [id^="s-"] {
   scroll-margin-top: 96px;
-}
+} */
