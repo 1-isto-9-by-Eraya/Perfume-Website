@@ -458,7 +458,6 @@ export default function Footer() {
                       >
                         <span aria-hidden>→</span>
                       </button>
-                      
                     </div>
                   </div>
 

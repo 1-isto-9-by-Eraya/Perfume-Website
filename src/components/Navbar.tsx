@@ -154,7 +154,7 @@ export default function Navbar() {
             {/* Shop Now button - only show for non-authenticated users */}
             {!allowed && allowed !== null && (
               <a
-                href="https://1-9-by-eraya.myshopify.com/collections/all"
+                href="https://thehouseoferaya.store/collections/all"
                 className={`px-4 py-1.5 bg-gradient-to-r from-[#EB9C1C] to-[#EB9C1C] text-black ${inter.className} font-semibold text-sm uppercase tracking-wider hover:shadow-lg hover:shadow-[#9A8E2B]/25 transition-all duration-200 transform hover:scale-105`}
                 // className={`px-4 py-1.5 bg-gradient-to-r from-[#9A8E2B] to-[#F5F287] text-black ${inter.className} font-bold text-sm uppercase tracking-wider hover:shadow-lg hover:shadow-[#9A8E2B]/25 transition-all duration-200 transform hover:scale-105`}
                 rel="noopener noreferrer"
@@ -201,15 +201,15 @@ export default function Navbar() {
             <NavLink href="/">Home</NavLink>
             <NavLink href="/our-story">Our Story</NavLink>
             <NavLink href="/blog">Journal</NavLink>
-            <NavLink href="https://1-9-by-eraya.myshopify.com/collections/all" isExternal>
-              Perfumes
+            <NavLink href="https://thehouseoferaya.store/collections/all" isExternal>
+              Store
             </NavLink>
             <NavLink href="/pre-order">Pre Order</NavLink>
 
             {/* Shop Now button - only show for non-authenticated users */}
             {!allowed && allowed !== null && (
               <a
-                href="https://1-9-by-eraya.myshopify.com/collections/all"
+                href="https://thehouseoferaya.store/collections/all"
                 className="px-6 py-2 bg-[#EB9C1C] text-black font-semibold uppercase tracking-wider hover:shadow-lg hover:shadow-[#9A8E2B]/30 transition-all duration-300 transform hover:scale-105 hover:-translate-y-0.5 active:scale-95"
                 rel="noopener noreferrer"
               >
@@ -309,11 +309,11 @@ export default function Navbar() {
               Journal
             </Link>
             <a
-              href="https://1-9-by-eraya.myshopify.com/collections/all"
+              href="https://thehouseoferaya.store/collections/all"
               className={`${mobileLinkStyles} ${mobileInactiveLinkStyles}`}
               rel="noopener noreferrer"
             >
-              Perfumes
+              Store
             </a>
             <Link
               href="/pre-order"

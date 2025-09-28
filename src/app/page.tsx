@@ -39,9 +39,9 @@ export default function HomePage() {
             }}
           >
             {/* Background image - only for first section */}
-            <div className="absolute top-0 left-32 w-full z-0 overflow-hidden pointer-events-none">
-              {/* <img
-              src="/images/landing-background.png"
+            <div className="absolute top-96 md:-top-20 left-0 w-[120%] md:w-[115%] z-0 overflow-hidden pointer-events-none">
+              <img
+              src="/images/smoke-bg.png"
               alt=""
               className="w-full h-full object-cover select-none"
               loading="eager"
@@ -49,7 +49,7 @@ export default function HomePage() {
               fetchPriority="high"
               draggable={false}
               style={{ transform: "translateZ(0)" }}
-            /> */}
+            />
             </div>
 
             {/* Sticky Canvas */}
@@ -90,7 +90,7 @@ export default function HomePage() {
                 <img
                   src="/images/Final_Logo.png"
                   alt=""
-                  className="absolute z-0 md:top-4 md:left-[300px] w-80 h-80 opacity-10"
+                  className="absolute z-0 top-24 md:top-4 left-0 md:left-[300px] h-60 w-60 md:w-80 md:h-80 opacity-10"
                 />
                 <p
                   className={`${inter.className} text-[#fffff2]/90 mt-6 max-w-2xl opacity-0 animate-fadeInDelay`}
@@ -108,7 +108,7 @@ export default function HomePage() {
                 Shop Now
               </button> */}
                 <button
-                  className={`mt-8 px-8 py-3 bg-[#EB9C1C] text-[#191919] ${inter.className} font-semibold text-[12px] md:text-[16px] tracking-wide uppercase transition-all duration-300 opacity-0 animate-fadeInDelayLong cursor-pointer`}
+                  className={`mt-8 px-8 py-2 bg-[#EB9C1C] text-[#191919] ${inter.className} font-semibold text-[14px] md:text-[16px] tracking-wide uppercase transition-all duration-300 opacity-0 animate-fadeInDelayLong cursor-pointer`}
                   style={{ willChange: "transform" }}
                 >
                   Shop Now
