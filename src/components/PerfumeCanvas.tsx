@@ -277,8 +277,8 @@ export default function PerfumeCanvas({ config, containerRef }: PerfumeCanvasPro
       camera={{ position: [0, 0, 5], fov: isMobile ? 50 : 45, near: 0.1, far: isMobile ? 30 : 50 }}
       gl={{
         alpha: true,
-        antialias: !isMobile,
-        powerPreference: isMobile ? "default" : "high-performance",
+        // antialias: !isMobile,
+        powerPreference: isMobile ? "low-power" : "low-power",
         toneMapping: THREE.NoToneMapping,
         outputColorSpace: THREE.SRGBColorSpace,
         preserveDrawingBuffer: false,
