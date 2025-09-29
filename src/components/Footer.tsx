@@ -561,7 +561,7 @@ export default function Footer() {
                   className={`font-inter ${baseStyles} transition-colors duration-200`}
                   rel="noopener noreferrer"
                 >
-                  Terms & Conditions
+                  Terms of Service
                 </a>
               </li>
               <li>
