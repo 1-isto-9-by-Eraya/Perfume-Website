@@ -1,10 +1,11 @@
 // src/app/api/auth/error/page.tsx
 'use client';
 
+import { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { UnauthorizedPopup } from '@/components/UnauthorisedPopup';
 
-export default function AuthError() {
+function AuthErrorContent() {
   const searchParams = useSearchParams();
   const error = searchParams.get('error');
 
@@ -25,5 +26,17 @@ export default function AuthError() {
         <p>An error occurred during sign-in: {error}</p>
       </div>
     </div>
+  );
+}
+
+export default function AuthError() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="text-[#ffffff]">Loading...</div>
+      </div>
+    }>
+      <AuthErrorContent />
+    </Suspense>
   );
 }
