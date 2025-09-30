@@ -164,7 +164,7 @@ export default function Navbar() {
           {/* Centered Logo */}
           <Link href="/" className="flex-1 flex justify-center">
             <img
-              src="/images/Final_Logo_Navbar.png"
+              src="/images/Logo_Navbar.png"
               alt="Eraya Logo"
               className="h-8"
             />
@@ -213,7 +213,7 @@ export default function Navbar() {
               className="transition-transform duration-300 ease-out hover:scale-105"
             >
               <img
-                src="/images/Final_Logo_Navbar.png"
+                src="/images/Logo_Navbar.png"
                 alt="Eraya Logo"
                 className="h-9"
               />
@@ -231,9 +231,9 @@ export default function Navbar() {
               href="https://thehouseoferaya.store/collections/all"
               isExternal
             >
-              Store
+              pre order
             </NavLink>
-            <NavLink href="/pre-order">Pre Order</NavLink>
+            {/* <NavLink href="/pre-order">Pre Order</NavLink> */}
 
             {/* Shop Now button - only show for non-authenticated users */}
             {!allowed && allowed !== null && (
