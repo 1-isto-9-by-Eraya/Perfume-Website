@@ -282,7 +282,8 @@ export default function OurStoryPage() {
               {/* Main bottle image 1 */}
               <div className="oss1i1">
                 <Image
-                  src="/images/AUREN.png"
+                  // src="/images/AUREN.png"
+                  src={`${process.env.__NEXT_ROUTER_BASEPATH || ''}/images/AUREN.png`}
                   alt="Perfume bottle"
                   fill
                   className="object-cover"
@@ -299,7 +300,8 @@ export default function OurStoryPage() {
               {/* Main bottle image 2 */}
               <div className="oss1i2">
                 <Image
-                  src="/images/NYSS.png"
+                  // src="/images/NYSS.png"
+                  src={`${process.env.__NEXT_ROUTER_BASEPATH || ''}/images/NYSS.png`}
                   alt="Perfume bottle"
                   fill
                   className="object-cover"
@@ -316,7 +318,8 @@ export default function OurStoryPage() {
                 aria-hidden="true"
               >
                 <img
-                  src="/images/Final_Logo.png"
+                  // src="/images/Final_Logo.png"
+                  src={`${process.env.__NEXT_ROUTER_BASEPATH || ''}/images/Final_Logo.png`}
                   alt=""
                   className="oss1l"
                 />
