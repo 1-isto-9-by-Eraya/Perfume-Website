@@ -4,10 +4,14 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import { Playfair_Display, Inter } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
-import Providers from "@/components/Providers";
+// import Providers from "@/components/Providers";
 import Footer from "@/components/Footer";
 import Preloader from "@/components/Preloader";
 import ScrollTriggerProvider from "@/components/ScrollTriggerProvider";
+import dynamic from "next/dynamic";
+
+// 🚑 Load client provider only on the client; avoids using React context during prerender
+const Providers = dynamic(() => import("@/components/Providers"), { ssr: false });
 
 export const metadata: Metadata = {
   title: "1:9 by Eraya",
