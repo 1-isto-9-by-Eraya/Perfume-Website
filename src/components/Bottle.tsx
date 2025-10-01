@@ -119,7 +119,8 @@ function useLeatherMatKTX2() {
       `${process.env.__NEXT_ROUTER_BASEPATH || ''}/textures/leather-roughness.ktx2`,
     ],
     (loader: KTX2Loader) => {
-      loader.setTranscoderPath("/basis/").detectSupport(gl);
+      const basePath = process.env.__NEXT_ROUTER_BASEPATH || '';
+      loader.setTranscoderPath(`${basePath}/basis/`).detectSupport(gl);
     }
   ) as [
     THREE.CompressedTexture,
@@ -626,7 +627,8 @@ Bottle3D.displayName = "Bottle3D";
 export default memo(Bottle3D);
 
 // Preload the FBX
-useFBX.preload("/models/bottle.fbx");
+// useFBX.preload("/models/bottle.fbx");
+useFBX.preload(`${process.env.__NEXT_ROUTER_BASEPATH || ''}/models/bottle.fbx`);
 
 // Optional: cleanup caches on tab close
 if (typeof window !== "undefined") {
