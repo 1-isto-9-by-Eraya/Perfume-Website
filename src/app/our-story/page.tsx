@@ -282,7 +282,7 @@ export default function OurStoryPage() {
               {/* Main bottle image 1 */}
               <div className="oss1i1">
                 <Image
-                  src="/images/our-story-bottle.png"
+                  src="/images/AUREN.png"
                   alt="Perfume bottle"
                   fill
                   className="object-cover"
@@ -299,7 +299,7 @@ export default function OurStoryPage() {
               {/* Main bottle image 2 */}
               <div className="oss1i2">
                 <Image
-                  src="/images/our-story-bottle.png"
+                  src="/images/NYSS.png"
                   alt="Perfume bottle"
                   fill
                   className="object-cover"
