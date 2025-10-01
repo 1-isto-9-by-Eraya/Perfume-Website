@@ -8,20 +8,34 @@ const withBundleAnalyzer = bundleAnalyzer({
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
-  // Add these from your old config to ignore build errors during deployment
-  eslint: {
-    ignoreDuringBuilds: true,
+
+  // Serve the whole app under this sub-path
+  basePath: "/1isto9-perfumery", // build-time setting
+
+  // Redirect the domain root to the sub-path (avoids double-prefixing)
+  async redirects() {
+    return [
+      {
+        source: "/",                    // matches https://thehouseoferaya.in/
+        destination: "/1isto9-perfumery",
+        basePath: false,                // don't auto-apply basePath to this rule
+        permanent: true,                // 308 (good for SEO/caching)
+      },
+    ];
   },
-  typescript: {
-    ignoreBuildErrors: true,
-  },
+
+  eslint: { ignoreDuringBuilds: true },
+  typescript: { ignoreBuildErrors: true },
+
   compiler: {
     removeConsole: process.env.NODE_ENV === "production",
   },
+
   experimental: {
     optimizeCss: true,
     optimizePackageImports: ["three", "@react-three/drei", "@react-three/fiber"],
   } as any,
+
   webpack: (config, { isServer }) => {
     if (!isServer) {
       config.optimization = config.optimization || {};

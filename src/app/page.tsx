@@ -71,10 +71,10 @@ export default function HomePage() {
               }}
             >
               {/* Background image - only for first section */}
-              <div className="absolute top-0 md:-top-10 h-[100vh] left-0 w-full z-0 overflow-hidden pointer-events-none">
+              <div className="absolute top-0 md:-top-10 h-[110vh] left-0 w-full z-0 overflow-hidden pointer-events-none">
                 {/* Background image */}
                 <img
-                  src="/images/smoke-bg.png"
+                  src="/images/smoke-bgt.png"
                   alt=""
                   className="absolute top-96 md:-top-20 left-0 w-[120%] md:w-[115%] z-0 overflow-hidden pointer-events-none"
                   loading="eager"
@@ -88,7 +88,7 @@ export default function HomePage() {
                 <img
                   src="/images/E.png"
                   alt="sdfghj"
-                  className="absolute -left-6 top-10 inset-0 w-[100%] lg:w-[40%] sm:h-[50%] md:h-[70%] lg:h-full object-fit select-none z-10 opacity-60"
+                  className="absolute -left-6 top-0 inset-0 w-[100%] lg:w-[40%] sm:h-[50%] md:h-[70%] lg:h-full object-fit select-none z-10 opacity-60"
                   loading="eager"
                   decoding="async"
                   fetchPriority="high"
