@@ -1,4 +1,7 @@
 // app/providers.tsx
+"use client";
+
+
 import { SessionProvider } from "next-auth/react";
 
 const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || "";
