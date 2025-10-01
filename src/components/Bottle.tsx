@@ -170,7 +170,7 @@ function useEmbossTextures() {
   // const one = useTexture("/textures/colon.png") as THREE.Texture;
   // const nine = useTexture("/textures/nine.png") as THREE.Texture;
   const one = useTexture(`${process.env.__NEXT_ROUTER_BASEPATH || ''}/textures/onet.png`) as THREE.Texture;
-  const colon = useTexture(`${process.env.__NEXT_ROUTER_BASEPATH || ''}/textures/colong.png`) as THREE.Texture;
+  const colon = useTexture(`${process.env.__NEXT_ROUTER_BASEPATH || ''}/textures/colon.png`) as THREE.Texture;
   const nine = useTexture(`${process.env.__NEXT_ROUTER_BASEPATH || ''}/textures/nineg.png`) as THREE.Texture;
 
   [one, colon, nine].forEach((t) => {
