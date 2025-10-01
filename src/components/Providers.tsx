@@ -1,6 +1,12 @@
-"use client";
+// app/providers.tsx
 import { SessionProvider } from "next-auth/react";
-export default function Providers({ children }: { children: React.ReactNode }) {
-  return <SessionProvider basePath="/1isto9-perfumery/api/auth">{children}</SessionProvider>;
-}
 
+const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || "";
+
+export default function Providers({ children }: { children: React.ReactNode }) {
+  return (
+    <SessionProvider basePath={`${BASE_PATH}/api/auth`}>
+      {children}
+    </SessionProvider>
+  );
+}
