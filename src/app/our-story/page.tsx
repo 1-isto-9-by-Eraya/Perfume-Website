@@ -436,13 +436,6 @@ export default function OurStoryPage() {
           </div>
         </div>
       </section>
-
-      {/* SECTION 3 — Placeholder for future content */}
-      <section className="relative bg-black py-12 lg:py-20">
-        <div className="mx-auto max-w-7xl px-4 md:px-6">
-          {/* Add your third section content here */}
-        </div>
-      </section>
     </main>
   );
 }

@@ -161,7 +161,7 @@ function useLeatherMatKTX2() {
 
 /* ---- Emboss textures ---- */
 function useEmbossTextures() {
-  const one = useTexture("/textures/one.png") as THREE.Texture;
+  const one = useTexture("/textures/onet.png") as THREE.Texture;
   const colon = useTexture("/textures/colon.png") as THREE.Texture;
   const nine = useTexture("/textures/nine.png") as THREE.Texture;
 
