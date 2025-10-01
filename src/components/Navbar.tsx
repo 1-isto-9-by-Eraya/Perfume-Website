@@ -164,7 +164,8 @@ export default function Navbar() {
           {/* Centered Logo */}
           <Link href="/" className="flex-1 flex justify-center">
             <img
-              src="/images/Logo_Navbar.png"
+              // src="/images/Logo_Navbar.png"
+              src={`${process.env.__NEXT_ROUTER_BASEPATH || ''}/images/Logo_Navbar.png`}
               alt="Eraya Logo"
               className="h-8"
             />
@@ -213,7 +214,8 @@ export default function Navbar() {
               className="transition-transform duration-300 ease-out hover:scale-105"
             >
               <img
-                src="/images/Logo_Navbar.png"
+                // src="/images/Logo_Navbar.png"
+                src={`${process.env.__NEXT_ROUTER_BASEPATH || ''}/images/Logo_Navbar.png`}
                 alt="Eraya Logo"
                 className="h-9"
               />

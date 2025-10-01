@@ -196,7 +196,8 @@ export default function Preloader({ children }: { children: React.ReactNode }) {
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black">
         <video
           ref={videoRef}
-          src="/videos/video.mp4"
+          // src="/videos/video.mp4"
+          src={`${process.env.__NEXT_ROUTER_BASEPATH || ''}/videos/video.mp4`}
           autoPlay
           muted={false}
           playsInline

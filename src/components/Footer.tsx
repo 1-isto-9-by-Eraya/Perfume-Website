@@ -64,7 +64,8 @@ export default function Footer() {
           {/* Brand Logo */}
           <div className="flex items-start">
             <img
-              src="/images/Logo_Footer.png"
+              // src="/images/Logo_Footer.png"
+              src={`${process.env.__NEXT_ROUTER_BASEPATH || ''}/images/Logo_Footer.png`}
               alt="Eraya Logo"
               className="h-24 mt-2 mb-0 -ml-8"
             />
