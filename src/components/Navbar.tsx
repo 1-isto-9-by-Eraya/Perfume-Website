@@ -25,7 +25,8 @@ export default function Navbar() {
 
   useEffect(() => {
     let mounted = true;
-    fetch("/api/me")
+    const basePath = process.env.__NEXT_ROUTER_BASEPATH || '';
+    fetch(`${basePath}/api/me`)
       .then((r) => r.json())
       .then((data) => mounted && setAllowed(Boolean(data.allowed)))
       .catch(() => mounted && setAllowed(false));
@@ -273,7 +274,6 @@ export default function Navbar() {
       </nav>
 
       {/* Mobile Sidebar Overlay */}
-
       <div
         className={`fixed inset-0 bg-black/80 backdrop-blur-sm z-40 lg:hidden transition-opacity duration-300 ease-in-out ${
           isMobileMenuOpen ? "opacity-100" : "opacity-0 pointer-events-none"
