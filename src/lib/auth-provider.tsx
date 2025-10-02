@@ -25,7 +25,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isAuthorized, setIsAuthorized] = useState(false);
   const [hasChecked, setHasChecked] = useState(false);
 
-  const protectedRoutes = ['/dashboard', '/blog/new', '/reviews'];
+  const protectedRoutes = ['/1isto9-perfumery/dashboard', '/1isto9-perfumery/blog/new', '/1isto9-perfumery/reviews'];
   const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route));
 
   useEffect(() => {
@@ -39,7 +39,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (isProtectedRoute && !authorized) {
         // Sign them out and show unauthorized popup
         signOut({ redirect: false }).then(() => {
-          router.push('/blog?unauthorized=1');
+          router.push('/1isto9-perfumery/blog?unauthorized=1');
         });
       }
     } else {
@@ -47,7 +47,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       
       // If on protected route and not signed in, redirect to sign in
       if (isProtectedRoute) {
-        router.push(`/api/auth/signin?callbackUrl=${encodeURIComponent(pathname)}`);
+        router.push(`/1isto9-perfumery/api/auth/signin?callbackUrl=${encodeURIComponent(pathname)}`);
       }
     }
     
