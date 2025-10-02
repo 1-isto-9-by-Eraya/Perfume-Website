@@ -323,9 +323,9 @@ export default function Navbar() {
               className={`${mobileLinkStyles} ${mobileInactiveLinkStyles}`}
               rel="noopener noreferrer"
             >
-              Store
+              pre-order
             </a>
-            <Link
+            {/* <Link
               href="/pre-order"
               className={`${mobileLinkStyles} ${
                 isActive("/pre-order")
@@ -334,7 +334,7 @@ export default function Navbar() {
               }`}
             >
               Pre Order
-            </Link>
+            </Link> */}
             {/* Dashboard link for authenticated users */}
             {allowed && (
               <Link

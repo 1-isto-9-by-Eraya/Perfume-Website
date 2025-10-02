@@ -98,9 +98,12 @@ export async function middleware(req: NextRequest) {
 
   // Routes that need authentication
   const needsAuth =
-    pathname.startsWith("/blog/new") ||
-    pathname.startsWith("/dashboard") ||
-    pathname.startsWith("/reviews") ||
+    // pathname.startsWith("/blog/new") ||
+    pathname.startsWith(`${process.env.__NEXT_ROUTER_BASEPATH || ""}/blog/new`) ||
+    // pathname.startsWith("/dashboard") ||
+    pathname.startsWith(`${process.env.__NEXT_ROUTER_BASEPATH || ""}/dashboard`) ||
+    // pathname.startsWith("/reviews") ||
+    pathname.startsWith(`${process.env.__NEXT_ROUTER_BASEPATH || ""}/reviews`) ||
     // All other API routes (except public ones handled above)
     (isApi(pathname) && !isPublicApiEndpoint(pathname));
 
@@ -126,7 +129,8 @@ export async function middleware(req: NextRequest) {
     }
     
     // For pages, redirect to sign-in
-    const signInUrl = new URL("/api/auth/signin", origin);
+    // const signInUrl = new URL("/api/auth/signin", origin);
+    const signInUrl = new URL(`${process.env.__NEXT_ROUTER_BASEPATH || ""}/api/auth/signin`, origin);
     signInUrl.searchParams.set("callbackUrl", req.nextUrl.href);
     return NextResponse.redirect(signInUrl);
   }
