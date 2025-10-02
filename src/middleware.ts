@@ -127,56 +127,50 @@ const ALLOWED = (process.env.ALLOWED_EMAILS || "")
   .map((s) => s.trim().toLowerCase())
   .filter(Boolean);
 
-const BASE_PATH = `${process.env.__NEXT_ROUTER_BASEPATH || ''}`;
+const BASE_PATH = "/1isto9-perfumery";
 
 // Helper: path checks
-const isApi = (p: string) => p.startsWith(`${process.env.__NEXT_ROUTER_BASEPATH || ''}/api`);
-const isAuthApi = (p: string) => p.startsWith(`${process.env.__NEXT_ROUTER_BASEPATH || ''}/api/auth`);
+const isApi = (p: string) => p.startsWith(`${BASE_PATH}/api`);
+const isAuthApi = (p: string) => p.startsWith(`${BASE_PATH}/api/auth`);
 const isPublicLikesEndpoint = (p: string) =>
-  new RegExp(`^${process.env.__NEXT_ROUTER_BASEPATH || ''}/api/posts/[^/]+/likes/?$`).test(p);
+  new RegExp(`^${BASE_PATH}/api/posts/[^/]+/likes/?$`).test(p);
 
 // Public API endpoints that don't need authentication
 const isPublicApiEndpoint = (p: string) => {
   return (
     isAuthApi(p) ||
     isPublicLikesEndpoint(p) ||
-    p === `${process.env.__NEXT_ROUTER_BASEPATH || ''}/api/health` ||
-    p.startsWith(`${process.env.__NEXT_ROUTER_BASEPATH || ''}/api/public/`)
+    p === `${BASE_PATH}/api/health` ||
+    p.startsWith(`${BASE_PATH}/api/public/`)
   );
 };
 
 export async function middleware(req: NextRequest) {
   const { pathname, origin } = req.nextUrl;
 
-  // Always let preflight pass
   if (req.method === "OPTIONS") {
     return NextResponse.next();
   }
 
-  // Let public API endpoints pass without authentication
   if (isPublicApiEndpoint(pathname)) {
     return NextResponse.next();
   }
 
-  // Routes that need authentication
   const needsAuth =
-    pathname.startsWith(`${process.env.__NEXT_ROUTER_BASEPATH || ''}/blog/new`) ||
-    pathname.startsWith(`${process.env.__NEXT_ROUTER_BASEPATH || ''}/dashboard`) ||
-    pathname.startsWith(`${process.env.__NEXT_ROUTER_BASEPATH || ''}/reviews`) ||
+    pathname.startsWith(`${BASE_PATH}/blog/new`) ||
+    pathname.startsWith(`${BASE_PATH}/dashboard`) ||
+    pathname.startsWith(`${BASE_PATH}/reviews`) ||
     (isApi(pathname) && !isPublicApiEndpoint(pathname));
 
-  // If no auth needed, let it pass
   if (!needsAuth) {
     return NextResponse.next();
   }
 
-  // Get token for protected routes
   const token = await getToken({
     req,
     secret: process.env.NEXTAUTH_SECRET || process.env.AUTH_SECRET,
   });
 
-  // Not signed in
   if (!token) {
     if (isApi(pathname)) {
       return NextResponse.json(
@@ -185,12 +179,11 @@ export async function middleware(req: NextRequest) {
       );
     }
     
-    const signInUrl = new URL(`${process.env.__NEXT_ROUTER_BASEPATH || ''}/api/auth/signin`, origin);
+    const signInUrl = new URL(`${BASE_PATH}/api/auth/signin`, origin);
     signInUrl.searchParams.set("callbackUrl", req.nextUrl.href);
     return NextResponse.redirect(signInUrl);
   }
 
-  // Signed in but check if user is authorized
   const email = (token.email || "").toLowerCase();
   if (!ALLOWED.includes(email)) {
     if (isApi(pathname)) {
@@ -200,7 +193,7 @@ export async function middleware(req: NextRequest) {
       );
     }
     
-    const url = new URL(`${process.env.__NEXT_ROUTER_BASEPATH || ''}/blog`, origin);
+    const url = new URL(`${BASE_PATH}/blog`, origin);
     url.searchParams.set("unauthorized", "1");
     return NextResponse.redirect(url);
   }
@@ -208,7 +201,6 @@ export async function middleware(req: NextRequest) {
   return NextResponse.next();
 }
 
-// IMPORTANT: Update matcher to include base path
 export const config = {
   matcher: [
     "/1isto9-perfumery/blog/new",
