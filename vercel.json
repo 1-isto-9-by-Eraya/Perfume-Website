@@ -1,8 +1,9 @@
 {
-  "rewrites": [
+  "redirects": [
     {
-      "source": "/1isto9-perfumery/:path*",
-      "destination": "/:path*"
+      "source": "/",
+      "destination": "/1isto9-perfumery",
+      "permanent": true
     }
   ]
 }
