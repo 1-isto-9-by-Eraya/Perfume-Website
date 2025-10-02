@@ -106,28 +106,37 @@ import { isAllowedEmail } from "@/lib/acl";
 import { DEFAULT_USER_ROLE, getRoleByEmail } from "@/lib/roles";
 import type { UserRole } from "@prisma/client";
 
-const BASE_PATH = "/1isto9-perfumery";
-
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   session: { strategy: "jwt" },
-  
-  // Add this to force the correct URLs
-  useSecureCookies: process.env.NODE_ENV === "production",
-  
+
   providers: [
     GoogleProvider({
       clientId: process.env.OAUTH_CLIENT_ID!,
       clientSecret: process.env.OAUTH_CLIENT_SECRET!,
-      authorization: {
-        params: {
-          redirect_uri: `${process.env.NEXTAUTH_URL}/api/auth/callback/google`,
-        },
-      },
     }),
   ],
 
   callbacks: {
+    async redirect({ url, baseUrl }) {
+      // Ensure redirects include the base path
+      const basePath = "/1isto9-perfumery";
+      
+      // If url is relative, prepend basePath and baseUrl
+      if (url.startsWith("/")) {
+        return `${baseUrl}${basePath}${url}`;
+      }
+      // If url already includes baseUrl, check if it has basePath
+      if (url.startsWith(baseUrl)) {
+        const urlObj = new URL(url);
+        if (!urlObj.pathname.startsWith(basePath)) {
+          urlObj.pathname = `${basePath}${urlObj.pathname}`;
+          return urlObj.toString();
+        }
+      }
+      return url;
+    },
+
     async signIn({ user }) {
       return isAllowedEmail(user?.email);
     },
