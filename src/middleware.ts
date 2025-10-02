@@ -127,21 +127,21 @@ const ALLOWED = (process.env.ALLOWED_EMAILS || "")
   .map((s) => s.trim().toLowerCase())
   .filter(Boolean);
 
-const BASE_PATH = "/1isto9-perfumery";
+const BASE_PATH = `${process.env.__NEXT_ROUTER_BASEPATH || ''}`;
 
 // Helper: path checks
-const isApi = (p: string) => p.startsWith(`${BASE_PATH}/api`);
-const isAuthApi = (p: string) => p.startsWith(`${BASE_PATH}/api/auth`);
+const isApi = (p: string) => p.startsWith(`${process.env.__NEXT_ROUTER_BASEPATH || ''}/api`);
+const isAuthApi = (p: string) => p.startsWith(`${process.env.__NEXT_ROUTER_BASEPATH || ''}/api/auth`);
 const isPublicLikesEndpoint = (p: string) =>
-  new RegExp(`^${BASE_PATH}/api/posts/[^/]+/likes/?$`).test(p);
+  new RegExp(`^${process.env.__NEXT_ROUTER_BASEPATH || ''}/api/posts/[^/]+/likes/?$`).test(p);
 
 // Public API endpoints that don't need authentication
 const isPublicApiEndpoint = (p: string) => {
   return (
     isAuthApi(p) ||
     isPublicLikesEndpoint(p) ||
-    p === `${BASE_PATH}/api/health` ||
-    p.startsWith(`${BASE_PATH}/api/public/`)
+    p === `${process.env.__NEXT_ROUTER_BASEPATH || ''}/api/health` ||
+    p.startsWith(`${process.env.__NEXT_ROUTER_BASEPATH || ''}/api/public/`)
   );
 };
 
@@ -160,9 +160,9 @@ export async function middleware(req: NextRequest) {
 
   // Routes that need authentication
   const needsAuth =
-    pathname.startsWith(`${BASE_PATH}/blog/new`) ||
-    pathname.startsWith(`${BASE_PATH}/dashboard`) ||
-    pathname.startsWith(`${BASE_PATH}/reviews`) ||
+    pathname.startsWith(`${process.env.__NEXT_ROUTER_BASEPATH || ''}/blog/new`) ||
+    pathname.startsWith(`${process.env.__NEXT_ROUTER_BASEPATH || ''}/dashboard`) ||
+    pathname.startsWith(`${process.env.__NEXT_ROUTER_BASEPATH || ''}/reviews`) ||
     (isApi(pathname) && !isPublicApiEndpoint(pathname));
 
   // If no auth needed, let it pass
@@ -185,7 +185,7 @@ export async function middleware(req: NextRequest) {
       );
     }
     
-    const signInUrl = new URL(`${BASE_PATH}/api/auth/signin`, origin);
+    const signInUrl = new URL(`${process.env.__NEXT_ROUTER_BASEPATH || ''}/api/auth/signin`, origin);
     signInUrl.searchParams.set("callbackUrl", req.nextUrl.href);
     return NextResponse.redirect(signInUrl);
   }
@@ -200,7 +200,7 @@ export async function middleware(req: NextRequest) {
       );
     }
     
-    const url = new URL(`${BASE_PATH}/blog`, origin);
+    const url = new URL(`${process.env.__NEXT_ROUTER_BASEPATH || ''}/blog`, origin);
     url.searchParams.set("unauthorized", "1");
     return NextResponse.redirect(url);
   }
