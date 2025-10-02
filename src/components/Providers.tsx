@@ -8,7 +8,7 @@ const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
 export default function Providers({ children }: { children: React.ReactNode }) {
   return (
-    <SessionProvider basePath={`${BASE_PATH}/api/auth`}>
+    <SessionProvider basePath="/1isto9-perfumery/api/auth">
       {children}
     </SessionProvider>
   );
