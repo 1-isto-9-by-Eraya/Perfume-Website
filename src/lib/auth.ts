@@ -246,6 +246,7 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
 
+  
   callbacks: {
     async redirect({ url, baseUrl }) {
       const basePath = BASE_PATH;
