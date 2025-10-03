@@ -14,50 +14,27 @@ import type { NextRequest } from "next/server";
 
 const BASE_PATH = "/1isto9-perfumery";
 
-// Helper to get the correct host from request
-function getAuthUrl(req: NextRequest): string {
+// Create the handler once
+const handler = NextAuth(authOptions);
+
+// Override NEXTAUTH_URL before any requests are handled
+function setCorrectNextAuthUrl(req: NextRequest) {
   const protocol = req.headers.get("x-forwarded-proto") || "https";
   const host = req.headers.get("x-forwarded-host") || req.headers.get("host") || "";
   
-  // This will use the actual domain being accessed (www.thehouseoferaya.in)
-  // instead of the Vercel deployment URL
-  return `${protocol}://${host}${BASE_PATH}/api/auth`;
+  // Override the environment variable
+  process.env.NEXTAUTH_URL = `${protocol}://${host}${BASE_PATH}/api/auth`;
+  
+  // Temporarily remove VERCEL_URL to prevent auto-detection
+  delete process.env.VERCEL_URL;
 }
 
-export async function GET(req: NextRequest) {
-  // Force the correct NEXTAUTH_URL at runtime
-  process.env.NEXTAUTH_URL = getAuthUrl(req);
-  
-  // Prevent Vercel's auto-detection
-  const originalVercelUrl = process.env.VERCEL_URL;
-  delete process.env.VERCEL_URL;
-  
-  const handler = NextAuth(authOptions);
-  const response = await handler(req);
-  
-  // Restore (cleanup, though not strictly necessary in serverless)
-  if (originalVercelUrl) {
-    process.env.VERCEL_URL = originalVercelUrl;
-  }
-  
-  return response;
+export async function GET(req: NextRequest, context: any) {
+  setCorrectNextAuthUrl(req);
+  return handler(req, context);
 }
 
-export async function POST(req: NextRequest) {
-  // Force the correct NEXTAUTH_URL at runtime
-  process.env.NEXTAUTH_URL = getAuthUrl(req);
-  
-  // Prevent Vercel's auto-detection
-  const originalVercelUrl = process.env.VERCEL_URL;
-  delete process.env.VERCEL_URL;
-  
-  const handler = NextAuth(authOptions);
-  const response = await handler(req);
-  
-  // Restore (cleanup, though not strictly necessary in serverless)
-  if (originalVercelUrl) {
-    process.env.VERCEL_URL = originalVercelUrl;
-  }
-  
-  return response;
+export async function POST(req: NextRequest, context: any) {
+  setCorrectNextAuthUrl(req);
+  return handler(req, context);
 }
