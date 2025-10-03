@@ -481,7 +481,7 @@ export default function OurStoryPage() {
                 <Image
                   src={`${
                     process.env.__NEXT_ROUTER_BASEPATH || ""
-                  }/images/Our-Story-Image-1.webp`}
+                  }/images/Our-Story-image-1.webp`}
                   alt="Perfume bottle"
                   fill
                   className="object-cover"
@@ -500,7 +500,7 @@ export default function OurStoryPage() {
                 <Image
                   src={`${
                     process.env.__NEXT_ROUTER_BASEPATH || ""
-                  }/images/Our-Story-Image-2.webp`}
+                  }/images/Our-Story-image-2.webp`}
                   alt="Perfume bottle"
                   fill
                   className="object-cover"
@@ -628,18 +628,18 @@ export default function OurStoryPage() {
           >
             MOOD BOARD
           </h2>
-          <div className="bg absolute top-[50%] left-[35%] w-fit h-fit  flex items-center justify-center z-10 pointer-events-none">
+          <div className="bg absolute top-[50%] left-0 w-full h-fit  flex items-center justify-center z-10 pointer-events-none">
             <div className="text-center">
               <h3
                 className={`${playfair.className} text-white text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-light tracking-wider mb-2`}
               >
-                SIGNATURE
+                VIVID | BOLD | UPBEAT
               </h3>
-              <p
+              {/* <p
                 className={`${inter.className} text-white/90 text-xl ml-[23%] font-extralight md:text-2xl lg:text-3xl tracking-[0.3em]`}
               >
                 OF THE ACHIEVERS
-              </p>
+              </p> */}
             </div>
           </div>
 
