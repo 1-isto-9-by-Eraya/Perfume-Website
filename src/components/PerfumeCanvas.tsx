@@ -173,9 +173,9 @@ const ScrollDriver = memo(function ScrollDriver({
       tl.to([bottle.position, cap.position], { y: -1.8, duration: 0.1 }, 0)
         .to([bottle.rotation, cap.rotation], { y: Math.PI / 12, duration: 0.1 }, 0)
         .to(cap.position, { y: 10, x: 0.1, duration: 0.1 }, 0.1)
-        .to(bottle.position, { x: 0.35, y: -2, duration: 0.05 }, 0.1)
+        .to(bottle.position, { x: 0.37, y: -1.5, duration: 0.05 }, 0.1)
         .to(bottle.rotation, { y: 0.6, z: -0.14, duration: 0.05 }, 0.1)
-        .to(bottle.scale, { x: 0.004, y: 0.004, z: 0.004, duration: 0.05 }, 0.1);
+        .to(bottle.scale, { x: 0.003, y: 0.003, z: 0.003, duration: 0.05 }, 0.1);
 
       tlRef.current = tl;
     }

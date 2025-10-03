@@ -74,7 +74,7 @@ export default function Navbar() {
 
   // Mobile menu link styles
   const mobileLinkStyles =
-    "block py-4 px-6 text-4xl  uppercase border-b border-neutral-800 hover:bg-neutral-900 transition-colors duration-200";
+    "block py-4 px-6 text-lg  uppercase border-b border-neutral-800 hover:bg-neutral-900 transition-colors duration-200";
   const mobileActiveLinkStyles = "text-white opacity-100";
   const mobileInactiveLinkStyles = "text-white opacity-70 hover:opacity-100";
 

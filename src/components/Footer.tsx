@@ -53,6 +53,7 @@ export default function Footer() {
   return (
     <footer
       className={`bg-black text-[#fffff2] px-4 md:px-12 pt-16 pb-6 ${inter.className}`}
+      // className={`bg-black text-[#fffff2] px-4 md:px-12 pt-16 pb-6 ${inter.className} border-t border-[#fffff2]/20`}
     >
       <div className="w-full">
         {/* Single Row: Brand Logo | Customer Care | Legal | Newsletter */}
@@ -67,12 +68,12 @@ export default function Footer() {
               // src="/images/Logo_Footer.png"
               src={`${process.env.__NEXT_ROUTER_BASEPATH || ''}/images/Logo_Footer.png`}
               alt="Eraya Logo"
-              className="h-24 mt-2 mb-0 -ml-8"
+              className="h-24 mt-2 mb-4 lg:-ml-8 -ml-24"
             />
           </div>
 
           {/* Customer Care */}
-          <div>
+          <div className="lg:text-center">
             <h3 className="text-white text-md font-medium mb-3">
               Customer Care
             </h3>
@@ -108,7 +109,7 @@ export default function Footer() {
           </div>
 
           {/* Legal */}
-          <div>
+          <div className="lg:text-center">
             <h3 className="font-inter text-white text-base font-medium mb-3">
               Legal
             </h3>

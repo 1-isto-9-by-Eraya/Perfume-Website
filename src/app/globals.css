@@ -647,13 +647,19 @@ body {
   .jptbtoc{
     display: none;
   }
+
+  .bg{
+    display: none;
+  }
 }
 
 @media (min-width: 1024px) {
   .jptbtoc{
     display: block;
   }
-  
+  .bg{
+    display: grid;
+  }
 }
 
 .desktop-nav {

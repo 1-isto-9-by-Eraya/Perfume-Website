@@ -208,7 +208,7 @@ export default function HomePage() {
                     <div className="flex flex-col gap-4">
                       <button
                         onClick={() => router.push("/our-story")}
-                        className={`mt-8 inline-flex items-center justify-center px-6 py-3 w-1/2
+                        className={`mt-8 inline-flex items-center justify-center px-1 py-3 w-1/2
                         border border-white/80 bg-transparent text-white
                         ${inter.className} font-semibold text-[12px] md:text-[16px] tracking-wide uppercase
                         transition-colors duration-200 cursor-pointer opacity-0 animate-fadeInDelayLong
@@ -229,7 +229,7 @@ export default function HomePage() {
                           (window.location.href =
                             "https://thehouseoferaya.store/collections/all")
                         }
-                        className={`inline-flex items-center justify-center px-8 py-3 w-1/2
+                        className={`inline-flex items-center justify-center px-4 py-3 w-1/2
                         border border-transparent bg-[#EB9C1C] text-[#191919]
                         ${inter.className} text-[12px] md:text-[16px] font-semibold tracking-wide uppercase
                         transition-colors duration-200 cursor-pointer
