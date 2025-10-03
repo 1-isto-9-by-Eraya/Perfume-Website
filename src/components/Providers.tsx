@@ -9,7 +9,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
   // console.log("SessionProvider basePath:", "/1isto9-perfumery/api/auth");
   return (
     //  <SessionProvider basePath={`${process.env.__NEXT_ROUTER_BASEPATH || ''}/api/auth`}>
-    <SessionProvider baseUrl="http://thehouseoferaya.in" basePath="/1isto9-perfumery/api/auth">
+    <SessionProvider baseUrl="https://thehouseoferaya.in" basePath="/1isto9-perfumery/api/auth">
       {children}
     </SessionProvider>
   );
