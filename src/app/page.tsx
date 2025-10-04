@@ -127,7 +127,7 @@ export default function HomePage() {
                   </p>
                 </div>
                 {/* HERO (section 1) */}
-                <section className="h-screen -mt-24 flex flex-col items-center justify-center px-6 text-center">
+                <section className="h-screen -mt-32 flex flex-col items-center justify-center px-6 text-center">
                   <h1
                     className={` text-white leading-tight max-w-3xl opacity-0 animate-fadeIn`}
                     style={{ willChange: "opacity, transform" }}

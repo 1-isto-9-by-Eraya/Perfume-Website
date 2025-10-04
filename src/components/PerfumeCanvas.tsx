@@ -307,12 +307,12 @@ export default function PerfumeCanvas({ config, containerRef }: PerfumeCanvasPro
       )}
 
       <Suspense
-        fallback={
-          <mesh>
-            <boxGeometry args={[0.4, 0.4, 0.4]} />
-            <meshBasicMaterial color="#666" />
-          </mesh>
-        }
+        // fallback={
+        //   <mesh>
+        //     <boxGeometry args={[0.4, 0.4, 0.4]} />
+        //     <meshBasicMaterial color="#666" />
+        //   </mesh>
+        // }
       >
         {/* Neutral wrapper — all posing is on Bottle's inner groups */}
         <group visible={shown}>
