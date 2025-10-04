@@ -207,25 +207,8 @@ import { DEFAULT_USER_ROLE, getRoleByEmail } from "@/lib/roles";
 import type { UserRole } from "@prisma/client";
 
 const BASE_PATH = "/1isto9-perfumery";
-
-// Force the correct NEXTAUTH_URL at runtime
-const getNextAuthUrl = () => {
-  // In production, use the production URL
-  // if (process.env.VERCEL_URL) {
-  //   return `https://${process.env.VERCEL_URL}${BASE_PATH}/api/auth`;
-  // }
-  
-  // Fallback to environment variable or construct from parts
-  if (process.env.NEXTAUTH_URL) {
-    return process.env.NEXTAUTH_URL;
-  }
-  
-  // Development fallback
-  return `http://localhost:3000${BASE_PATH}/api/auth`;
-};
-
-// Override the URL before NextAuth processes it
-process.env.NEXTAUTH_URL = getNextAuthUrl();
+const DOMAIN = "https://www.thehouseoferaya.in";
+const AUTH_URL = `${DOMAIN}${BASE_PATH}/api/auth`;
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
@@ -235,42 +218,41 @@ export const authOptions: NextAuthOptions = {
     GoogleProvider({
       clientId: process.env.OAUTH_CLIENT_ID!,
       clientSecret: process.env.OAUTH_CLIENT_SECRET!,
-      // Explicitly set the authorization URL with basePath
+      // Manually configure authorization URL to use correct redirect
       authorization: {
         params: {
           prompt: "consent",
           access_type: "offline",
           response_type: "code",
+          redirect_uri: `${AUTH_URL}/callback/google`,
         },
       },
     }),
   ],
 
-  
   callbacks: {
     async redirect({ url, baseUrl }) {
+      // Use the hardcoded domain for consistency
+      const actualBaseUrl = DOMAIN;
       const basePath = BASE_PATH;
       
-      // If url is relative
       if (url.startsWith("/")) {
         if (url.startsWith(basePath)) {
-          return `${baseUrl}${url}`;
+          return `${actualBaseUrl}${url}`;
         }
-        return `${baseUrl}${basePath}${url}`;
+        return `${actualBaseUrl}${basePath}${url}`;
       }
       
-      // If url is absolute and on same domain
-      if (url.startsWith(baseUrl)) {
+      if (url.startsWith(actualBaseUrl) || url.startsWith(baseUrl)) {
         const urlObj = new URL(url);
         if (!urlObj.pathname.startsWith(basePath)) {
           urlObj.pathname = `${basePath}${urlObj.pathname}`;
-          return urlObj.toString();
+          return `${actualBaseUrl}${urlObj.pathname}${urlObj.search}`;
         }
         return url;
       }
       
-      // External or unsafe - redirect to home
-      return `${baseUrl}${basePath}`;
+      return `${actualBaseUrl}${basePath}`;
     },
 
     async signIn({ user }) {
