@@ -12,8 +12,6 @@ const nextConfig: NextConfig = {
   // Serve the whole app under this sub-path
   basePath: "/1isto9-perfumery", // build-time setting
   assetPrefix: "/1isto9-perfumery", // runtime setting (for assets like images, etc.)
-
-  domain: "thehouseoferaya.in",
   // // Redirect the domain root to the sub-path (avoids double-prefixing)
   // async redirects() {
   //   return [

@@ -237,9 +237,9 @@ export const authOptions: NextAuthOptions = {
       const basePath = BASE_PATH;
       
       if (url.startsWith("/")) {
-        if (url.startsWith(basePath)) {
-          return `${actualBaseUrl}${url}`;
-        }
+        // if (url.startsWith(basePath)) {
+        //   return `${actualBaseUrl}${url}`;
+        // }
         return `${actualBaseUrl}${basePath}${url}`;
       }
       
