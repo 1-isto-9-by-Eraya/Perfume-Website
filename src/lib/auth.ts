@@ -211,9 +211,9 @@ const BASE_PATH = "/1isto9-perfumery";
 // Force the correct NEXTAUTH_URL at runtime
 const getNextAuthUrl = () => {
   // In production, use the production URL
-  if (process.env.VERCEL_URL) {
-    return `https://${process.env.VERCEL_URL}${BASE_PATH}/api/auth`;
-  }
+  // if (process.env.VERCEL_URL) {
+  //   return `https://${process.env.VERCEL_URL}${BASE_PATH}/api/auth`;
+  // }
   
   // Fallback to environment variable or construct from parts
   if (process.env.NEXTAUTH_URL) {
