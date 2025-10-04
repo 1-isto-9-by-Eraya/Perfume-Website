@@ -651,6 +651,10 @@ body {
   .bg{
     display: none;
   }
+
+  .mh{
+    display: none;
+  }
 }
 
 @media (min-width: 1024px) {
@@ -684,6 +688,8 @@ body {
   .mobile-nav {
     display: none;
   }
+
+
 }
 
 

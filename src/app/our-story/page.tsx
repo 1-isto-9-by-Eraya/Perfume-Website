@@ -470,6 +470,12 @@ export default function OurStoryPage() {
 
   return (
     <main className="bg-black">
+      <div className="w-full text-center flex justify-center items-center uppercase bg-[#eb9c1c] text-white text-[1rem] font-normal px-2 py-2.5">
+        <p className={`${inter.className} w-[70%] lg:w-full`}>
+          Pre-orders now open | Take 10% off, use WELCOME10 | Shipping begins
+          October 27 | Only in India
+        </p>
+      </div>
       {/* SECTION 1 — "Our Brand Story" - Fully Responsive */}
       <section className="relative overflow-hidden pt-8 md:pt-12 min-h-screen w-full">
         <div className="oss1-container mx-auto max-w-7xl">

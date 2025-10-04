@@ -126,6 +126,7 @@ export default function Navbar() {
     <>
       <nav className="w-full bg-black text-white backdrop-blur relative top-0 inset-x-0 z-50">
         {/* Mobile Navigation */}
+        
         <div className="mobile-nav">
           {/* Hamburger Menu Button */}
           <button

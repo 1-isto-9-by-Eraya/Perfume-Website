@@ -121,6 +121,11 @@ export default function HomePage() {
 
               {/* Content sections (overlay) */}
               <div className="absolute top-0 left-0 w-full z-20">
+                <div className="w-full text-center flex justify-center items-center uppercase bg-[#eb9c1c] text-white text-[1rem] font-normal px-2 py-2.5">
+                  <p className={`${inter.className} w-[70%] lg:w-full`}>
+                    Pre-orders now open | Take 10% off, use WELCOME10 | Shipping begins October 27 | Only in India
+                  </p>
+                </div>
                 {/* HERO (section 1) */}
                 <section className="h-screen -mt-24 flex flex-col items-center justify-center px-6 text-center">
                   <h1

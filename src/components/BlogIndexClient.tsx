@@ -631,6 +631,102 @@ export default function BlogIndexClient({
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  // return (
+  //   <section className="container mx-auto px-4 py-6 space-y-4">
+  //     <div className="flex items-center justify-between mb-2">
+  //       <h1 className={`text-5xl font-semibold text-white mb-6 ${playfairDisplay.className}`}>
+  //         Journal
+  //       </h1>
+  //     </div>
+
+  //     <div className="relative">
+  //       <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+  //         <svg className="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+  //           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M10 18a8 8 0 100-16 8 8 0 000 16z" />
+  //         </svg>
+  //       </div>
+  //       <input type="text" placeholder="Search posts, keywords..." value={filters.query} onChange={(e) => setFilters((prev) => ({ ...prev, query: e.target.value }))} disabled={isLoading} className={`${inter.className} w-full pl-10 pr-4 py-3 bg-[#121212] text-gray-200 placeholder-gray-500 rounded-lg border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50`} />
+  //     </div>
+
+  //     {isLoading ? (
+  //       <div className="w-full h-12 bg-gray-700 rounded-lg animate-pulse"></div>
+  //     ) : (
+  //       <FilterSummary filters={filters} onOpenModal={() => setIsFilterModalOpen(true)} filteredCount={filtered.length} totalCount={posts.length} />
+  //     )}
+
+  //     <DesktopFilters filters={filters} setFilters={setFilters} availableKeywords={availableKeywords} isLoading={isLoading} />
+
+  //     {!isLoading && (filters.type !== "ALL" || filters.keywords.length > 0) && (
+  //       <div className="md:hidden flex flex-wrap gap-2">
+  //         {filters.type !== "ALL" && (
+  //           <span className="inline-flex items-center gap-1 px-3 py-1 bg-blue-600/20 text-blue-300 rounded-full text-sm border border-blue-500/30">
+  //             {filters.type}
+  //             <button onClick={() => setFilters((prev) => ({ ...prev, type: "ALL" }))} className="ml-1 hover:text-red-400 transition-colors">
+  //               <XMarkIcon className="w-3 h-3" />
+  //             </button>
+  //           </span>
+  //         )}
+  //         {filters.keywords.slice(0, 3).map((keyword) => (
+  //           <span key={keyword} className="inline-flex items-center gap-1 px-3 py-1 bg-blue-600/20 text-blue-300 rounded-full text-sm border border-blue-500/30">
+  //             <HashtagIcon className="w-3 h-3" />
+  //             {keyword}
+  //             <button onClick={() => setFilters((prev) => ({ ...prev, keywords: prev.keywords.filter((k) => k !== keyword) }))} className="ml-1 hover:text-red-400 transition-colors">
+  //               <XMarkIcon className="w-3 h-3" />
+  //             </button>
+  //           </span>
+  //         ))}
+  //         {filters.keywords.length > 3 && (
+  //           <span className="px-3 py-1 bg-gray-800 text-gray-400 rounded-full text-sm">
+  //             +{filters.keywords.length - 3} more
+  //           </span>
+  //         )}
+  //       </div>
+  //     )}
+
+  //     {!isLoading && filtered.length > 0 && (
+  //       <div className="flex items-center justify-between text-sm text-gray-400 px-1">
+  //         <span>
+  //           Showing {((currentPage - 1) * POSTS_PER_PAGE) + 1}-{Math.min(currentPage * POSTS_PER_PAGE, filtered.length)} of {filtered.length} posts
+  //         </span>
+  //       </div>
+  //     )}
+
+  //     {isLoading ? (
+  //       <SkeletonGrid count={8} />
+  //     ) : (
+  //       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 pt-2">
+  //         {paginatedPosts.map((p) => (
+  //           <BlogCard key={p.id} post={p} />
+  //         ))}
+  //       </div>
+  //     )}
+
+  //     {!isLoading && filtered.length > 0 && (
+  //       <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />
+  //     )}
+
+  //     {!isLoading && filtered.length === 0 && (
+  //       <div className="text-center py-12">
+  //         <div className="w-16 h-16 mx-auto mb-4 bg-gray-800 rounded-full flex items-center justify-center">
+  //           <svg className="w-8 h-8 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+  //             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6M5 8h14M5 16h14" />
+  //           </svg>
+  //         </div>
+  //         <h3 className="text-lg font-medium text-white mb-2">No posts found</h3>
+  //         <p className="text-gray-400 text-sm mb-4">Try adjusting your filters or search terms.</p>
+  //         <button onClick={() => setFilters({ query: "", type: "ALL", keywords: [] })} className="text-blue-400 hover:text-blue-300 transition-colors text-sm">
+  //           Clear all filters
+  //         </button>
+  //       </div>
+  //     )}
+
+  //     {!isLoading && (
+  //       <MobileFilterModal isOpen={isFilterModalOpen} onClose={() => setIsFilterModalOpen(false)} filters={filters} onFiltersChange={setFilters} availableKeywords={availableKeywords} />
+  //     )}
+  //   </section>
+  // );
+
+
   return (
     <section className="container mx-auto px-4 py-6 space-y-4">
       <div className="flex items-center justify-between mb-2">
@@ -639,20 +735,54 @@ export default function BlogIndexClient({
         </h1>
       </div>
 
-      <div className="relative">
-        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-          <svg className="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M10 18a8 8 0 100-16 8 8 0 000 16z" />
-          </svg>
+      {/* Mobile: Stacked */}
+      <div className="md:hidden space-y-4">
+        <div className="relative">
+          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <svg className="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M10 18a8 8 0 100-16 8 8 0 000 16z" />
+            </svg>
+          </div>
+          <input type="text" placeholder="Search posts, keywords..." value={filters.query} onChange={(e) => setFilters((prev) => ({ ...prev, query: e.target.value }))} disabled={isLoading} className={`${inter.className} w-full pl-10 pr-4 py-3 bg-[#121212] text-gray-200 placeholder-gray-500 rounded-lg border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50`} />
         </div>
-        <input type="text" placeholder="Search posts, keywords..." value={filters.query} onChange={(e) => setFilters((prev) => ({ ...prev, query: e.target.value }))} disabled={isLoading} className={`${inter.className} w-full pl-10 pr-4 py-3 bg-[#121212] text-gray-200 placeholder-gray-500 rounded-lg border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50`} />
+
+        {isLoading ? (
+          <div className="w-full h-12 bg-gray-700 rounded-lg animate-pulse"></div>
+        ) : (
+          <FilterSummary filters={filters} onOpenModal={() => setIsFilterModalOpen(true)} filteredCount={filtered.length} totalCount={posts.length} />
+        )}
       </div>
 
-      {isLoading ? (
-        <div className="w-full h-12 bg-gray-700 rounded-lg animate-pulse"></div>
-      ) : (
-        <FilterSummary filters={filters} onOpenModal={() => setIsFilterModalOpen(true)} filteredCount={filtered.length} totalCount={posts.length} />
-      )}
+      {/* Desktop: Side by side */}
+      <div className="mh md:flex md:gap-4">
+        <div className="relative flex-1">
+          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <svg className="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M10 18a8 8 0 100-16 8 8 0 000 16z" />
+            </svg>
+          </div>
+          <input type="text" placeholder="Search posts, keywords..." value={filters.query} onChange={(e) => setFilters((prev) => ({ ...prev, query: e.target.value }))} disabled={isLoading} className={`${inter.className} w-full pl-10 pr-4 py-3 bg-[#121212] text-gray-200 placeholder-gray-500 rounded-lg border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50`} />
+        </div>
+
+        {isLoading ? (
+          <div className="flex-1 h-12 bg-gray-700 rounded-lg animate-pulse"></div>
+        ) : (
+          <button onClick={() => setIsFilterModalOpen(true)} className="flex-1 p-3 rounded-lg flex items-center justify-between transition-colors bg-[#0f1115] border border-gray-700 hover:bg-[#151a1f]" style={{ boxShadow: "0 1px 0 rgba(0,0,0,0.6), 0 8px 24px rgba(0,0,0,0.35)" }}>
+            <div className="flex items-center gap-2">
+              <FunnelIcon className="w-4 h-4 text-gray-400" />
+              <span className="text-sm text-gray-200">
+                {((filters.type !== "ALL" ? 1 : 0) + filters.keywords.length + (filters.query ? 1 : 0)) > 0 ? `${(filters.type !== "ALL" ? 1 : 0) + filters.keywords.length + (filters.query ? 1 : 0)} filters active` : "All posts"}
+              </span>
+              {((filters.type !== "ALL" ? 1 : 0) + filters.keywords.length + (filters.query ? 1 : 0)) > 0 && (
+                <span className="px-2 py-0.5 text-xs rounded-full bg-gray-800 border border-gray-700 text-gray-400">
+                  {filtered.length == 1 ? "1 post found" : `${filtered.length} posts found`}
+                </span>
+              )}
+            </div>
+            <ChevronDownIcon className="w-4 h-4 text-gray-400" />
+          </button>
+        )}
+      </div>
 
       <DesktopFilters filters={filters} setFilters={setFilters} availableKeywords={availableKeywords} isLoading={isLoading} />
 
@@ -725,4 +855,5 @@ export default function BlogIndexClient({
       )}
     </section>
   );
+
 }
