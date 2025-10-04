@@ -87,8 +87,8 @@ body,
     z-index: 3;
     top: 80px;
     left: 120px;
-    height: 200px;
-    width: 160px;
+    height: 300px;
+    width: 230px;
     aspect-ratio: 4/5;
     overflow: hidden;
     border-radius: 0.375rem;
@@ -203,7 +203,7 @@ body,
     z-index: 3;
     top: 20px;
     left: 120px;
-    height: 275px;
+    height: 320px;
     width: 220px;
     aspect-ratio: 4/5;
     overflow: hidden;
@@ -312,10 +312,10 @@ body,
   .oss1i2 {
     position: absolute;
     z-index: 3;
-    top: -30px;
-    left: 140px;
-    height: 322px;
-    width: 276px;
+    top: -50px;
+    left: 20px;
+    height: 500px;
+    width: 400px;
     aspect-ratio: 4/5;
     overflow: hidden;
     border-radius: 0.375rem;

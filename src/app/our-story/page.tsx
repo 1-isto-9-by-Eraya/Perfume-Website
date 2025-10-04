@@ -483,7 +483,7 @@ export default function OurStoryPage() {
             {/* Images Container */}
             <div className="oss1-images relative">
               {/* Main bottle image 1 */}
-              <div className="oss1i1">
+              {/* <div className="oss1i1">
                 <Image
                   src={`${
                     process.env.__NEXT_ROUTER_BASEPATH || ""
@@ -494,19 +494,19 @@ export default function OurStoryPage() {
                   priority
                   sizes="(max-width: 768px) 160px, (max-width: 1024px) 220px, 276px"
                 />
-              </div>
+              </div> */}
 
               {/* Neon frame behind */}
-              <div className="oss1nf">
+              {/* <div className="oss1nf">
                 <div className="h-full w-full rounded-md bg-black" />
-              </div>
+              </div> */}
 
               {/* Main bottle image 2 */}
               <div className="oss1i2">
                 <Image
                   src={`${
                     process.env.__NEXT_ROUTER_BASEPATH || ""
-                  }/images/Our-Story-image-2.webp`}
+                  }/images/Our-story.webp`}
                   alt="Perfume bottle"
                   fill
                   className="object-cover"
