@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { signOut } from "next-auth/react";
+// import { signOut } from "next-auth/react";
+import { signOut } from "@/lib/auth-actions";
 import { usePathname } from "next/navigation";
 import { Playfair_Display, Inter } from "next/font/google";
 
@@ -21,19 +22,20 @@ const inter = Inter({
 export default function Navbar() {
   const [allowed, setAllowed] = useState<boolean | null>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [session, setSession] = useState<any>(null);
   const pathname = usePathname();
 
-  useEffect(() => {
-    let mounted = true;
-    const basePath = process.env.__NEXT_ROUTER_BASEPATH || '';
-    fetch(`${basePath}/api/me`)
+   useEffect(() => {
+    fetch(`${process.env.__NEXT_ROUTER_BASEPATH || ''}/api/me`)
       .then((r) => r.json())
-      .then((data) => mounted && setAllowed(Boolean(data.allowed)))
-      .catch(() => mounted && setAllowed(false));
-    return () => {
-      mounted = false;
-    };
+      .then((data) => {
+        setSession(data.user);
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
   }, []);
+
 
   // Close mobile menu when route changes
   useEffect(() => {
@@ -126,7 +128,7 @@ export default function Navbar() {
     <>
       <nav className="w-full bg-black text-white backdrop-blur relative top-0 inset-x-0 z-50">
         {/* Mobile Navigation */}
-        
+
         <div className="mobile-nav">
           {/* Hamburger Menu Button */}
           <button
@@ -167,7 +169,9 @@ export default function Navbar() {
           <Link href="/" className="flex-1 flex justify-center">
             <img
               // src="/images/Logo_Navbar.png"
-              src={`${process.env.__NEXT_ROUTER_BASEPATH || ''}/images/Logo_Navbar.png`}
+              src={`${
+                process.env.__NEXT_ROUTER_BASEPATH || ""
+              }/images/Logo_Navbar.png`}
               alt="Eraya Logo"
               className="h-8"
             />
@@ -188,21 +192,15 @@ export default function Navbar() {
             )}
 
             {/* Sign out button for authenticated users */}
-            {allowed && (
-              <button
-                className={`rounded px-3 py-1 border border-white/30 text-sm ${inter.className} opacity-60 hover:opacity-80 hover:border-white/50 transition-all duration-200`}
-                onClick={() => {
-                  signOut()
-                    .then(() => {
-                      window.location.href = "/";
-                    })
-                    .catch(() => {
-                      window.location.href = "/";
-                    });
-                }}
-              >
-                Sign out
-              </button>
+            {session && (
+              <form action={signOut}>
+                <button
+                  type="submit"
+                  className="rounded px-3 py-1 border border-white/30 text-sm opacity-60 hover:opacity-80"
+                >
+                  Sign out
+                </button>
+              </form>
             )}
           </div>
         </div>
@@ -217,7 +215,9 @@ export default function Navbar() {
             >
               <img
                 // src="/images/Logo_Navbar.png"
-                src={`${process.env.__NEXT_ROUTER_BASEPATH || ''}/images/Logo_Navbar.png`}
+                src={`${
+                  process.env.__NEXT_ROUTER_BASEPATH || ""
+                }/images/Logo_Navbar.png`}
                 alt="Eraya Logo"
                 className="h-9"
               />
@@ -249,27 +249,26 @@ export default function Navbar() {
                 Shop Now
               </a>
             )}
+            {session && (
+              <NavLink
+                href="/dashboard"
+              >
+                Dashboard
+              </NavLink>
+            )}
 
             {/* Only show Dashboard + Sign out for allowed users */}
-            {allowed ? (
-              <>
-                <NavLink href="/dashboard">Dashboard</NavLink>
+            {session && (
+              
+              <form action={signOut}>
                 <button
-                  className="rounded px-3 py-1 border border-white/30 opacity-60 hover:opacity-80 hover:border-white/50 hover:bg-white/5 transition-all duration-200"
-                  onClick={() => {
-                    signOut()
-                      .then(() => {
-                        window.location.href = "/";
-                      })
-                      .catch(() => {
-                        window.location.href = "/";
-                      });
-                  }}
+                  type="submit"
+                  className="rounded px-3 py-1 border border-white/30 text-sm opacity-60 hover:opacity-80"
                 >
                   Sign out
                 </button>
-              </>
-            ) : null}
+              </form>
+            )}
           </div>
         </div>
       </nav>

@@ -8,16 +8,43 @@ import InstagramEditor from '@/components/create-post/editors/InstagramEditor';
 import VlogEditor from '@/components/create-post/editors/VlogEditor';
 import PreviewStep from '@/components/create-post/steps/PreviewStep';
 import type { CreatePostData, CreatePostFormErrors, PostSection } from '@/types/createPost';
-import type { PostWithDetails } from '@/types/auth';
+
+interface Author {
+  id: string;
+  name: string | null;
+  email: string;
+  role: string;
+}
+
+interface PostWithDetails {
+  id: string;
+  title: string;
+  slug: string;
+  postType: 'BLOG' | 'VLOG' | 'INSTAGRAM';
+  status: 'APPROVED' | 'PENDING' | 'REJECTED' | 'DRAFT';
+  published: boolean;
+  heroImage: string | null;
+  coverImage: string | null;
+  instagramUrl: string | null;
+  videoUrl: string | null;
+  sections: any;
+  keywords: string[] | null;
+  createdAt: string;
+  updatedAt: string;
+  reviewComments: string | null;
+  author: Author;
+  reviewedBy?: Author | null;
+}
 
 interface EditPostFormProps {
   post: PostWithDetails;
 }
 
-// Extended form errors interface to include slug
 interface ExtendedCreatePostFormErrors extends CreatePostFormErrors {
   slug?: string;
 }
+
+const BASE_PATH = '/1isto9-perfumery';
 
 export default function EditPostForm({ post }: EditPostFormProps) {
   const router = useRouter();
@@ -25,7 +52,6 @@ export default function EditPostForm({ post }: EditPostFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<ExtendedCreatePostFormErrors>({});
 
-  // Initialize form data from existing post
   const [postData, setPostData] = useState<CreatePostData>(() => ({
     title: post.title,
     slug: post.slug,
@@ -35,7 +61,7 @@ export default function EditPostForm({ post }: EditPostFormProps) {
     instagramUrl: post.instagramUrl || undefined,
     videoUrl: post.videoUrl || undefined,
     sections: post.sections as any || [],
-    keywords: post.keywords || [], // Added keywords property
+    keywords: post.keywords || [],
   }));
 
   const steps = [
@@ -51,7 +77,6 @@ export default function EditPostForm({ post }: EditPostFormProps) {
 
   const updatePostData = (updates: Partial<CreatePostData>) => {
     setPostData(prev => ({ ...prev, ...updates }));
-    // Clear related errors when data changes
     setErrors(prev => {
       const newErrors = { ...prev };
       Object.keys(updates).forEach(key => {
@@ -61,7 +86,6 @@ export default function EditPostForm({ post }: EditPostFormProps) {
     });
   };
 
-  // Auto-generate slug from title
   useEffect(() => {
     if (postData.title && postData.title !== post.title) {
       const newSlug = postData.title
@@ -77,7 +101,6 @@ export default function EditPostForm({ post }: EditPostFormProps) {
     }
   }, [postData.title, post.title, postData.slug]);
 
-  // Placeholder functions for section management (VlogEditor compatibility)
   const handleAddSection = (section: Omit<PostSection, 'id'>) => {
     const newSection: PostSection = {
       ...section,
@@ -121,7 +144,6 @@ export default function EditPostForm({ post }: EditPostFormProps) {
     const newErrors: ExtendedCreatePostFormErrors = {};
 
     if (step === 0) {
-      // Validate basic fields
       if (!postData.title?.trim()) {
         newErrors.title = 'Title is required';
       }
@@ -129,7 +151,6 @@ export default function EditPostForm({ post }: EditPostFormProps) {
         newErrors.slug = 'Slug is required';
       }
 
-      // Validate post type specific fields
       if (postData.postType === 'INSTAGRAM' && !postData.instagramUrl?.trim()) {
         newErrors.instagramUrl = 'Instagram URL is required for Instagram posts';
       }
@@ -137,7 +158,6 @@ export default function EditPostForm({ post }: EditPostFormProps) {
         newErrors.videoUrl = 'Video URL is required for vlogs';
       }
 
-      // Validate sections for blog posts
       if (postData.postType === 'BLOG') {
         if (!postData.sections || postData.sections.length === 0) {
           newErrors.sections = 'At least one content section is required';
@@ -172,19 +192,19 @@ export default function EditPostForm({ post }: EditPostFormProps) {
 
     setIsSubmitting(true);
     try {
-      const response = await fetch(`/api/posts/edits/${post.id}`, {
+      const response = await fetch(`${BASE_PATH}/api/posts/edits/${post.id}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           ...postData,
-          status: 'PENDING', // Resubmit for review
+          status: 'PENDING',
         }),
       });
 
       if (response.ok) {
-        router.push('/dashboard?success=post-updated');
+        router.push(`/dashboard?success=post-updated`);
       } else {
         const data = await response.json();
         alert(data.error || 'Failed to update post');
@@ -200,7 +220,6 @@ export default function EditPostForm({ post }: EditPostFormProps) {
   const renderStepContent = () => {
     switch (currentStep) {
       case 0:
-        // Edit step - show appropriate editor based on post type
         switch (postData.postType) {
           case 'INSTAGRAM':
             return (
@@ -232,7 +251,6 @@ export default function EditPostForm({ post }: EditPostFormProps) {
             );
         }
       case 1:
-        // Preview step
         return <PreviewStep postData={postData} />;
       default:
         return null;
@@ -305,7 +323,7 @@ export default function EditPostForm({ post }: EditPostFormProps) {
 
         <div className="flex items-center space-x-4">
           <button
-            onClick={() => router.push('/dashboard')}
+            onClick={() => router.push(`${BASE_PATH}/dashboard`)}
             className="px-4 py-2 text-[#fffff2] hover:text-white transition-colors"
           >
             Cancel

@@ -1,27 +1,25 @@
 // src/app/blog/edit/[id]/page.tsx
-import { getServerSession } from 'next-auth/next';
-import { authOptions } from '@/lib/auth';
+import { getSession } from '@/lib/auth-utils';
 import { prisma } from '@/lib/db';
 import { notFound, redirect } from 'next/navigation';
 import { isUploader } from '@/lib/roles';
 import EditPostForm from '@/components/edit-post/EditPostForm';
-import type { ExtendedSession } from '@/types/auth';
 
 export default async function EditPostPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const session = await getServerSession(authOptions) as ExtendedSession;
+  const session = await getSession();
   const resolvedParams = await params;
   const postId = resolvedParams.id;
 
-  // Enhanced session validation to ensure user exists
-  if (!session || !session.user || !isUploader(session.user.role)) {
+  // Session validation
+  if (!session || !isUploader(session.role)) {
     redirect('/blog?unauthorized=1');
   }
 
-  // Fetch the post with role included in author selection
+  // Fetch the post
   const post = await prisma.post.findUnique({
     where: { id: postId },
     include: {
@@ -30,7 +28,7 @@ export default async function EditPostPage({
           id: true,
           name: true,
           email: true,
-          role: true, // Added role field to match PostWithDetails type
+          role: true,
         },
       },
       reviewedBy: {
@@ -38,7 +36,7 @@ export default async function EditPostPage({
           id: true,
           name: true,
           email: true,
-          role: true, // Added role field for consistency
+          role: true,
         },
       },
     },
@@ -48,8 +46,8 @@ export default async function EditPostPage({
     notFound();
   }
 
-  // Check if user owns this post - now safely accessing session.user.id
-  if (post.authorId !== session.user.id) {
+  // Check if user owns this post
+  if (post.authorId !== session.id) {
     redirect('/dashboard?error=not-your-post');
   }
 

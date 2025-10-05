@@ -6,6 +6,17 @@ import {
 } from "@uploadthing/react";
 import type { OurFileRouter } from "@/app/api/uploadthing/core";
 
-export const UploadButton = generateUploadButton<OurFileRouter>();
-export const UploadDropzone = generateUploadDropzone<OurFileRouter>();
-export const { useUploadThing } = generateReactHelpers<OurFileRouter>();
+// Specify the endpoint URL explicitly with basePath
+const BASE_PATH = "/1isto9-perfumery";
+
+export const UploadButton = generateUploadButton<OurFileRouter>({
+  url: `${BASE_PATH}/api/uploadthing`,
+});
+
+export const UploadDropzone = generateUploadDropzone<OurFileRouter>({
+  url: `${BASE_PATH}/api/uploadthing`,
+});
+
+export const { useUploadThing } = generateReactHelpers<OurFileRouter>({
+  url: `${BASE_PATH}/api/uploadthing`,
+});

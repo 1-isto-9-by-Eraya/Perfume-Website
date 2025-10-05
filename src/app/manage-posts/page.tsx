@@ -1,6 +1,9 @@
+// src/app/manage-posts/page.tsx (or wherever this component is)
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { isReviewer } from '@/lib/roles';
 import { 
   MagnifyingGlassIcon, 
   TrashIcon, 
@@ -32,9 +35,15 @@ interface Post {
 }
 
 export default function ManagePosts() {
+  // Authorization state
+  const [session, setSession] = useState<any>(null);
+  const [authLoading, setAuthLoading] = useState(true);
+  const router = useRouter();
+
+  // Posts state
   const [posts, setPosts] = useState<Post[]>([]);
   const [filteredPosts, setFilteredPosts] = useState<Post[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('ALL');
   const [filterStatus, setFilterStatus] = useState('APPROVED');
@@ -45,9 +54,31 @@ export default function ManagePosts() {
 
   const postsPerPage = 5;
 
+  // Check authorization first
   useEffect(() => {
-    fetchApprovedPosts();
-  }, []);
+    fetch('/1isto9-perfumery/api/me')
+      .then((r) => r.json())
+      .then((data) => {
+        setSession(data.user);
+        setAuthLoading(false);
+        
+        // Redirect if not reviewer
+        if (!data.user || !isReviewer(data.user.role)) {
+          router.push("/blog?unauthorized=1");
+        }
+      })
+      .catch(() => {
+        setAuthLoading(false);
+        router.push("/blog?unauthorized=1");
+      });
+  }, [router]);
+
+  // Fetch posts only if authorized
+  useEffect(() => {
+    if (session && isReviewer(session.role)) {
+      fetchApprovedPosts();
+    }
+  }, [session]);
 
   useEffect(() => {
     filterPosts();
@@ -56,7 +87,7 @@ export default function ManagePosts() {
   const fetchApprovedPosts = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/posts/manage');
+      const response = await fetch('/1isto9-perfumery/api/posts/manage');
       if (response.ok) {
         const data = await response.json();
         setPosts(data.posts || []);
@@ -71,17 +102,14 @@ export default function ManagePosts() {
   const filterPosts = () => {
     let filtered = posts;
 
-    // Filter by status
     if (filterStatus !== 'ALL') {
       filtered = filtered.filter(post => post.status === filterStatus);
     }
 
-    // Filter by type
     if (filterType !== 'ALL') {
       filtered = filtered.filter(post => post.postType === filterType);
     }
 
-    // Filter by search term
     if (searchTerm) {
       filtered = filtered.filter(post => 
         post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -97,7 +125,7 @@ export default function ManagePosts() {
   const deletePost = async (postId: string) => {
     try {
       setDeleteLoading(postId);
-      const response = await fetch(`/api/posts/manage/${postId}`, {
+      const response = await fetch(`/1isto9-perfumery/api/posts/manage/${postId}`, {
         method: 'DELETE',
       });
 
@@ -154,6 +182,23 @@ export default function ManagePosts() {
   const goToPage = (page: number) => setCurrentPage(page);
   const goToPrevious = () => currentPage > 1 && setCurrentPage(currentPage - 1);
   const goToNext = () => currentPage < totalPages && setCurrentPage(currentPage + 1);
+
+  // Show loading during auth check
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="flex items-center space-x-3">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-400"></div>
+          <span className="text-gray-300">Checking authorization...</span>
+        </div>
+      </div>
+    );
+  }
+
+  // Don't render if not authorized
+  if (!session || !isReviewer(session.role)) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-black">
@@ -216,10 +261,10 @@ export default function ManagePosts() {
               onChange={(e) => setFilterStatus(e.target.value)}
               className="px-3 py-2 bg-[#1a1a1a] border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
-              <option value="ALL">All Status</option>
+              {/* <option value="ALL">All Status</option> */}
               <option value="APPROVED">Approved</option>
               <option value="PENDING">Pending</option>
-              <option value="REJECTED">Rejected</option>
+              {/* <option value="REJECTED">Rejected</option> */}
               <option value="DRAFT">Draft</option>
             </select>
           </div>

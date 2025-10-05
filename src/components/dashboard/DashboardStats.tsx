@@ -20,7 +20,7 @@ export default function DashboardStats() {
 
   const fetchStats = async () => {
     try {
-      const response = await fetch('/api/posts/stats');
+      const response = await fetch('/1isto9-perfumery/api/posts/stats');
       if (response.ok) {
         const data = await response.json();
         setStats({

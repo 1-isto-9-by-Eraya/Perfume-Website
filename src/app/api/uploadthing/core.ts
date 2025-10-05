@@ -1,7 +1,6 @@
 // src/app/api/uploadthing/core.ts
 import { createUploadthing, type FileRouter } from "uploadthing/next";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { getSession } from "@/lib/auth-utils";
 import { isAllowedEmail } from "@/lib/acl";
 
 const f = createUploadthing();
@@ -15,17 +14,16 @@ export const ourFileRouter = {
     },
   })
     .middleware(async () => {
-      const session = await getServerSession(authOptions);
-      const email = session?.user?.email ?? null;
+      const session = await getSession();
+      const email = session?.email ?? null;
 
       if (!session || !isAllowedEmail(email)) {
         throw new Error("UNAUTHORIZED");
       }
 
-      return { userId: session.user!.id as string };
+      return { userId: session.id };
     })
     .onUploadComplete(async ({ metadata, file }) => {
-      // Return whatever you want to your client here
       return {
         uploadedBy: metadata.userId,
         url: file.url,
@@ -43,20 +41,16 @@ export const ourFileRouter = {
     },
   })
     .middleware(async () => {
-      const session = await getServerSession(authOptions);
-      const email = session?.user?.email ?? null;
+      const session = await getSession();
+      const email = session?.email ?? null;
 
       if (!session || !isAllowedEmail(email)) {
         throw new Error("UNAUTHORIZED");
       }
 
-      // NOTE: Only return serializable metadata you need later.
-      // Anything returned here is available as `metadata` in onUploadComplete.
-      return { userId: session.user!.id as string };
+      return { userId: session.id };
     })
-    // ❌ onUploadBegin is NOT available on server; use client hooks for that.
     .onUploadComplete(async ({ metadata, file }) => {
-      // Post-process or persist as needed
       console.log(`Video uploaded by ${metadata.userId}: ${file.name} (${file.size} bytes)`);
       return {
         uploadedBy: metadata.userId,

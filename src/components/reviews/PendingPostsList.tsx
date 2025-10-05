@@ -3,11 +3,33 @@
 
 import { useState, useEffect } from 'react';
 import PostPreview from './PostPreview';
-import type { PostWithDetails } from '@/types/auth';
+
+interface Author {
+  id: string;
+  name: string | null;
+  email: string;
+  role: string;
+}
+
+interface PostWithDetails {
+  id: string;
+  title: string;
+  slug: string;
+  postType: 'BLOG' | 'VLOG' | 'INSTAGRAM';
+  status: 'APPROVED' | 'PENDING' | 'REJECTED' | 'DRAFT';
+  published: boolean;
+  createdAt: string;
+  updatedAt: string;
+  reviewComments: string | null;
+  author: Author;
+  reviewedBy?: Author | null;
+}
 
 interface PendingPostsListProps {
   onModalStateChange?: (isOpen: boolean) => void;
 }
+
+const BASE_PATH = '/1isto9-perfumery';
 
 export default function PendingPostsList({ onModalStateChange }: PendingPostsListProps) {
   const [posts, setPosts] = useState<PostWithDetails[]>([]);
@@ -15,7 +37,6 @@ export default function PendingPostsList({ onModalStateChange }: PendingPostsLis
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  // Notify parent when modal state changes
   useEffect(() => {
     if (onModalStateChange) {
       onModalStateChange(!!selectedPost);
@@ -29,16 +50,14 @@ export default function PendingPostsList({ onModalStateChange }: PendingPostsLis
   const fetchPendingPosts = async () => {
     try {
       setErrorMessage(null);
-      const response = await fetch('/api/posts/pending');
+      const response = await fetch(`${BASE_PATH}/api/posts/pending`);
       
       if (response.ok) {
         const data = await response.json();
         
-        // Handle your API response format: { success: true, posts, count }
         if (data.success && Array.isArray(data.posts)) {
           setPosts(data.posts);
         } else if (Array.isArray(data)) {
-          // Fallback for direct array response
           setPosts(data);
         } else {
           console.error('API returned unexpected format:', data);
@@ -60,7 +79,6 @@ export default function PendingPostsList({ onModalStateChange }: PendingPostsLis
   };
 
   const handleStatusChange = (postId: string) => {
-    // Refresh the list
     fetchPendingPosts();
     setSelectedPost(null);
   };

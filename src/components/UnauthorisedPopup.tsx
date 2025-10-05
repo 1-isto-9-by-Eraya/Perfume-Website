@@ -4,7 +4,7 @@
 export function UnauthorizedPopup() {
   const handleClose = () => {
     if (typeof window !== "undefined") {
-      window.location.assign("/"); // always go home
+      window.location.assign("/1isto9-perfumery"); // always go home
     }
   };
 

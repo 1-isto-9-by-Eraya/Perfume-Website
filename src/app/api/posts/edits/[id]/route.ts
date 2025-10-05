@@ -1,20 +1,17 @@
 // src/app/api/posts/edits/[id]/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth/next';
-import { authOptions } from '@/lib/auth';
+import { getSession } from '@/lib/auth-utils';
 import { prisma } from '@/lib/db';
 import { isUploader, isReviewer } from '@/lib/roles';
-import type { ExtendedSession } from '@/types/auth';
 
 export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await getServerSession(authOptions) as ExtendedSession;
+    const session = await getSession();
     
-    // Enhanced session validation to ensure user exists
-    if (!session || !session.user || !isUploader(session.user.role)) {
+    if (!session || !isUploader(session.role)) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -22,7 +19,6 @@ export async function PATCH(
     const postId = resolvedParams.id;
     const body = await request.json();
 
-    // Check if post exists and user owns it
     const existingPost = await prisma.post.findUnique({
       where: { id: postId },
     });
@@ -31,12 +27,10 @@ export async function PATCH(
       return NextResponse.json({ error: 'Post not found' }, { status: 404 });
     }
 
-    // Now we can safely access session.user.id since we validated it above
-    if (existingPost.authorId !== session.user.id) {
+    if (existingPost.authorId !== session.id) {
       return NextResponse.json({ error: 'Not authorized to edit this post' }, { status: 403 });
     }
 
-    // Only allow editing if post is in DRAFT status with review comments
     if (existingPost.status !== 'DRAFT' || !existingPost.reviewComments) {
       return NextResponse.json({ 
         error: 'Post cannot be edited. Only draft posts with review feedback can be edited.' 
@@ -52,10 +46,9 @@ export async function PATCH(
       instagramUrl,
       videoUrl,
       sections,
-      status = 'PENDING' // Default to PENDING for re-review
+      status = 'PENDING'
     } = body;
 
-    // Validation
     if (!title || !slug) {
       return NextResponse.json(
         { error: 'Title and slug are required' },
@@ -63,7 +56,6 @@ export async function PATCH(
       );
     }
 
-    // Check for slug conflicts (excluding current post)
     const slugConflict = await prisma.post.findFirst({
       where: {
         slug,
@@ -78,7 +70,6 @@ export async function PATCH(
       );
     }
 
-    // Update the post
     const updatedPost = await prisma.post.update({
       where: { id: postId },
       data: {
@@ -90,9 +81,8 @@ export async function PATCH(
         instagramUrl: instagramUrl || null,
         videoUrl: videoUrl || null,
         sections: sections || existingPost.sections,
-        status, // Usually PENDING for re-review
+        status,
         updatedAt: new Date(),
-        // Clear review fields since this is a new version
         reviewComments: null,
         reviewedAt: null,
         reviewedById: null,
@@ -117,7 +107,6 @@ export async function PATCH(
   } catch (error) {
     console.error('Error updating post:', error);
     
-    // Proper error type handling for Prisma errors
     if (error && typeof error === 'object' && 'code' in error && error.code === 'P2002') {
       return NextResponse.json(
         { error: 'A post with this slug already exists' },
@@ -132,16 +121,14 @@ export async function PATCH(
   }
 }
 
-// Optional: Also handle GET for fetching single post details
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await getServerSession(authOptions) as ExtendedSession;
+    const session = await getSession();
     
-    // Enhanced session validation
-    if (!session || !session.user) {
+    if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -172,8 +159,7 @@ export async function GET(
       return NextResponse.json({ error: 'Post not found' }, { status: 404 });
     }
 
-    // Now we can safely access session.user.id and session.user.role
-    if (post.authorId !== session.user.id && !isReviewer(session.user.role)) {
+    if (post.authorId !== session.id && !isReviewer(session.role)) {
       return NextResponse.json({ error: 'Not authorized to view this post' }, { status: 403 });
     }
 

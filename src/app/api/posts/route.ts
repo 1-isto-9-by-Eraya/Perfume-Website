@@ -1,8 +1,7 @@
 // src/app/api/posts/route.ts
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { getSession } from "@/lib/auth-utils"; // ✅ Changed
 import { slugify } from "@/lib/utils";
 import { isAllowedEmail } from "@/lib/acl";
 
@@ -19,10 +18,10 @@ export async function GET() {
   return NextResponse.json(posts);
 }
 
-// Create post (supports BLOG, INSTAGRAM, VLOG types)
+// Create post
 export async function POST(req: Request) {
-  const session = await getServerSession(authOptions);
-  const email = session?.user?.email || null;
+  const session = await getSession(); // ✅ Changed
+  const email = session?.email || null;
 
   if (!session || !isAllowedEmail(email)) {
     return new NextResponse("Forbidden", { status: 403 });
@@ -30,7 +29,6 @@ export async function POST(req: Request) {
 
   const body = await req.json();
 
-  // Validate basic required fields
   const title = String(body?.title || "").trim();
   if (!title) {
     return new NextResponse("Missing title", { status: 400 });
@@ -41,31 +39,27 @@ export async function POST(req: Request) {
     return new NextResponse("Invalid post type", { status: 400 });
   }
 
-  // Validate and clean keywords
   let cleanedKeywords: string[] = [];
   if (Array.isArray(body?.keywords)) {
     cleanedKeywords = body.keywords
       .map((keyword: any) => String(keyword).trim().toLowerCase())
       .filter((keyword: string) => {
-        // Basic validation: 2-30 chars, alphanumeric + spaces + hyphens
         return keyword.length >= 2 && 
                keyword.length <= 30 && 
                /^[a-zA-Z0-9\s-]+$/.test(keyword);
       })
       .filter((keyword: string, index: number, arr: string[]) => 
-        arr.indexOf(keyword) === index // Remove duplicates
+        arr.indexOf(keyword) === index
       )
-      .slice(0, 10); // Limit to 10 keywords max
+      .slice(0, 10);
   }
 
-  // Validate based on post type
   if (postType === 'BLOG') {
     const sections = body?.sections;
     if (!Array.isArray(sections) || sections.length === 0) {
       return new NextResponse("Blog posts require sections", { status: 400 });
     }
 
-    // Validate each section for blog posts
     for (const s of sections) {
       if (typeof s?.heading !== "string") {
         return new NextResponse("Invalid section.heading", { status: 400 });
@@ -77,7 +71,6 @@ export async function POST(req: Request) {
         return new NextResponse("Invalid section.images", { status: 400 });
       }
       
-      // Validate images in section
       for (const img of s.images) {
         if (typeof img?.url !== "string") {
           return new NextResponse("Invalid image.url", { status: 400 });
@@ -105,15 +98,12 @@ export async function POST(req: Request) {
     }
   }
 
-  // Extract optional fields
   const heroImage = typeof body?.heroImage === "string" ? body.heroImage : null;
   const coverImage = typeof body?.coverImage === "string" ? body.coverImage : null;
   const instagramUrl = typeof body?.instagramUrl === "string" ? body.instagramUrl : null;
   const videoUrl = typeof body?.videoUrl === "string" ? body.videoUrl : null;
-  const description = typeof body?.description === "string" ? body.description : null;
   const sections = Array.isArray(body?.sections) ? body.sections : [];
 
-  // Generate unique slug
   const base = slugify(title);
   let slug = base;
   for (let i = 1; await prisma.post.findUnique({ where: { slug } }); i++) {
@@ -130,12 +120,11 @@ export async function POST(req: Request) {
         coverImage,
         instagramUrl,
         videoUrl,
-        // description,
         sections,
-        keywords: cleanedKeywords, // ✅ FIXED: Use cleanedKeywords instead of data.keywords
-        authorId: session.user?.id as string,
-        status: 'PENDING', // All new posts start as pending review
-        published: false,   // Will be set to true when approved
+        keywords: cleanedKeywords,
+        authorId: session.id, // ✅ Changed from session.user?.id
+        status: 'PENDING',
+        published: false,
       },
     });
 
@@ -151,10 +140,10 @@ export async function POST(req: Request) {
   }
 }
 
-// Update post status (for reviewers)
+// Update post status
 export async function PATCH(req: Request) {
-  const session = await getServerSession(authOptions);
-  const email = session?.user?.email || null;
+  const session = await getSession(); // ✅ Changed
+  const email = session?.email || null;
 
   if (!session || !isAllowedEmail(email)) {
     return new NextResponse("Forbidden", { status: 403 });
@@ -175,17 +164,15 @@ export async function PATCH(req: Request) {
     const updateData: any = { 
       status,
       reviewedAt: new Date(),
-      reviewedBy: session.user?.id as string,
+      reviewedById: session.id, // ✅ Changed
     };
 
-    // If approved, publish the post
     if (status === 'APPROVED') {
       updateData.published = true;
     }
 
-    // If rejected, add feedback
     if (status === 'REJECTED' && feedback) {
-      updateData.reviewFeedback = feedback;
+      updateData.reviewComments = feedback;
     }
 
     const post = await prisma.post.update({
