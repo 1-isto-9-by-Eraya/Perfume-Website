@@ -85,8 +85,8 @@ body,
   .oss1i2 {
     position: absolute;
     z-index: 3;
-    top: 80px;
-    left: 120px;
+    top: -10px;
+    left: 40px;
     height: 300px;
     width: 230px;
     aspect-ratio: 4/5;
@@ -201,8 +201,8 @@ body,
   .oss1i2 {
     position: absolute;
     z-index: 3;
-    top: 20px;
-    left: 120px;
+    top: -40px;
+    left: 50px;
     height: 320px;
     width: 220px;
     aspect-ratio: 4/5;
@@ -312,7 +312,7 @@ body,
   .oss1i2 {
     position: absolute;
     z-index: 3;
-    top: -50px;
+    top: -130px;
     left: 20px;
     height: 500px;
     width: 400px;
