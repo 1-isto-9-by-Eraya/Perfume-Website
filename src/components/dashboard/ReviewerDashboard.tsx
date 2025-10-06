@@ -335,7 +335,7 @@ export default function ReviewerDashboard({ session }: ReviewerDashboardProps) {
                 Create your first journal post to get started.
               </p>
               <Link
-                href={`${BASE_PATH}/blog/new`}
+                href={`/blog/new`}
                 className="inline-flex items-center space-x-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
               >
                 <PlusIcon className="h-4 w-4" />

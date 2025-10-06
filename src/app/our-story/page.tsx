@@ -630,9 +630,9 @@ export default function OurStoryPage() {
         <div className="max-w-[1600px] mx-auto">
           {/* Header */}
           <h2
-            className={`${playfair.className} text-white text-3xl md:text-5xl lg:text-7xl font-semibold mb-8 md:mb-12 lg:mb-16`}
+            className={`font-medium text-[1.125rem] tracking-widest text-white/70 ${playfair.className} mb-4 md:mb-6 lg:mb-8`}
           >
-            MOOD BOARD
+            MOODBOARD
           </h2>
           <div className="bg absolute top-[50%] left-0 w-full h-fit  flex items-center justify-center z-10 pointer-events-none">
             <div className="text-center">
