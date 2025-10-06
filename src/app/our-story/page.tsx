@@ -471,7 +471,7 @@ export default function OurStoryPage() {
   return (
     <main className="bg-black">
       <div className="w-full text-center flex justify-center items-center uppercase bg-[#eb9c1c] text-white text-[1rem] font-normal px-2 py-2.5">
-        <p className={`${inter.className} w-[70%] lg:w-full`}>
+        <p className={`${inter.className} w-[70%] lg:w-full text-[12px]`}>
           Pre-orders now open | Take 10% off, use WELCOME10 | Shipping begins
           October 27 | Only in India
         </p>
