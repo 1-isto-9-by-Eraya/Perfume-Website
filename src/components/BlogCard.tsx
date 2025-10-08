@@ -129,7 +129,7 @@ export function BlogCard({ post }: { post: CardPost }) {
             <img
               src={imageUrl}
               alt={post.title || ""}
-              className="w-full h-full object-fit group-hover:scale-110 transition-transform duration-700 ease-out"
+              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
               onError={() => setImageError(true)}
               onLoad={() => setImageError(false)}
             />
