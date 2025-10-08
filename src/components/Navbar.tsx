@@ -2,16 +2,9 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-// import { signOut } from "next-auth/react";
 import { signOut } from "@/lib/auth-actions";
 import { usePathname } from "next/navigation";
 import { Playfair_Display, Inter } from "next/font/google";
-
-const playfairDisplay = Playfair_Display({
-  subsets: ["latin"],
-  variable: "--font-playfair",
-  display: "swap",
-});
 
 const inter = Inter({
   subsets: ["latin"],
@@ -26,16 +19,22 @@ export default function Navbar() {
   const [session, setSession] = useState<any>(null);
   const pathname = usePathname();
 
-   useEffect(() => {
+  // Fetch user session - now refetches on pathname change
+  useEffect(() => {
+    setLoading(true);
     fetch(`${process.env.__NEXT_ROUTER_BASEPATH || ''}/api/me`)
       .then((r) => r.json())
       .then((data) => {
         setSession(data.user);
+        setAllowed(!!data.user); // Set allowed based on whether user exists
         setLoading(false);
       })
-      .catch(() => setLoading(false));
-  }, []);
-
+      .catch(() => {
+        setSession(null);
+        setAllowed(false);
+        setLoading(false);
+      });
+  }, [pathname]); // Added pathname dependency
 
   // Close mobile menu when route changes
   useEffect(() => {
@@ -45,16 +44,13 @@ export default function Navbar() {
   // Lock/unlock body scroll when mobile menu is open/closed
   useEffect(() => {
     if (isMobileMenuOpen) {
-      // Lock scroll
       document.body.style.overflow = "hidden";
       document.body.style.paddingRight = "var(--scrollbar-width, 0px)";
     } else {
-      // Unlock scroll
       document.body.style.overflow = "";
       document.body.style.paddingRight = "";
     }
 
-    // Cleanup on unmount
     return () => {
       document.body.style.overflow = "";
       document.body.style.paddingRight = "";
@@ -100,7 +96,6 @@ export default function Navbar() {
 
     const underlineEffect = (
       <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-[#EB9C1C] to-[#EB9C1C] transition-all duration-300 group-hover:w-full"></span>
-      // <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-[#9A8E2B] to-[#F5F287] transition-all duration-300 group-hover:w-full"></span>
     );
 
     if (isExternal) {
@@ -128,7 +123,6 @@ export default function Navbar() {
     <>
       <nav className="w-full bg-black text-white backdrop-blur relative top-0 inset-x-0 z-50">
         {/* Mobile Navigation */}
-
         <div className="mobile-nav">
           {/* Hamburger Menu Button */}
           <button
@@ -138,7 +132,6 @@ export default function Navbar() {
             className="relative grid place-items-center w-8 h-8 focus:outline-none group"
           >
             <div className="relative w-6 h-6">
-              {/* Top bar */}
               <span
                 className={`absolute left-1/2 top-1/2 block h-0.5 w-6 rounded bg-white
         transition-transform duration-300 ease-in-out transform
@@ -147,10 +140,8 @@ export default function Navbar() {
           isMobileMenuOpen
             ? "rotate-45 -translate-x-1/2 -translate-y-1/2"
             : "-translate-x-1/2 -mt-1.5"
-        }  /* move UP when closed */
-      `}
+        }`}
               />
-              {/* Bottom bar */}
               <span
                 className={`absolute left-1/2 top-1/2 block h-0.5 w-6 rounded bg-white
         transition-transform duration-300 ease-in-out transform
@@ -159,8 +150,7 @@ export default function Navbar() {
           isMobileMenuOpen
             ? "-rotate-45 -translate-x-1/2 -translate-y-1/2"
             : "-translate-x-1/2 mt-1.5"
-        }   /* move DOWN when closed */
-      `}
+        }`}
               />
             </div>
           </button>
@@ -168,7 +158,6 @@ export default function Navbar() {
           {/* Centered Logo */}
           <Link href="/" className="flex-1 flex justify-center">
             <img
-              // src="/images/Logo_Navbar.png"
               src={`${
                 process.env.__NEXT_ROUTER_BASEPATH || ""
               }/images/Logo_Navbar.png`}
@@ -180,11 +169,10 @@ export default function Navbar() {
           {/* Right Side Content */}
           <div className="flex items-center">
             {/* Shop Now button - only show for non-authenticated users */}
-            {!allowed && allowed !== null && (
+            {!session && !loading && (
               <a
                 href="https://thehouseoferaya.store/collections/all"
                 className={`px-4 py-1.5 bg-gradient-to-r from-[#EB9C1C] to-[#EB9C1C] text-black ${inter.className} font-semibold text-sm uppercase tracking-wider hover:shadow-lg hover:shadow-[#9A8E2B]/25 transition-all duration-200 transform hover:scale-105`}
-                // className={`px-4 py-1.5 bg-gradient-to-r from-[#9A8E2B] to-[#F5F287] text-black ${inter.className} font-bold text-sm uppercase tracking-wider hover:shadow-lg hover:shadow-[#9A8E2B]/25 transition-all duration-200 transform hover:scale-105`}
                 rel="noopener noreferrer"
               >
                 Shop Now
@@ -214,7 +202,6 @@ export default function Navbar() {
               className="transition-transform duration-300 ease-out hover:scale-105"
             >
               <img
-                // src="/images/Logo_Navbar.png"
                 src={`${
                   process.env.__NEXT_ROUTER_BASEPATH || ""
                 }/images/Logo_Navbar.png`}
@@ -237,10 +224,9 @@ export default function Navbar() {
             >
               pre order
             </NavLink>
-            {/* <NavLink href="/pre-order">Pre Order</NavLink> */}
 
             {/* Shop Now button - only show for non-authenticated users */}
-            {!allowed && allowed !== null && (
+            {!session && !loading && (
               <a
                 href="https://thehouseoferaya.store/collections/all"
                 className="px-6 py-2 bg-[#EB9C1C] text-black font-semibold uppercase tracking-wider hover:shadow-lg hover:shadow-[#9A8E2B]/30 transition-all duration-300 transform hover:scale-105 hover:-translate-y-0.5 active:scale-95"
@@ -249,17 +235,16 @@ export default function Navbar() {
                 Shop Now
               </a>
             )}
+            
+            {/* Dashboard link for authenticated users */}
             {session && (
-              <NavLink
-                href="/dashboard"
-              >
+              <NavLink href="/dashboard">
                 Dashboard
               </NavLink>
             )}
 
-            {/* Only show Dashboard + Sign out for allowed users */}
+            {/* Sign out for authenticated users */}
             {session && (
-              
               <form action={signOut}>
                 <button
                   type="submit"
@@ -325,18 +310,9 @@ export default function Navbar() {
             >
               pre-order
             </a>
-            {/* <Link
-              href="/pre-order"
-              className={`${mobileLinkStyles} ${
-                isActive("/pre-order")
-                  ? mobileActiveLinkStyles
-                  : mobileInactiveLinkStyles
-              }`}
-            >
-              Pre Order
-            </Link> */}
+            
             {/* Dashboard link for authenticated users */}
-            {allowed && (
+            {session && (
               <Link
                 href="/dashboard"
                 className={`${mobileLinkStyles} ${

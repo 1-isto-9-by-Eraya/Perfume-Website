@@ -11,8 +11,8 @@ import ScrollTriggerProvider from "@/components/ScrollTriggerProvider";
 import dynamic from "next/dynamic";
 
 export const metadata: Metadata = {
-  title: "1:9 by Eraya",
-  description: "Next.js + Three.js + Auth + Prisma + Vercel",
+  title: "1:9 Perfumery by Eraya",
+  description: "",
 };
 
 const playfairDisplay = Playfair_Display({
