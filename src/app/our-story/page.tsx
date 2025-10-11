@@ -220,7 +220,7 @@ export default function OurStoryPage() {
                 alt="Mood board 1"
                 fill
                 className="object-cover"
-                loading="lazy"
+                loading="eager"
                 quality={85}
                 sizes="(min-width: 1024px) 16vw"
               />
@@ -233,7 +233,7 @@ export default function OurStoryPage() {
                 alt="Mood board 2"
                 fill
                 className="object-cover"
-                loading="lazy"
+                loading="eager"
                 quality={85}
                 sizes="(min-width: 1024px) 16vw"
               />
@@ -246,7 +246,7 @@ export default function OurStoryPage() {
                 alt="Mood board 3"
                 fill
                 className="object-cover"
-                loading="lazy"
+                loading="eager"
                 quality={85}
                 sizes="(min-width: 1024px) 16vw"
               />
@@ -259,7 +259,7 @@ export default function OurStoryPage() {
                 alt="Mood board 4"
                 fill
                 className="object-cover"
-                loading="lazy"
+                loading="eager"
                 quality={85}
                 sizes="(min-width: 1024px) 16vw"
               />
@@ -272,7 +272,7 @@ export default function OurStoryPage() {
                 alt="Mood board 5"
                 fill
                 className="object-cover"
-                loading="lazy"
+                loading="eager"
                 quality={85}
                 sizes="(min-width: 1024px) 16vw"
               />
@@ -285,7 +285,7 @@ export default function OurStoryPage() {
                 alt="Mood board 6"
                 fill
                 className="object-cover"
-                loading="lazy"
+                loading="eager"
                 quality={85}
                 sizes="(min-width: 1024px) 16vw"
               />
@@ -300,7 +300,7 @@ export default function OurStoryPage() {
                 alt="Mood board 7"
                 fill
                 className="object-cover"
-                loading="lazy"
+                loading="eager"
                 quality={85}
                 sizes="(min-width: 1024px) 16vw"
               />
@@ -313,7 +313,7 @@ export default function OurStoryPage() {
                 alt="Mood board 8"
                 fill
                 className="object-cover"
-                loading="lazy"
+                loading="eager"
                 quality={85}
                 sizes="(min-width: 1024px) 16vw"
               />
@@ -326,7 +326,7 @@ export default function OurStoryPage() {
                 alt="Mood board 9"
                 fill
                 className="object-cover"
-                loading="lazy"
+                loading="eager"
                 quality={85}
                 sizes="(min-width: 1024px) 16vw"
               />
@@ -339,7 +339,7 @@ export default function OurStoryPage() {
                 alt="Mood board 10"
                 fill
                 className="object-cover"
-                loading="lazy"
+                loading="eager"
                 quality={85}
                 sizes="(min-width: 1024px) 16vw"
               />
@@ -354,7 +354,7 @@ export default function OurStoryPage() {
                 alt="Mood board 11"
                 fill
                 className="object-cover"
-                loading="lazy"
+                loading="eager"
                 quality={85}
                 sizes="(min-width: 1024px) 16vw"
               />
@@ -367,7 +367,7 @@ export default function OurStoryPage() {
                 alt="Mood board 12"
                 fill
                 className="object-fit"
-                loading="lazy"
+                loading="eager"
                 quality={85}
                 sizes="(min-width: 1024px) 16vw"
               />
@@ -380,7 +380,7 @@ export default function OurStoryPage() {
                 alt="Mood board 13"
                 fill
                 className="object-cover"
-                loading="lazy"
+                loading="eager"
                 quality={85}
                 sizes="(min-width: 1024px) 16vw"
               />
@@ -395,7 +395,7 @@ export default function OurStoryPage() {
                 alt="Mood board 14"
                 fill
                 className="object-cover"
-                loading="lazy"
+                loading="eager"
                 quality={85}
                 sizes="(min-width: 1024px) 16vw"
               />
@@ -408,7 +408,7 @@ export default function OurStoryPage() {
                 alt="Mood board 15"
                 fill
                 className="object-cover"
-                loading="lazy"
+                loading="eager"
                 quality={85}
                 sizes="(min-width: 1024px) 16vw"
               />
@@ -421,7 +421,7 @@ export default function OurStoryPage() {
                 alt="Mood board 16"
                 fill
                 className="object-cover"
-                loading="lazy"
+                loading="eager"
                 quality={85}
                 sizes="(min-width: 1024px) 25vw"
               />
@@ -434,7 +434,7 @@ export default function OurStoryPage() {
                 alt="Mood board 17"
                 fill
                 className="object-cover"
-                loading="lazy"
+                loading="eager"
                 quality={85}
                 sizes="(min-width: 1024px) 25vw"
               />
@@ -447,7 +447,7 @@ export default function OurStoryPage() {
                 alt="Mood board 18"
                 fill
                 className="object-cover"
-                loading="lazy"
+                loading="eager"
                 quality={85}
                 sizes="(min-width: 1024px) 16vw"
               />
@@ -462,7 +462,7 @@ export default function OurStoryPage() {
                 alt="Mood board 19"
                 fill
                 className="object-cover"
-                loading="lazy"
+                loading="eager"
                 quality={85}
                 sizes="(min-width: 1024px) 16vw"
               />
@@ -475,7 +475,7 @@ export default function OurStoryPage() {
                 alt="Mood board 20"
                 fill
                 className="object-cover"
-                loading="lazy"
+                loading="eager"
                 quality={85}
                 sizes="(min-width: 1024px) 16vw"
               />
@@ -488,7 +488,7 @@ export default function OurStoryPage() {
                 alt="Mood board 21"
                 fill
                 className="object-cover"
-                loading="lazy"
+                loading="eager"
                 quality={85}
                 sizes="(min-width: 1024px) 16vw"
               />
@@ -505,7 +505,7 @@ export default function OurStoryPage() {
                 alt="Mood board 1"
                 fill
                 className="object-cover"
-                loading="lazy"
+                loading="eager"
                 quality={80}
                 sizes="50vw"
               />
@@ -518,7 +518,7 @@ export default function OurStoryPage() {
                 alt="Mood board 2"
                 fill
                 className="object-cover"
-                loading="lazy"
+                loading="eager"
                 quality={80}
                 sizes="50vw"
               />
@@ -531,7 +531,7 @@ export default function OurStoryPage() {
                 alt="Mood board 3"
                 fill
                 className="object-cover"
-                loading="lazy"
+                loading="eager"
                 quality={80}
                 sizes="50vw"
               />
@@ -544,7 +544,7 @@ export default function OurStoryPage() {
                 alt="Mood board 4"
                 fill
                 className="object-cover"
-                loading="lazy"
+                loading="eager"
                 quality={80}
                 sizes="50vw"
               />
@@ -557,7 +557,7 @@ export default function OurStoryPage() {
                 alt="Mood board 5"
                 fill
                 className="object-cover"
-                loading="lazy"
+                loading="eager"
                 quality={80}
                 sizes="50vw"
               />
@@ -570,7 +570,7 @@ export default function OurStoryPage() {
                 alt="Mood board 6"
                 fill
                 className="object-cover"
-                loading="lazy"
+                loading="eager"
                 quality={80}
                 sizes="50vw"
               />
@@ -583,7 +583,7 @@ export default function OurStoryPage() {
                 alt="Mood board 7"
                 fill
                 className="object-cover"
-                loading="lazy"
+                loading="eager"
                 quality={80}
                 sizes="50vw"
               />
@@ -596,7 +596,7 @@ export default function OurStoryPage() {
                 alt="Mood board 8"
                 fill
                 className="object-cover"
-                loading="lazy"
+                loading="eager"
                 quality={80}
                 sizes="50vw"
               />
@@ -609,7 +609,7 @@ export default function OurStoryPage() {
                 alt="Mood board 9"
                 fill
                 className="object-cover"
-                loading="lazy"
+                loading="eager"
                 quality={80}
                 sizes="50vw"
               />
@@ -622,7 +622,7 @@ export default function OurStoryPage() {
                 alt="Mood board 10"
                 fill
                 className="object-cover"
-                loading="lazy"
+                loading="eager"
                 quality={80}
                 sizes="50vw"
               />
