@@ -12,7 +12,7 @@ import { ServiceWorkerRegistration } from "./register-sw";
 
 export const metadata: Metadata = {
   title: "1:9 Perfumery by Eraya",
-  description: "",
+  description: "Superior quality fragrances crafted for young achievers in urban India, blending luxury with authenticity.",
 };
 
 const playfairDisplay = Playfair_Display({
