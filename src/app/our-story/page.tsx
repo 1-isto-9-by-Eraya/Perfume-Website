@@ -16,20 +16,33 @@ const playfair = Playfair_Display({
   display: "swap",
 });
 
-// Preload critical images
-const preloadCriticalImages = () => {
+// Preload all critical images including moodboard
+const preloadAllImages = () => {
   if (typeof window === 'undefined') return;
+  
+  const basePath = process.env.__NEXT_ROUTER_BASEPATH || '';
   
   const criticalImages = [
     '/images/Our-story.webp',
     '/images/Final_Logo.png',
+    // Preload first 10 moodboard images for faster initial render
+    '/images/moodboard/image1.webp',
+    '/images/moodboard/image2.webp',
+    '/images/moodboard/image3.webp',
+    '/images/moodboard/image4.webp',
+    '/images/moodboard/image5.webp',
+    '/images/moodboard/image6.webp',
+    '/images/moodboard/image7.webp',
+    '/images/moodboard/image8.webp',
+    '/images/moodboard/image9.webp',
+    '/images/moodboard/image10.webp',
   ];
 
   criticalImages.forEach((path) => {
     const link = document.createElement('link');
     link.rel = 'preload';
     link.as = 'image';
-    link.href = `${process.env.__NEXT_ROUTER_BASEPATH || ''}${path}`;
+    link.href = `${basePath}${path}`;
     document.head.appendChild(link);
   });
 };
@@ -37,14 +50,16 @@ const preloadCriticalImages = () => {
 export default function OurStoryPage() {
   const [isExpanded, setIsExpanded] = useState(false);
 
-  // Preload critical images on mount
+  // Preload all images on mount
   useEffect(() => {
-    preloadCriticalImages();
+    preloadAllImages();
   }, []);
 
   const handleReadMoreToggle = () => {
     setIsExpanded(!isExpanded);
   };
+
+  const basePath = process.env.__NEXT_ROUTER_BASEPATH || "";
 
   return (
     <main className="bg-black">
@@ -64,15 +79,14 @@ export default function OurStoryPage() {
               {/* Main bottle image */}
               <div className="oss1i2">
                 <Image
-                  src={`${
-                    process.env.__NEXT_ROUTER_BASEPATH || ""
-                  }/images/Our-story.webp`}
+                  src={`${basePath}/images/Our-story.webp`}
                   alt="Perfume bottle"
                   fill
                   className="object-cover"
                   priority
                   quality={90}
                   sizes="(max-width: 768px) 160px, (max-width: 1024px) 220px, 276px"
+                  unoptimized={false}
                 />
               </div>
             </div>
@@ -85,9 +99,7 @@ export default function OurStoryPage() {
                 aria-hidden="true"
               >
                 <img
-                  src={`${
-                    process.env.__NEXT_ROUTER_BASEPATH || ""
-                  }/images/Final_Logo.png`}
+                  src={`${basePath}/images/Final_Logo.png`}
                   alt=""
                   className="oss1l"
                 />
@@ -214,283 +226,262 @@ export default function OurStoryPage() {
             {/* Row 1 */}
             <div className="col-span-2 row-span-2 relative overflow-hidden rounded-lg">
               <Image
-                src={`${
-                  process.env.__NEXT_ROUTER_BASEPATH || ""
-                }/images/moodboard/image1.webp`}
+                src={`${basePath}/images/moodboard/image1.webp`}
                 alt="Mood board 1"
                 fill
                 className="object-cover"
-                loading="eager"
+                priority
                 quality={85}
                 sizes="(min-width: 1024px) 16vw"
+                unoptimized={false}
               />
             </div>
             <div className="col-span-2 row-span-2 relative overflow-hidden rounded-lg">
               <Image
-                src={`${
-                  process.env.__NEXT_ROUTER_BASEPATH || ""
-                }/images/moodboard/image2.webp`}
+                src={`${basePath}/images/moodboard/image2.webp`}
                 alt="Mood board 2"
                 fill
                 className="object-cover"
-                loading="eager"
+                priority
                 quality={85}
                 sizes="(min-width: 1024px) 16vw"
+                unoptimized={false}
               />
             </div>
             <div className="col-span-2 row-span-2 relative overflow-hidden rounded-lg">
               <Image
-                src={`${
-                  process.env.__NEXT_ROUTER_BASEPATH || ""
-                }/images/moodboard/image3.webp`}
+                src={`${basePath}/images/moodboard/image3.webp`}
                 alt="Mood board 3"
                 fill
                 className="object-cover"
-                loading="eager"
+                priority
                 quality={85}
                 sizes="(min-width: 1024px) 16vw"
+                unoptimized={false}
               />
             </div>
             <div className="col-span-2 row-span-4 relative overflow-hidden rounded-lg">
               <Image
-                src={`${
-                  process.env.__NEXT_ROUTER_BASEPATH || ""
-                }/images/moodboard/image4.webp`}
+                src={`${basePath}/images/moodboard/image4.webp`}
                 alt="Mood board 4"
                 fill
                 className="object-cover"
-                loading="eager"
+                priority
                 quality={85}
                 sizes="(min-width: 1024px) 16vw"
+                unoptimized={false}
               />
             </div>
             <div className="col-span-2 row-span-3 relative overflow-hidden rounded-lg">
               <Image
-                src={`${
-                  process.env.__NEXT_ROUTER_BASEPATH || ""
-                }/images/moodboard/image5.webp`}
+                src={`${basePath}/images/moodboard/image5.webp`}
                 alt="Mood board 5"
                 fill
                 className="object-cover"
-                loading="eager"
+                priority
                 quality={85}
                 sizes="(min-width: 1024px) 16vw"
+                unoptimized={false}
               />
             </div>
             <div className="col-span-2 row-span-3 relative overflow-hidden rounded-lg">
               <Image
-                src={`${
-                  process.env.__NEXT_ROUTER_BASEPATH || ""
-                }/images/moodboard/image6.webp`}
+                src={`${basePath}/images/moodboard/image6.webp`}
                 alt="Mood board 6"
                 fill
                 className="object-cover"
-                loading="eager"
+                priority
                 quality={85}
                 sizes="(min-width: 1024px) 16vw"
+                unoptimized={false}
               />
             </div>
 
             {/* Row 2 */}
             <div className="col-span-2 row-span-3 col-start-1 row-start-3 relative overflow-hidden rounded-lg">
               <Image
-                src={`${
-                  process.env.__NEXT_ROUTER_BASEPATH || ""
-                }/images/moodboard/image7.webp`}
+                src={`${basePath}/images/moodboard/image7.webp`}
                 alt="Mood board 7"
                 fill
                 className="object-cover"
-                loading="eager"
+                priority
                 quality={85}
                 sizes="(min-width: 1024px) 16vw"
+                unoptimized={false}
               />
             </div>
             <div className="col-span-2 row-span-3 col-start-3 row-start-3 relative overflow-hidden rounded-lg">
               <Image
-                src={`${
-                  process.env.__NEXT_ROUTER_BASEPATH || ""
-                }/images/moodboard/image8.webp`}
+                src={`${basePath}/images/moodboard/image8.webp`}
                 alt="Mood board 8"
                 fill
                 className="object-cover"
-                loading="eager"
+                priority
                 quality={85}
                 sizes="(min-width: 1024px) 16vw"
+                unoptimized={false}
               />
             </div>
             <div className="col-span-2 row-span-3 col-start-9 row-start-0 relative overflow-hidden rounded-lg">
               <Image
-                src={`${
-                  process.env.__NEXT_ROUTER_BASEPATH || ""
-                }/images/moodboard/image9.webp`}
+                src={`${basePath}/images/moodboard/image9.webp`}
                 alt="Mood board 9"
                 fill
                 className="object-cover"
-                loading="eager"
+                priority
                 quality={85}
                 sizes="(min-width: 1024px) 16vw"
+                unoptimized={false}
               />
             </div>
             <div className="col-span-2 row-span-2 col-start-11 row-start-4 relative overflow-hidden rounded-lg">
               <Image
-                src={`${
-                  process.env.__NEXT_ROUTER_BASEPATH || ""
-                }/images/moodboard/image10.webp`}
+                src={`${basePath}/images/moodboard/image10.webp`}
                 alt="Mood board 10"
                 fill
                 className="object-cover"
-                loading="eager"
+                priority
                 quality={85}
                 sizes="(min-width: 1024px) 16vw"
+                unoptimized={false}
               />
             </div>
 
             {/* Row 3 */}
             <div className="col-span-2 row-span-3 col-start-5 row-start-3 relative overflow-hidden rounded-lg">
               <Image
-                src={`${
-                  process.env.__NEXT_ROUTER_BASEPATH || ""
-                }/images/moodboard/image11.webp`}
+                src={`${basePath}/images/moodboard/image11.webp`}
                 alt="Mood board 11"
                 fill
                 className="object-cover"
                 loading="eager"
                 quality={85}
                 sizes="(min-width: 1024px) 16vw"
+                unoptimized={false}
               />
             </div>
             <div className="col-span-2 row-span-2 col-start-7 row-start-5 relative overflow-hidden rounded-lg">
               <Image
-                src={`${
-                  process.env.__NEXT_ROUTER_BASEPATH || ""
-                }/images/moodboard/image22.webp`}
+                src={`${basePath}/images/moodboard/image22.webp`}
                 alt="Mood board 12"
                 fill
                 className="object-fit"
                 loading="eager"
                 quality={85}
                 sizes="(min-width: 1024px) 16vw"
+                unoptimized={false}
               />
             </div>
             <div className="col-span-2 row-span-2 col-start-5 row-start-6 relative overflow-hidden rounded-lg">
               <Image
-                src={`${
-                  process.env.__NEXT_ROUTER_BASEPATH || ""
-                }/images/moodboard/image21.webp`}
+                src={`${basePath}/images/moodboard/image21.webp`}
                 alt="Mood board 13"
                 fill
                 className="object-cover"
                 loading="eager"
                 quality={85}
                 sizes="(min-width: 1024px) 16vw"
+                unoptimized={false}
               />
             </div>
 
             {/* Row 4 */}
             <div className="col-span-2 row-span-2 col-start-1 row-start-6 relative overflow-hidden rounded-lg">
               <Image
-                src={`${
-                  process.env.__NEXT_ROUTER_BASEPATH || ""
-                }/images/moodboard/image13.webp`}
+                src={`${basePath}/images/moodboard/image13.webp`}
                 alt="Mood board 14"
                 fill
                 className="object-cover"
                 loading="eager"
                 quality={85}
                 sizes="(min-width: 1024px) 16vw"
+                unoptimized={false}
               />
             </div>
             <div className="col-span-2 row-span-2 col-start-3 row-start-6 relative overflow-hidden rounded-lg">
               <Image
-                src={`${
-                  process.env.__NEXT_ROUTER_BASEPATH || ""
-                }/images/moodboard/image14.webp`}
+                src={`${basePath}/images/moodboard/image14.webp`}
                 alt="Mood board 15"
                 fill
                 className="object-cover"
                 loading="eager"
                 quality={85}
                 sizes="(min-width: 1024px) 16vw"
+                unoptimized={false}
               />
             </div>
             <div className="col-span-2 row-span-2 col-start-5 row-start-8 relative overflow-hidden rounded-lg">
               <Image
-                src={`${
-                  process.env.__NEXT_ROUTER_BASEPATH || ""
-                }/images/moodboard/image15.webp`}
+                src={`${basePath}/images/moodboard/image15.webp`}
                 alt="Mood board 16"
                 fill
                 className="object-cover"
                 loading="eager"
                 quality={85}
                 sizes="(min-width: 1024px) 25vw"
+                unoptimized={false}
               />
             </div>
             <div className="col-span-4 row-span-3 col-start-7 row-start-7 relative overflow-hidden rounded-lg">
               <Image
-                src={`${
-                  process.env.__NEXT_ROUTER_BASEPATH || ""
-                }/images/moodboard/image16.webp`}
+                src={`${basePath}/images/moodboard/image16.webp`}
                 alt="Mood board 17"
                 fill
                 className="object-cover"
                 loading="eager"
                 quality={85}
                 sizes="(min-width: 1024px) 25vw"
+                unoptimized={false}
               />
             </div>
             <div className="col-span-2 row-span-2 col-start-11 row-start-6 relative overflow-hidden rounded-lg">
               <Image
-                src={`${
-                  process.env.__NEXT_ROUTER_BASEPATH || ""
-                }/images/moodboard/image17.webp`}
+                src={`${basePath}/images/moodboard/image17.webp`}
                 alt="Mood board 18"
                 fill
                 className="object-cover"
                 loading="eager"
                 quality={85}
                 sizes="(min-width: 1024px) 16vw"
+                unoptimized={false}
               />
             </div>
 
             {/* Row 5 */}
             <div className="col-span-2 row-span-2 col-start-1 row-start-8 relative overflow-hidden rounded-lg">
               <Image
-                src={`${
-                  process.env.__NEXT_ROUTER_BASEPATH || ""
-                }/images/moodboard/image18.webp`}
+                src={`${basePath}/images/moodboard/image18.webp`}
                 alt="Mood board 19"
                 fill
                 className="object-cover"
                 loading="eager"
                 quality={85}
                 sizes="(min-width: 1024px) 16vw"
+                unoptimized={false}
               />
             </div>
             <div className="col-span-2 row-span-2 col-start-3 row-start-8 relative overflow-hidden rounded-lg">
               <Image
-                src={`${
-                  process.env.__NEXT_ROUTER_BASEPATH || ""
-                }/images/moodboard/image19.webp`}
-                alt="Mood board 20"
+                src={`${basePath}/images/moodboard/image19.webp`}
+                alt="Mood board 19"
                 fill
                 className="object-cover"
                 loading="eager"
                 quality={85}
                 sizes="(min-width: 1024px) 16vw"
+                unoptimized={false}
               />
             </div>
             <div className="col-span-2 row-span-2 col-start-11 row-start-8 relative overflow-hidden rounded-lg">
               <Image
-                src={`${
-                  process.env.__NEXT_ROUTER_BASEPATH || ""
-                }/images/moodboard/image20.webp`}
+                src={`${basePath}/images/moodboard/image20.webp`}
                 alt="Mood board 21"
                 fill
                 className="object-cover"
                 loading="eager"
                 quality={85}
                 sizes="(min-width: 1024px) 16vw"
+                unoptimized={false}
               />
             </div>
           </div>
@@ -499,132 +490,122 @@ export default function OurStoryPage() {
           <div className="grid lg:hidden grid-cols-2 auto-rows-[120px] bg-[#EB9C1C] p-[8px] gap-2 relative">
             <div className="row-span-2 relative overflow-hidden rounded-lg">
               <Image
-                src={`${
-                  process.env.__NEXT_ROUTER_BASEPATH || ""
-                }/images/moodboard/image1.webp`}
+                src={`${basePath}/images/moodboard/image1.webp`}
                 alt="Mood board 1"
                 fill
                 className="object-cover"
-                loading="eager"
+                priority
                 quality={80}
                 sizes="50vw"
+                unoptimized={false}
               />
             </div>
             <div className="row-span-3 relative overflow-hidden rounded-lg">
               <Image
-                src={`${
-                  process.env.__NEXT_ROUTER_BASEPATH || ""
-                }/images/moodboard/image2.webp`}
+                src={`${basePath}/images/moodboard/image2.webp`}
                 alt="Mood board 2"
                 fill
                 className="object-cover"
-                loading="eager"
+                priority
                 quality={80}
                 sizes="50vw"
+                unoptimized={false}
               />
             </div>
             <div className="row-span-4 relative overflow-hidden rounded-lg">
               <Image
-                src={`${
-                  process.env.__NEXT_ROUTER_BASEPATH || ""
-                }/images/moodboard/image3.webp`}
+                src={`${basePath}/images/moodboard/image3.webp`}
                 alt="Mood board 3"
                 fill
                 className="object-cover"
-                loading="eager"
+                priority
                 quality={80}
                 sizes="50vw"
+                unoptimized={false}
               />
             </div>
             <div className="row-span-2 relative overflow-hidden rounded-lg">
               <Image
-                src={`${
-                  process.env.__NEXT_ROUTER_BASEPATH || ""
-                }/images/moodboard/image4.webp`}
+                src={`${basePath}/images/moodboard/image4.webp`}
                 alt="Mood board 4"
                 fill
                 className="object-cover"
-                loading="eager"
+                priority
                 quality={80}
                 sizes="50vw"
+                unoptimized={false}
               />
             </div>
             <div className="row-span-3 relative overflow-hidden rounded-lg">
               <Image
-                src={`${
-                  process.env.__NEXT_ROUTER_BASEPATH || ""
-                }/images/moodboard/image5.webp`}
+                src={`${basePath}/images/moodboard/image5.webp`}
                 alt="Mood board 5"
                 fill
                 className="object-cover"
-                loading="eager"
+                priority
                 quality={80}
                 sizes="50vw"
+                unoptimized={false}
               />
             </div>
             <div className="row-span-2 relative overflow-hidden rounded-lg">
               <Image
-                src={`${
-                  process.env.__NEXT_ROUTER_BASEPATH || ""
-                }/images/moodboard/image6.webp`}
+                src={`${basePath}/images/moodboard/image6.webp`}
                 alt="Mood board 6"
                 fill
                 className="object-cover"
-                loading="eager"
+                priority
                 quality={80}
                 sizes="50vw"
+                unoptimized={false}
               />
             </div>
             <div className="row-span-3 relative overflow-hidden rounded-lg">
               <Image
-                src={`${
-                  process.env.__NEXT_ROUTER_BASEPATH || ""
-                }/images/moodboard/image7.webp`}
+                src={`${basePath}/images/moodboard/image7.webp`}
                 alt="Mood board 7"
                 fill
                 className="object-cover"
-                loading="eager"
+                priority
                 quality={80}
                 sizes="50vw"
+                unoptimized={false}
               />
             </div>
             <div className="row-span-2 relative overflow-hidden rounded-lg">
               <Image
-                src={`${
-                  process.env.__NEXT_ROUTER_BASEPATH || ""
-                }/images/moodboard/image8.webp`}
+                src={`${basePath}/images/moodboard/image8.webp`}
                 alt="Mood board 8"
                 fill
                 className="object-cover"
-                loading="eager"
+                priority
                 quality={80}
                 sizes="50vw"
+                unoptimized={false}
               />
             </div>
             <div className="row-span-4 relative overflow-hidden rounded-lg">
               <Image
-                src={`${
-                  process.env.__NEXT_ROUTER_BASEPATH || ""
-                }/images/moodboard/image9.webp`}
+                src={`${basePath}/images/moodboard/image9.webp`}
                 alt="Mood board 9"
                 fill
                 className="object-cover"
-                loading="eager"
+                priority
                 quality={80}
                 sizes="50vw"
+                unoptimized={false}
               />
             </div>
             <div className="row-span-3 relative overflow-hidden rounded-lg">
               <Image
-                src={`${
-                  process.env.__NEXT_ROUTER_BASEPATH || ""
-                }/images/moodboard/image10.webp`}
+                src={`${basePath}/images/moodboard/image10.webp`}
                 alt="Mood board 10"
                 fill
                 className="object-cover"
-                loading="eager"
+                priority
                 quality={80}
                 sizes="50vw"
+                unoptimized={false}
               />
             </div>
           </div>
