@@ -123,7 +123,7 @@ export default function HomePage() {
               <div className="absolute top-0 left-0 w-full z-20">
                 <div className="w-full text-center flex justify-center items-center uppercase bg-[#eb9c1c] text-white text-[1rem] font-normal px-2 py-2.5">
                   <p className={`${inter.className} w-[70%] lg:w-full text-[12px]`}>
-                    Pre-orders now open | Take 10% off, use WELCOME10 | Shipping begins October 27 | Only in India
+                    Pre-orders now open | Take 10% off, use WELCOME10 | Shipping begins November 10 | Only in India
                   </p>
                 </div>
                 {/* HERO (section 1) */}
