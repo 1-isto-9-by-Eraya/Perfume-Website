@@ -18,6 +18,11 @@ export default function Navbar() {
   const [loading, setLoading] = useState(true);
   const [session, setSession] = useState<any>(null);
   const pathname = usePathname();
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   // Fetch user session - now refetches on pathname change
   useEffect(() => {
@@ -169,7 +174,7 @@ export default function Navbar() {
           {/* Right Side Content */}
           <div className="flex items-center">
             {/* Shop Now button - only show for non-authenticated users */}
-            {!session && !loading && (
+            {isClient && !session && (
               <a
                 href="https://thehouseoferaya.store/collections/all"
                 className={`px-4 py-1.5 bg-gradient-to-r from-[#EB9C1C] to-[#EB9C1C] text-black ${inter.className} font-semibold text-sm uppercase tracking-wider hover:shadow-lg hover:shadow-[#9A8E2B]/25 transition-all duration-200 transform hover:scale-105`}
@@ -222,11 +227,11 @@ export default function Navbar() {
               href="https://thehouseoferaya.store/collections/all"
               isExternal
             >
-              pre order
+              Store
             </NavLink>
 
             {/* Shop Now button - only show for non-authenticated users */}
-            {!session && !loading && (
+            {isClient && !session && !loading && (
               <a
                 href="https://thehouseoferaya.store/collections/all"
                 className="px-6 py-2 bg-[#EB9C1C] text-black font-semibold uppercase tracking-wider hover:shadow-lg hover:shadow-[#9A8E2B]/30 transition-all duration-300 transform hover:scale-105 hover:-translate-y-0.5 active:scale-95"

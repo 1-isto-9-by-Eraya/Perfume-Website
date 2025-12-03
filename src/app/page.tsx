@@ -123,7 +123,7 @@ export default function HomePage() {
               <div className="absolute top-0 left-0 w-full z-20">
                 <div className="w-full text-center flex justify-center items-center uppercase bg-[#eb9c1c] text-white text-[1rem] font-normal px-2 py-2.5">
                   <p className={`${inter.className} w-[70%] lg:w-full text-[12px]`}>
-                    Pre-orders now open | Take 10% off, use WELCOME10 | Shipping begins November 10 | Only in India
+                    Delivery anywhere in India
                   </p>
                 </div>
                 {/* HERO (section 1) */}
@@ -162,11 +162,8 @@ export default function HomePage() {
                   >
                     For those who lead with quiet power
                   </p>
-                  <button
-                    onClick={() =>
-                      (window.location.href =
-                        "https://thehouseoferaya.store/collections/all")
-                    }
+                  <a
+                    href="https://thehouseoferaya.store/collections/all"
                     className={`mt-8 inline-flex items-center justify-center px-8 py-2
                     border border-white/80 bg-transparent text-white
                     ${inter.className} font-semibold text-[14px] md:text-[16px] tracking-wide uppercase
@@ -182,7 +179,7 @@ export default function HomePage() {
                     }}
                   >
                     Shop Now
-                  </button>
+                  </a>
                 </section>
 
                 {/* SECOND SECTION */}
@@ -229,11 +226,8 @@ export default function HomePage() {
                       >
                         View Our Story
                       </button>
-                      <button
-                        onClick={() =>
-                          (window.location.href =
-                            "https://thehouseoferaya.store/collections/all")
-                        }
+                      <a
+                        href="https://thehouseoferaya.store/collections/all"
                         className={`inline-flex items-center justify-center px-4 py-3 w-1/2
                         border border-transparent bg-[#EB9C1C] text-[#191919]
                         ${inter.className} text-[12px] md:text-[16px] font-semibold tracking-wide uppercase
@@ -250,7 +244,7 @@ export default function HomePage() {
                         }}
                       >
                         Shop Now
-                      </button>
+                      </a>
                     </div>
                   </div>
                   <div className="hidden lg:block" />
