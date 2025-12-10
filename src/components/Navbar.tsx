@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { signOut } from "@/lib/auth-actions";
 import { usePathname } from "next/navigation";
 import { Playfair_Display, Inter } from "next/font/google";
@@ -19,6 +19,8 @@ export default function Navbar() {
   const [session, setSession] = useState<any>(null);
   const pathname = usePathname();
   const [isClient, setIsClient] = useState(false);
+  const mountTime = useRef(Date.now());
+  const [isNavigating, setIsNavigating] = useState(false);
 
   useEffect(() => {
     setIsClient(true);
@@ -85,6 +87,31 @@ export default function Navbar() {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
 
+  const handleExternalLink = (
+    e: React.MouseEvent<HTMLAnchorElement>,
+    href: string
+  ) => {
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    e.preventDefault();
+    
+    if (isNavigating) return;
+
+    const timeElapsed = Date.now() - mountTime.current;
+    const SAFE_DELAY = 3000;
+    
+    if (timeElapsed < SAFE_DELAY) {
+      setIsNavigating(true);
+      document.body.style.cursor = "wait";
+      const remainingTime = SAFE_DELAY - timeElapsed;
+      
+      setTimeout(() => {
+        window.location.href = href;
+      }, remainingTime);
+    } else {
+      window.location.href = href;
+    }
+  };
+
   // Enhanced Link Component with Hover Effects
   const NavLink = ({
     href,
@@ -105,7 +132,12 @@ export default function Navbar() {
 
     if (isExternal) {
       return (
-        <a href={href} className={linkClasses} rel="noopener noreferrer">
+        <a
+          href={href}
+          className={linkClasses}
+          rel="noopener noreferrer"
+          onClick={(e) => handleExternalLink(e, href)}
+        >
           <span className="relative">
             {children}
             {underlineEffect}
@@ -179,6 +211,12 @@ export default function Navbar() {
                 href="https://thehouseoferaya.store/collections/all"
                 className={`px-4 py-1.5 bg-gradient-to-r from-[#EB9C1C] to-[#EB9C1C] text-black ${inter.className} font-semibold text-sm uppercase tracking-wider hover:shadow-lg hover:shadow-[#9A8E2B]/25 transition-all duration-200 transform hover:scale-105`}
                 rel="noopener noreferrer"
+                onClick={(e) =>
+                  handleExternalLink(
+                    e,
+                    "https://thehouseoferaya.store/collections/all"
+                  )
+                }
               >
                 Shop Now
               </a>
@@ -236,6 +274,12 @@ export default function Navbar() {
                 href="https://thehouseoferaya.store/collections/all"
                 className="px-6 py-2 bg-[#EB9C1C] text-black font-semibold uppercase tracking-wider hover:shadow-lg hover:shadow-[#9A8E2B]/30 transition-all duration-300 transform hover:scale-105 hover:-translate-y-0.5 active:scale-95"
                 rel="noopener noreferrer"
+                onClick={(e) =>
+                  handleExternalLink(
+                    e,
+                    "https://thehouseoferaya.store/collections/all"
+                  )
+                }
               >
                 Shop Now
               </a>
@@ -312,6 +356,12 @@ export default function Navbar() {
               href="https://thehouseoferaya.store/collections/all"
               className={`${mobileLinkStyles} ${mobileInactiveLinkStyles}`}
               rel="noopener noreferrer"
+              onClick={(e) =>
+                handleExternalLink(
+                  e,
+                  "https://thehouseoferaya.store/collections/all"
+                )
+              }
             >
               pre-order
             </a>

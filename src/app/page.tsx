@@ -1,7 +1,7 @@
 // app/page.tsx
 "use client";
 
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import {
   Playfair_Display,
@@ -57,6 +57,33 @@ const maves = localFont({
 export default function HomePage() {
   const wrapperRef = useRef<HTMLDivElement>(null!);
   const router = useRouter();
+  const mountTime = useRef(Date.now());
+  const [isNavigating, setIsNavigating] = useState(false);
+
+  const handleExternalLink = (
+    e: React.MouseEvent<HTMLAnchorElement>,
+    href: string
+  ) => {
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    e.preventDefault();
+
+    if (isNavigating) return;
+
+    const timeElapsed = Date.now() - mountTime.current;
+    const SAFE_DELAY = 3000;
+
+    if (timeElapsed < SAFE_DELAY) {
+      setIsNavigating(true);
+      document.body.style.cursor = "wait";
+      const remainingTime = SAFE_DELAY - timeElapsed;
+
+      setTimeout(() => {
+        window.location.href = href;
+      }, remainingTime);
+    } else {
+      window.location.href = href;
+    }
+  };
 
   return (
     <>
@@ -177,6 +204,12 @@ export default function HomePage() {
                       willChange:
                         "color, background-color, border-color, transform",
                     }}
+                    onClick={(e) =>
+                      handleExternalLink(
+                        e,
+                        "https://thehouseoferaya.store/collections/all"
+                      )
+                    }
                   >
                     Shop Now
                   </a>
@@ -242,6 +275,12 @@ export default function HomePage() {
                           willChange:
                             "color, background-color, border-color, transform",
                         }}
+                        onClick={(e) =>
+                          handleExternalLink(
+                            e,
+                            "https://thehouseoferaya.store/collections/all"
+                          )
+                        }
                       >
                         Shop Now
                       </a>
