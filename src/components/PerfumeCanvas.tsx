@@ -8,6 +8,7 @@ import { Environment, AdaptiveDpr, AdaptiveEvents } from "@react-three/drei";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Bottle3D, { Bottle3DRef } from "@/components/Bottle";
+import { ThreeErrorBoundary } from "@/components/ThreeErrorBoundary";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -321,32 +322,34 @@ export default function PerfumeCanvas({ config, containerRef, isNavigating }: Pe
         //   </mesh>
         // }
       >
-        {/* Neutral wrapper — all posing is on Bottle's inner groups */}
-        <group visible={shown}>
-          <Bottle3D
-            ref={bottleRef}
-            position={[0, 0, 0]}
-            rotation={[0, 0, 0]}
-            scale={1}
-            onReady={handleReady}
-          />
-        </group>
+        <ThreeErrorBoundary>
+          {/* Neutral wrapper — all posing is on Bottle's inner groups */}
+          <group visible={shown}>
+            <Bottle3D
+              ref={bottleRef}
+              position={[0, 0, 0]}
+              rotation={[0, 0, 0]}
+              scale={1}
+              onReady={handleReady}
+            />
+          </group>
 
-        <Environment
-          preset={isMobile ? "city" : "studio"}
-          background={false}
-          resolution={isMobile ? 128 : 256}
-        />
-
-        {/* ScrollTrigger animations on top of DEFAULT_POSES */}
-        {ready && (
-          <ScrollDriver
-            bottleRef={bottleRef}
-            containerRef={containerRef}
-            device={device}
-            enabled={Boolean(config?.enableAnimation)}
+          <Environment
+            preset={isMobile ? "city" : "studio"}
+            background={false}
+            resolution={isMobile ? 128 : 256}
           />
-        )}
+
+          {/* ScrollTrigger animations on top of DEFAULT_POSES */}
+          {ready && (
+            <ScrollDriver
+              bottleRef={bottleRef}
+              containerRef={containerRef}
+              device={device}
+              enabled={Boolean(config?.enableAnimation)}
+            />
+          )}
+        </ThreeErrorBoundary>
       </Suspense>
     </Canvas>
   );
