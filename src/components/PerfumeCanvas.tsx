@@ -24,6 +24,7 @@ export type PerfumeCanvasProps = {
   /** The tall sticky section element that ScrollTrigger should attach to */
   containerRef?: React.RefObject<HTMLDivElement>;
   config?: { enableAnimation?: boolean; scale?: number };
+  isNavigating?: boolean;
 };
 
 /* ------------------------------------------------------------------ */
@@ -195,12 +196,18 @@ const ScrollDriver = memo(function ScrollDriver({
 /* Canvas host                                                         */
 /* ------------------------------------------------------------------ */
 
-export default function PerfumeCanvas({ config, containerRef }: PerfumeCanvasProps) {
+export default function PerfumeCanvas({ config, containerRef, isNavigating }: PerfumeCanvasProps) {
   const bottleRef = useRef<Bottle3DRef | null>(null); // ← explicit union with null
 
   const [device, setDevice] = useState<Device>(
     typeof window === "undefined" ? "desktop" : detectDevice(window.innerWidth)
   );
+
+  // Hard stop mechanism: If navigating, immediately return null to unmount the entire Canvas
+  if (isNavigating) {
+    return null;
+  }
+  
   const isMobile = device === "mobile";
 
   // Model lifecycle gating:

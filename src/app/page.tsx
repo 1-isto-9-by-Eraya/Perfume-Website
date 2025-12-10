@@ -139,6 +139,7 @@ export default function HomePage() {
               >
                 <PerfumeCanvas
                   containerRef={wrapperRef}
+                  isNavigating={isNavigating}
                   config={{
                     enableAnimation: true,
                     // scale: 0.01,
