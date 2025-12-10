@@ -97,7 +97,7 @@ export default function Navbar() {
     if (isNavigating) return;
 
     const timeElapsed = Date.now() - mountTime.current;
-    const SAFE_DELAY = 3000;
+    const SAFE_DELAY = 1500;
     
     if (timeElapsed < SAFE_DELAY) {
       setIsNavigating(true);
