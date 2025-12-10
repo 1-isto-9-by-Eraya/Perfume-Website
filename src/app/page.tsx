@@ -1,7 +1,7 @@
 // app/page.tsx
 "use client";
 
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import {
   Playfair_Display,
@@ -59,6 +59,15 @@ export default function HomePage() {
   const router = useRouter();
   const mountTime = useRef(Date.now());
   const [isNavigating, setIsNavigating] = useState(false);
+  const [shouldMount3D, setShouldMount3D] = useState(false);
+
+  // Delay mounting the heavy 3D scene to allow video resources to clear (helps iOS)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShouldMount3D(true);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleExternalLink = (
     e: React.MouseEvent<HTMLAnchorElement>,
@@ -137,14 +146,16 @@ export default function HomePage() {
                   perspective: "1000px",
                 }}
               >
-                <PerfumeCanvas
-                  containerRef={wrapperRef}
-                  isNavigating={isNavigating}
-                  config={{
-                    enableAnimation: true,
-                    // scale: 0.01,
-                  }}
-                />
+                {shouldMount3D && (
+                  <PerfumeCanvas
+                    containerRef={wrapperRef}
+                    isNavigating={isNavigating}
+                    config={{
+                      enableAnimation: true,
+                      // scale: 0.01,
+                    }}
+                  />
+                )}
               </div>
 
               {/* Content sections (overlay) */}
