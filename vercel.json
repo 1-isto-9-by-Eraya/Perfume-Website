@@ -1,0 +1,9 @@
+{
+  "redirects": [
+    {
+      "source": "/",
+      "destination": "/1isto9-perfumery",
+      "permanent": true
+    }
+  ]
+}

@@ -1,9 +1,11 @@
 // src/app/blog/new/page.tsx
 'use client';
 
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 import { useCreatePost } from '@/hooks/useCreatePost';
+import { isUploader } from '@/lib/roles';
 import StepIndicator from '@/components/create-post/StepIndicator';
 import StepContainer from '@/components/create-post/StepContainer';
 import PostTypeStep from '@/components/create-post/steps/PostTypeStep';
@@ -12,6 +14,11 @@ import PreviewStep from '@/components/create-post/steps/PreviewStep';
 
 export default function NewPostPage() {
   const router = useRouter();
+  
+  // Authorization state
+  const [session, setSession] = useState<any>(null);
+  const [authLoading, setAuthLoading] = useState(true);
+
   const {
     currentStep,
     steps,
@@ -28,6 +35,25 @@ export default function NewPostPage() {
     goToStep,
     submitPost,
   } = useCreatePost();
+
+  // Check authorization
+  useEffect(() => {
+    fetch('/1isto9-perfumery/api/me')
+      .then((r) => r.json())
+      .then((data) => {
+        setSession(data.user);
+        setAuthLoading(false);
+        
+        // Redirect if not uploader or reviewer
+        if (!data.user || !isUploader(data.user.role)) {
+          router.push("/blog?unauthorized=1");
+        }
+      })
+      .catch(() => {
+        setAuthLoading(false);
+        router.push("/blog?unauthorized=1");
+      });
+  }, [router]);
 
   const handleSubmit = async () => {
     const result = await submitPost();
@@ -114,6 +140,23 @@ export default function NewPostPage() {
         return false;
     }
   };
+
+  // Show loading during auth check
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="flex items-center space-x-3">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-400"></div>
+          <span className="text-gray-300">Checking authorization...</span>
+        </div>
+      </div>
+    );
+  }
+
+  // Don't render if not authorized
+  if (!session || !isUploader(session.role)) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-black">

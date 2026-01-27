@@ -91,48 +91,70 @@ model PostLike {
   @@index([fingerprint])
 }
 
+// model User {
+//   id            String    @id @default(cuid())
+//   name          String?
+//   email         String?   @unique
+//   image         String?
+//   emailVerified DateTime?
+  
+//   // New role field
+//   role          UserRole  @default(UPLOADER)
+  
+//   accounts      Account[]
+//   sessions      Session[]
+  
+//   // Updated relations
+//   authoredPosts Post[]    @relation("AuthoredPosts")
+//   reviewedPosts Post[]    @relation("ReviewedPosts")
+// }
+
 model User {
   id            String    @id @default(cuid())
   name          String?
-  email         String?   @unique
+  email         String    @unique
+  password      String    // NEW: For email/password auth
   image         String?
   emailVerified DateTime?
   
-  // New role field
   role          UserRole  @default(UPLOADER)
   
-  accounts      Account[]
-  sessions      Session[]
+  // Remove these if not using OAuth anymore:
+  // accounts      Account[]
+  // sessions      Session[]
   
-  // Updated relations
   authoredPosts Post[]    @relation("AuthoredPosts")
   reviewedPosts Post[]    @relation("ReviewedPosts")
+  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 }
 
-model Account {
-  id                String  @id @default(cuid())
-  userId            String
-  type              String
-  provider          String
-  providerAccountId String
-  refresh_token     String? @db.Text
-  access_token      String? @db.Text
-  expires_at        Int?
-  token_type        String?
-  scope             String?
-  id_token          String? @db.Text
-  session_state     String?
 
-  user User @relation(fields: [userId], references: [id])
+// model Account {
+//   id                String  @id @default(cuid())
+//   userId            String
+//   type              String
+//   provider          String
+//   providerAccountId String
+//   refresh_token     String? @db.Text
+//   access_token      String? @db.Text
+//   expires_at        Int?
+//   token_type        String?
+//   scope             String?
+//   id_token          String? @db.Text
+//   session_state     String?
 
-  @@unique([provider, providerAccountId])
-}
+//   user User @relation(fields: [userId], references: [id])
 
-model Session {
-  id           String   @id @default(cuid())
-  sessionToken String   @unique
-  userId       String
-  expires      DateTime
+//   @@unique([provider, providerAccountId])
+// }
 
-  user User @relation(fields: [userId], references: [id])
-}
+// model Session {
+//   id           String   @id @default(cuid())
+//   sessionToken String   @unique
+//   userId       String
+//   expires      DateTime
+
+//   user User @relation(fields: [userId], references: [id])
+// }

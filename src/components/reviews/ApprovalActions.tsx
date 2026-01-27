@@ -2,14 +2,36 @@
 'use client';
 
 import { useState } from 'react';
-import { CheckIcon, PencilIcon, XMarkIcon, InformationCircleIcon } from '@heroicons/react/24/outline';
-import type { PostWithDetails } from '@/types/auth';
+import { CheckIcon, PencilIcon, XMarkIcon } from '@heroicons/react/24/outline';
+
+interface Author {
+  id: string;
+  name: string | null;
+  email: string;
+  role: string;
+}
+
+interface PostWithDetails {
+  id: string;
+  title: string;
+  slug: string;
+  postType: 'BLOG' | 'VLOG' | 'INSTAGRAM';
+  status: 'APPROVED' | 'PENDING' | 'REJECTED' | 'DRAFT';
+  published: boolean;
+  createdAt: string;
+  updatedAt: string;
+  reviewComments: string | null;
+  author: Author;
+  reviewedBy?: Author | null;
+}
 
 interface ApprovalActionsProps {
   post: PostWithDetails;
   onStatusChange: (postId: string) => void;
   onClose: () => void;
 }
+
+const BASE_PATH = '/1isto9-perfumery';
 
 export default function ApprovalActions({ post, onStatusChange, onClose }: ApprovalActionsProps) {
   const [isLoading, setIsLoading] = useState(false);
@@ -21,7 +43,7 @@ export default function ApprovalActions({ post, onStatusChange, onClose }: Appro
     setError(null);
     
     try {
-      const response = await fetch(`/api/posts/approve/${post.id}`, {
+      const response = await fetch(`${BASE_PATH}/api/posts/approve/${post.id}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -55,7 +77,7 @@ export default function ApprovalActions({ post, onStatusChange, onClose }: Appro
     setError(null);
     
     try {
-      const response = await fetch(`/api/posts/needs-update/${post.id}`, {
+      const response = await fetch(`${BASE_PATH}/api/posts/needs-update/${post.id}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -98,7 +120,7 @@ export default function ApprovalActions({ post, onStatusChange, onClose }: Appro
     setError(null);
     
     try {
-      const response = await fetch(`/api/posts/reject/${post.id}`, {
+      const response = await fetch(`${BASE_PATH}/api/posts/reject/${post.id}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -129,7 +151,6 @@ export default function ApprovalActions({ post, onStatusChange, onClose }: Appro
     <div className="p-6 space-y-6">
       <div>
         <h2 className="text-xl font-semibold text-white mb-2">Review Actions</h2>
-        {/* <p className="text-sm text-gray-400">Review the post content and decide the appropriate action.</p> */}
       </div>
 
       {/* Error Message */}
@@ -218,20 +239,6 @@ export default function ApprovalActions({ post, onStatusChange, onClose }: Appro
           {isLoading ? 'Processing...' : 'Reject & Delete'}
         </button>
       </div>
-
-      {/* Review Guidelines */}
-      {/* <div className="bg-blue-900/20 border border-blue-500/30 rounded-lg p-4">
-        <h4 className="flex items-center gap-2 text-blue-400 font-medium text-sm mb-3">
-          <InformationCircleIcon className="h-4 w-4" />
-          Review Guidelines
-        </h4>
-        <ul className="space-y-1 text-xs text-blue-200">
-          <li><strong>Approve:</strong> Post meets quality standards and will be published immediately</li>
-          <li><strong>Needs Update:</strong> Post has potential but needs improvements (requires feedback)</li>
-          <li><strong>Reject:</strong> Post doesn't meet standards and will be permanently deleted (requires reason)</li>
-          <li>Always provide constructive feedback for rejections and updates</li>
-        </ul>
-      </div> */}
     </div>
   );
 }

@@ -1,18 +1,16 @@
 // app/api/posts/[param]/route.ts
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { getSession } from "@/lib/auth-utils";
 import { isAllowedEmail } from "@/lib/acl";
 
 function canModerate(session: any) {
-  const email = session?.user?.email ?? null;
-  const role = session?.user?.role;
+  const email = session?.email ?? null;
+  const role = session?.role;
   return !!session && (role === "REVIEWER" || isAllowedEmail(email));
 }
 
 async function findByParam(param: string) {
-  // Try id first, then slug
   let post = await prisma.post.findUnique({ where: { id: param } });
   if (!post) post = await prisma.post.findUnique({ where: { slug: param } });
   return post;
@@ -32,7 +30,7 @@ export async function PUT(
   req: Request,
   { params }: { params: Promise<{ param: string }> }
 ) {
-  const session = await getServerSession(authOptions);
+  const session = await getSession();
   if (!canModerate(session)) return new NextResponse("Forbidden", { status: 403 });
 
   const { param } = await params;
@@ -49,7 +47,7 @@ export async function PUT(
   if (typeof body.postType === "string") data.postType = body.postType;
 
   const updated = await prisma.post.update({
-    where: { id: current.id }, // always update by id
+    where: { id: current.id },
     data,
   });
 
@@ -60,7 +58,7 @@ export async function DELETE(
   _req: Request,
   { params }: { params: Promise<{ param: string }> }
 ) {
-  const session = await getServerSession(authOptions);
+  const session = await getSession();
   if (!canModerate(session)) return new NextResponse("Forbidden", { status: 403 });
 
   const { param } = await params;

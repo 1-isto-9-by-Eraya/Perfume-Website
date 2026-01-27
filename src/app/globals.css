@@ -37,39 +37,6 @@ body,
   transition: opacity 0.8s ease-out;
 }
 
-/* .border-box {
-  border: 20px solid transparent;
-  border-color: linear-gradient(to right, #9a8e2b, #f5f287);
-} */
-
-.gradient-button-container {
-  background: #EB9C1C;
-  /* background: linear-gradient(to right, #9A8E2B, #F5F287); */
-  padding: 2px;
-  transition: all 300ms;
-  width: 50%;
-}
-
-.gradient-button-container:hover {
-  background: linear-gradient(to right, black, #716B10);
-}
-
-/* Button element */
-.gradient-button {
-  background-color: black;
-  color: white;
-  font-weight: 600;
-  padding: 0.75rem 0rem;
-  transition: all 300ms;
-  width: 100%;
-  border: none;
-  cursor: pointer;
-}
-
-.gradient-button-container:hover .gradient-button {
-  background-color: transparent;
-  color: white;
-}
 
 /* Mobile First Approach - Default styles for mobile (0-767px) */
 @media (max-width: 767px) {
@@ -118,10 +85,10 @@ body,
   .oss1i2 {
     position: absolute;
     z-index: 3;
-    top: 80px;
-    left: 120px;
-    height: 200px;
-    width: 160px;
+    top: -10px;
+    left: 40px;
+    height: 300px;
+    width: 230px;
     aspect-ratio: 4/5;
     overflow: hidden;
     border-radius: 0.375rem;
@@ -188,26 +155,34 @@ body,
     padding: 12px 20px;
   }
   
-  /* Section 1 - Tablet Layout */
+  /* Section 1 - Updated Tablet Layout - Vertical Stack */
   .oss1-container {
     padding: 2rem 1.5rem;
   }
   
   .oss1-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+    display: flex;
+    flex-direction: column;
     gap: 3rem;
     align-items: center;
   }
   
   .oss1-images {
+    order: 1; /* Images first */
     position: relative;
     height: 400px;
     width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
   }
   
   .oss1-content {
-    padding-left: 1rem;
+    order: 2; /* Content second */
+    padding-left: 0;
+    text-align: left;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
   }
   
   .oss1i1 {
@@ -226,9 +201,9 @@ body,
   .oss1i2 {
     position: absolute;
     z-index: 3;
-    top: 20px;
-    left: 120px;
-    height: 275px;
+    top: -40px;
+    left: 50px;
+    height: 320px;
     width: 220px;
     aspect-ratio: 4/5;
     overflow: hidden;
@@ -253,38 +228,40 @@ body,
   .oss1l {
     position: absolute;
     z-index: 0;
-    top: -100px;
-    left: -60px;
-    height: 320px;
-    width: 320px;
+    top: -50px;
+    left: -40px;
+    height: 280px;
+    width: 280px;
     opacity: 0.08;
   }
   
-  /* Typography adjustments for tablet */
+  /* Typography adjustments for tablet - more compact */
   .oss1-headline {
-    font-size: 3.5rem;
-    line-height: 1.15;
-    margin-bottom: 1.5rem;
+    font-size: 3rem;
+    line-height: 1.1;
+    margin-bottom: 1rem;
+    text-align: center;
   }
   
   .oss1-paragraph {
-    font-size: 1rem;
-    line-height: 1.6;
-    margin-top: 2rem;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin-top: 1.5rem;
     max-width: none;
   }
   
   .oss1-label {
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
+    justify-content: center;
   }
   
   .oss1-label span:first-child {
-    width: 4rem;
+    width: 3rem;
   }
   
   .oss1-label span:last-child {
-    font-size: 1rem;
-    letter-spacing: 0.2em;
+    font-size: 0.875rem;
+    letter-spacing: 0.15em;
   }
 }
 
@@ -335,10 +312,10 @@ body,
   .oss1i2 {
     position: absolute;
     z-index: 3;
-    top: -30px;
-    left: 140px;
-    height: 322px;
-    width: 276px;
+    top: -130px;
+    left: 20px;
+    height: 500px;
+    width: 400px;
     aspect-ratio: 4/5;
     overflow: hidden;
     border-radius: 0.375rem;
@@ -468,7 +445,111 @@ body,
 }
 
 
+@media (max-width: 1023px) {
+  .oss1-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 2rem !important;
+  }
+  
+  .oss1-images {
+    order: 1 !important;
+    position: relative;
+    height: 350px;
+    margin: 0 auto;
+    width: 100%;
+    max-width: 320px;
+  }
+  
+  .oss1-content {
+    order: 2 !important;
+    text-align: left;
+    padding-left: 0 !important;
+  }
+}
 
+/* Mobile specific adjustments (keep existing mobile styles but ensure proper ordering) */
+@media (max-width: 767px) {
+  .oss1-images {
+    height: 350px;
+    max-width: 320px;
+  }
+}
+
+/* Tablet specific adjustments */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .oss1-images {
+    height: 400px;
+    max-width: 400px;
+  }
+  
+  .oss1-container {
+    padding: 2rem 1.5rem;
+  }
+  
+  .oss1-grid {
+    gap: 3rem !important;
+  }
+}
+
+
+/* Fix the breakpoint to ensure iPad Pro (1024px) uses mobile layout */
+@media (max-width: 1024px) {
+  .oss1-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 2rem !important;
+  }
+  
+  .oss1-images {
+    order: 1 !important;
+    position: relative;
+    top: 60px;
+    height: 350px;
+    margin: 0 auto;
+    width: 100%;
+    max-width: 320px;
+  }
+  
+  .oss1-content {
+    order: 2 !important;
+    text-align: left;
+    padding-left: 0 !important;
+  }
+}
+
+/* Update the desktop breakpoint to start from 1025px */
+@media (min-width: 1025px) {
+  .deskV {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 24px;
+  }
+  
+  /* Section 1 - Desktop Layout */
+  .oss1-container {
+    padding: 4rem 1.5rem;
+  }
+  
+  .oss1-grid {
+    display: grid;
+    grid-template-columns: 5fr 7fr;
+    gap: 4rem;
+    align-items: center;
+  }
+  
+  .oss1-images {
+    position: relative;
+    top: 40px;
+    height: 500px;
+    width: 100%;
+  }
+  
+  .oss1-content {
+    padding-left: 2rem;
+  }
+}
 
 
 /* Add this to your globals.css file */
@@ -480,11 +561,6 @@ body,
   transition-duration: 0s !important;
   transition-delay: 0s !important;
 }
-
-/* Optimize scrolling performance */
-/* html {
-  scroll-behavior: auto; 
-} */
 
 body {
   overflow-x: hidden;
@@ -571,19 +647,53 @@ body {
   .jptbtoc{
     display: none;
   }
+
+  .bg{
+    display: none;
+  }
+
+  .mh{
+    display: none;
+  }
 }
 
 @media (min-width: 1024px) {
   .jptbtoc{
     display: block;
   }
-  
+  .bg{
+    display: grid;
+  }
 }
 
+.desktop-nav {
+  display: none;
+}
 
+.mobile-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+}
+
+@media (min-width: 1024px) {
+  .desktop-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.5rem;
+  }
+
+  .mobile-nav {
+    display: none;
+  }
+
+
+}
 
 
 /* ensure in-page anchors (section ids) don't hide under the navbar */
-[id^="s-"] {
+/* [id^="s-"] {
   scroll-margin-top: 96px;
-}
+} */

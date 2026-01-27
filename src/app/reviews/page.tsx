@@ -1,33 +1,36 @@
 // src/app/reviews/page.tsx
 "use client";
 
-import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { isReviewer } from "@/lib/roles";
 import PendingPostsList from "@/components/reviews/PendingPostsList";
-import type { ExtendedSession } from "@/types/auth";
 import Link from "next/link";
 import ChevronLeftIcon from "@heroicons/react/24/outline/ChevronLeftIcon";
 
 export default function ReviewPage() {
-  const { data: session, status } = useSession() as {
-    data: ExtendedSession | null;
-    status: string;
-  };
+  const [session, setSession] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
-    if (status === "loading") return;
+    fetch('/1isto9-perfumery/api/me')
+      .then((r) => r.json())
+      .then((data) => {
+        setSession(data.user);
+        setLoading(false);
+        
+        if (!data.user || !isReviewer(data.user.role)) {
+          router.push("/blog?unauthorized=1");
+        }
+      })
+      .catch(() => {
+        setLoading(false);
+        router.push("/blog?unauthorized=1");
+      });
+  }, [router]);
 
-    if (!session || !isReviewer(session.user?.role)) {
-      router.push("/blog?unauthorized=1");
-      return;
-    }
-  }, [session, status, router]);
-
-  // Handle modal state changes
   useEffect(() => {
     if (isModalOpen) {
       document.body.style.overflow = "hidden";
@@ -37,14 +40,13 @@ export default function ReviewPage() {
       document.documentElement.style.overflow = "unset";
     }
 
-    // Cleanup on unmount
     return () => {
       document.body.style.overflow = "unset";
       document.documentElement.style.overflow = "unset";
     };
   }, [isModalOpen]);
 
-  if (status === "loading") {
+  if (loading) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="text-[#ffffff]">Loading...</div>
@@ -52,22 +54,20 @@ export default function ReviewPage() {
     );
   }
 
-  if (!session || !isReviewer(session.user?.role)) {
+  if (!session || !isReviewer(session.role)) {
     return null;
   }
 
   return (
     <div className="min-h-screen bg-black">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 ">
-        {/* Header */}{" "}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex justify-between items-center mb-8">
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-[#ffffff]">
               Post Review Dashboard
             </h1>
             <p className="mt-2 text-[#fffff2]">
-              Review and approve posts from content creators before they go
-              live.
+              Review and approve posts from content creators before they go live.
             </p>
           </div>
 
@@ -79,7 +79,7 @@ export default function ReviewPage() {
             <span>Back to Dashboard</span>
           </Link>
         </div>
-        {/* Review Interface */}
+
         <div className="space-y-6">
           <PendingPostsList onModalStateChange={setIsModalOpen} />
         </div>

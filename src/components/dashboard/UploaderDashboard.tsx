@@ -4,11 +4,41 @@
 import { useState, useEffect } from 'react';
 import { PlusIcon, PencilIcon, ClockIcon, CheckCircleIcon, XCircleIcon, ChatBubbleLeftEllipsisIcon, ChevronLeftIcon, ChevronRightIcon, UserGroupIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
-import type { ExtendedSession, PostWithDetails } from '@/types/auth';
+
+interface Author {
+  id: string;
+  name: string | null;
+  email: string;
+  role: string;
+}
+
+interface PostWithDetails {
+  id: string;
+  title: string;
+  slug: string;
+  postType: 'BLOG' | 'VLOG' | 'INSTAGRAM';
+  status: 'APPROVED' | 'PENDING' | 'REJECTED' | 'DRAFT';
+  published: boolean;
+  createdAt: string;
+  updatedAt: string;
+  reviewComments: string | null;
+  author: Author;
+  reviewedBy?: Author | null;
+}
+
+interface SessionUser {
+  id: string;
+  email: string;
+  name: string | null;
+  role: string;
+  image: string | null;
+}
 
 interface UploaderDashboardProps {
-  session: ExtendedSession;
+  session: SessionUser;
 }
+
+const BASE_PATH = '/1isto9-perfumery';
 
 export default function UploaderDashboard({ session }: UploaderDashboardProps) {
   const [recentPosts, setRecentPosts] = useState<PostWithDetails[]>([]);
@@ -26,8 +56,8 @@ export default function UploaderDashboard({ session }: UploaderDashboardProps) {
     try {
       setLoading(true);
       const [recentResponse, needsUpdateResponse] = await Promise.all([
-        fetch('/api/posts/user/recent'),
-        fetch('/api/posts/user/needs-update')
+        fetch(`${BASE_PATH}/api/posts/user/recent`),
+        fetch(`${BASE_PATH}/api/posts/needs-update`)
       ]);
 
       if (recentResponse.ok) {
@@ -105,7 +135,7 @@ export default function UploaderDashboard({ session }: UploaderDashboardProps) {
         <h2 className="text-xl font-semibold text-[#ffffff] mb-4">Quick Actions</h2>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
           <Link
-            href="/blog/new"
+            href={`/blog/new`}
             className="flex items-center justify-center space-x-2 p-4 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
           >
             <PlusIcon className="h-5 w-5" />
@@ -121,7 +151,7 @@ export default function UploaderDashboard({ session }: UploaderDashboardProps) {
           </button>
 
           <Link
-            href="/blog"
+            href={`/blog`}
             className="flex items-center justify-center space-x-2 p-4 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
           >
             <UserGroupIcon className="h-5 w-5" />
@@ -278,7 +308,7 @@ export default function UploaderDashboard({ session }: UploaderDashboardProps) {
               Create your first journal post to get started.
             </p>
             <Link
-              href="/blog/new"
+              href={`${BASE_PATH}/blog/new`}
               className="inline-flex items-center space-x-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
             >
               <PlusIcon className="h-4 w-4" />

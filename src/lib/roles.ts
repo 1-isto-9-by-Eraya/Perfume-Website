@@ -1,6 +1,5 @@
 // lib/roles.ts
 import { UserRole, PostStatus } from "@prisma/client";
-import type { Session } from "next-auth";
 
 export const ROLES = {
   UPLOADER: "UPLOADER" as const,
@@ -41,7 +40,6 @@ export function canReviewPosts(role?: UserRole | null): boolean {
 
 // Check if user can approve/reject posts
 export function canApprovePost(userRole?: UserRole | null, postAuthorId?: string, userId?: string): boolean {
-  // Reviewers can approve posts from other users
   return isReviewer(userRole) && postAuthorId !== userId;
 }
 
@@ -61,12 +59,6 @@ export function getRoleByEmail(email?: string | null): UserRole {
   return reviewerEmails.includes(email.toLowerCase()) 
     ? ROLES.REVIEWER 
     : ROLES.UPLOADER;
-}
-
-// Get user role from session
-export function getUserRole(session: Session | null): UserRole | null {
-  if (!session?.user?.email) return null;
-  return getRoleByEmail(session.user.email);
 }
 
 // Post status helpers
@@ -100,5 +92,5 @@ export const STATUS_DISPLAY_NAMES = {
   [POST_STATUSES.REJECTED]: "Rejected",
 } as const;
 
-// Default role for new users (you can change this based on your needs)
+// Default role for new users
 export const DEFAULT_USER_ROLE = ROLES.UPLOADER;

@@ -8,6 +8,7 @@ import { Environment, AdaptiveDpr, AdaptiveEvents } from "@react-three/drei";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Bottle3D, { Bottle3DRef } from "@/components/Bottle";
+import { ThreeErrorBoundary } from "@/components/ThreeErrorBoundary";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -24,6 +25,7 @@ export type PerfumeCanvasProps = {
   /** The tall sticky section element that ScrollTrigger should attach to */
   containerRef?: React.RefObject<HTMLDivElement>;
   config?: { enableAnimation?: boolean; scale?: number };
+  isNavigating?: boolean;
 };
 
 /* ------------------------------------------------------------------ */
@@ -173,9 +175,9 @@ const ScrollDriver = memo(function ScrollDriver({
       tl.to([bottle.position, cap.position], { y: -1.8, duration: 0.1 }, 0)
         .to([bottle.rotation, cap.rotation], { y: Math.PI / 12, duration: 0.1 }, 0)
         .to(cap.position, { y: 10, x: 0.1, duration: 0.1 }, 0.1)
-        .to(bottle.position, { x: 0.35, y: -2, duration: 0.05 }, 0.1)
+        .to(bottle.position, { x: 0.37, y: -1.5, duration: 0.05 }, 0.1)
         .to(bottle.rotation, { y: 0.6, z: -0.14, duration: 0.05 }, 0.1)
-        .to(bottle.scale, { x: 0.004, y: 0.004, z: 0.004, duration: 0.05 }, 0.1);
+        .to(bottle.scale, { x: 0.003, y: 0.003, z: 0.003, duration: 0.05 }, 0.1);
 
       tlRef.current = tl;
     }
@@ -195,12 +197,18 @@ const ScrollDriver = memo(function ScrollDriver({
 /* Canvas host                                                         */
 /* ------------------------------------------------------------------ */
 
-export default function PerfumeCanvas({ config, containerRef }: PerfumeCanvasProps) {
+export default function PerfumeCanvas({ config, containerRef, isNavigating }: PerfumeCanvasProps) {
   const bottleRef = useRef<Bottle3DRef | null>(null); // ← explicit union with null
 
   const [device, setDevice] = useState<Device>(
     typeof window === "undefined" ? "desktop" : detectDevice(window.innerWidth)
   );
+
+  // Hard stop mechanism: If navigating, immediately return null to unmount the entire Canvas
+  if (isNavigating) {
+    return null;
+  }
+  
   const isMobile = device === "mobile";
 
   // Model lifecycle gating:
@@ -277,8 +285,8 @@ export default function PerfumeCanvas({ config, containerRef }: PerfumeCanvasPro
       camera={{ position: [0, 0, 5], fov: isMobile ? 50 : 45, near: 0.1, far: isMobile ? 30 : 50 }}
       gl={{
         alpha: true,
-        antialias: !isMobile,
-        powerPreference: isMobile ? "default" : "high-performance",
+        // antialias: !isMobile,
+        powerPreference: isMobile ? "low-power" : "low-power",
         toneMapping: THREE.NoToneMapping,
         outputColorSpace: THREE.SRGBColorSpace,
         preserveDrawingBuffer: false,
@@ -307,39 +315,41 @@ export default function PerfumeCanvas({ config, containerRef }: PerfumeCanvasPro
       )}
 
       <Suspense
-        fallback={
-          <mesh>
-            <boxGeometry args={[0.4, 0.4, 0.4]} />
-            <meshBasicMaterial color="#666" />
-          </mesh>
-        }
+        // fallback={
+        //   <mesh>
+        //     <boxGeometry args={[0.4, 0.4, 0.4]} />
+        //     <meshBasicMaterial color="#666" />
+        //   </mesh>
+        // }
       >
-        {/* Neutral wrapper — all posing is on Bottle's inner groups */}
-        <group visible={shown}>
-          <Bottle3D
-            ref={bottleRef}
-            position={[0, 0, 0]}
-            rotation={[0, 0, 0]}
-            scale={1}
-            onReady={handleReady}
-          />
-        </group>
+        <ThreeErrorBoundary>
+          {/* Neutral wrapper — all posing is on Bottle's inner groups */}
+          <group visible={shown}>
+            <Bottle3D
+              ref={bottleRef}
+              position={[0, 0, 0]}
+              rotation={[0, 0, 0]}
+              scale={1}
+              onReady={handleReady}
+            />
+          </group>
 
-        <Environment
-          preset={isMobile ? "city" : "studio"}
-          background={false}
-          resolution={isMobile ? 128 : 256}
-        />
-
-        {/* ScrollTrigger animations on top of DEFAULT_POSES */}
-        {ready && (
-          <ScrollDriver
-            bottleRef={bottleRef}
-            containerRef={containerRef}
-            device={device}
-            enabled={Boolean(config?.enableAnimation)}
+          <Environment
+            preset={isMobile ? "city" : "studio"}
+            background={false}
+            resolution={isMobile ? 128 : 256}
           />
-        )}
+
+          {/* ScrollTrigger animations on top of DEFAULT_POSES */}
+          {ready && (
+            <ScrollDriver
+              bottleRef={bottleRef}
+              containerRef={containerRef}
+              device={device}
+              enabled={Boolean(config?.enableAnimation)}
+            />
+          )}
+        </ThreeErrorBoundary>
       </Suspense>
     </Canvas>
   );

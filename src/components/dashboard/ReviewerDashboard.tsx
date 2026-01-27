@@ -4,12 +4,42 @@
 import { useState, useEffect } from 'react';
 import { PlusIcon, EyeIcon, ClockIcon, CheckCircleIcon, XCircleIcon, PencilIcon, UserGroupIcon, ChevronLeftIcon, ChevronRightIcon, TrashIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
-import type { ExtendedSession, PostWithDetails } from '@/types/auth';
 import DashboardStats from './DashboardStats';
 
-interface ReviewerDashboardProps {
-  session: ExtendedSession;
+interface Author {
+  id: string;
+  name: string | null;
+  email: string;
+  role: string;
 }
+
+interface PostWithDetails {
+  id: string;
+  title: string;
+  slug: string;
+  postType: 'BLOG' | 'VLOG' | 'INSTAGRAM';
+  status: 'APPROVED' | 'PENDING' | 'REJECTED' | 'DRAFT';
+  published: boolean;
+  createdAt: string;
+  updatedAt: string;
+  reviewComments: string | null;
+  author: Author;
+  reviewedBy?: Author | null;
+}
+
+interface SessionUser {
+  id: string;
+  email: string;
+  name: string | null;
+  role: string;
+  image: string | null;
+}
+
+interface ReviewerDashboardProps {
+  session: SessionUser;
+}
+
+const BASE_PATH = '/1isto9-perfumery';
 
 export default function ReviewerDashboard({ session }: ReviewerDashboardProps) {
   const [pendingPosts, setPendingPosts] = useState<PostWithDetails[]>([]);
@@ -26,8 +56,8 @@ export default function ReviewerDashboard({ session }: ReviewerDashboardProps) {
     try {
       setLoading(true);
       const [pendingResponse, recentResponse] = await Promise.all([
-        fetch('/api/posts/pending'),
-        fetch('/api/posts/user/recent')
+        fetch(`${BASE_PATH}/api/posts/pending`),
+        fetch(`${BASE_PATH}/api/posts/user/recent`)
       ]);
 
       if (pendingResponse.ok) {
@@ -105,7 +135,7 @@ export default function ReviewerDashboard({ session }: ReviewerDashboardProps) {
         <h2 className="text-xl font-semibold text-[#ffffff] mb-4">Quick Actions</h2>
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <Link
-            href="/blog/new"
+            href={`/blog/new`}
             className="flex items-center justify-center space-x-2 p-4 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
           >
             <PlusIcon className="h-5 w-5" />
@@ -113,7 +143,7 @@ export default function ReviewerDashboard({ session }: ReviewerDashboardProps) {
           </Link>
           
           <Link
-            href="/reviews"
+            href={`/reviews`}
             className="flex items-center justify-center space-x-2 p-4 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors"
           >
             <EyeIcon className="h-5 w-5" />
@@ -121,7 +151,7 @@ export default function ReviewerDashboard({ session }: ReviewerDashboardProps) {
           </Link>
 
           <Link
-            href="/manage-posts"
+            href={`/manage-posts`}
             className="flex items-center justify-center space-x-2 p-4 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
           >
             <TrashIcon className="h-5 w-5" />
@@ -129,7 +159,7 @@ export default function ReviewerDashboard({ session }: ReviewerDashboardProps) {
           </Link>
 
           <Link
-            href="/blog"
+            href={`/blog`}
             className="flex items-center justify-center space-x-2 p-4 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
           >
             <UserGroupIcon className="h-5 w-5" />
@@ -148,7 +178,7 @@ export default function ReviewerDashboard({ session }: ReviewerDashboardProps) {
             <h2 className="text-xl font-semibold text-[#ffffff]">Posts Awaiting Review</h2>
             {pendingPosts.length > 0 && (
               <Link
-                href="/reviews"
+                href={`/reviews`}
                 className="text-blue-400 hover:text-blue-300 text-sm"
               >
                 View All →
@@ -179,7 +209,7 @@ export default function ReviewerDashboard({ session }: ReviewerDashboardProps) {
                       </div>
                     </div>
                     <Link
-                      href="/reviews"
+                      href={`/reviews`}
                       className="flex items-center space-x-1 px-2 py-1 bg-purple-600 hover:bg-purple-700 text-white rounded text-sm transition-colors"
                     >
                       <EyeIcon className="h-4 w-4" />
@@ -305,7 +335,7 @@ export default function ReviewerDashboard({ session }: ReviewerDashboardProps) {
                 Create your first journal post to get started.
               </p>
               <Link
-                href="/blog/new"
+                href={`/blog/new`}
                 className="inline-flex items-center space-x-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
               >
                 <PlusIcon className="h-4 w-4" />

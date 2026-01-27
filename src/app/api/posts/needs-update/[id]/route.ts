@@ -1,19 +1,17 @@
 // src/app/api/posts/needs-update/[id]/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth/next';
-import { authOptions } from '@/lib/auth';
+import { getSession } from '@/lib/auth-utils';
 import { prisma } from '@/lib/db';
 import { isReviewer } from '@/lib/roles';
-import type { ExtendedSession } from '@/types/auth';
 
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await getServerSession(authOptions) as ExtendedSession;
+    const session = await getSession();
     
-    if (!session || !isReviewer(session.user?.role)) {
+    if (!session || !isReviewer(session.role)) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -29,9 +27,9 @@ export async function POST(
     const updatedPost = await prisma.post.update({
       where: { id: postId },
       data: {
-        status: 'DRAFT', // Send back to draft for updates
+        status: 'DRAFT',
         reviewedAt: new Date(),
-        reviewedById: session.user?.id,
+        reviewedById: session.id,
         reviewComments: feedback.trim(),
         published: false,
       },

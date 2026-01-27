@@ -1,22 +1,20 @@
 // src/app/api/posts/user/needs-update/route.ts
-import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth/next';
-import { authOptions } from '@/lib/auth';
+import { NextResponse } from 'next/server';
+import { getSession } from '@/lib/auth-utils';
 import { prisma } from '@/lib/db';
-import type { ExtendedSession } from '@/types/auth';
 
 export async function GET() {
   try {
-    const session = await getServerSession(authOptions) as ExtendedSession;
+    const session = await getSession();
     
-    if (!session?.user?.id) {
+    if (!session?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // Get user's posts that need updates (status: DRAFT with reviewComments)
     const posts = await prisma.post.findMany({
       where: {
-        authorId: session.user.id,
+        authorId: session.id,
         status: 'DRAFT',
         reviewComments: {
           not: null,

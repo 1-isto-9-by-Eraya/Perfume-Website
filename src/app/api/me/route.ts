@@ -1,13 +1,19 @@
+// app/api/me/route.ts
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { getSession } from "@/lib/auth-utils";
 import { isAllowedEmail } from "@/lib/acl";
 
 export async function GET() {
-  const session = await getServerSession(authOptions);
-  const email = session?.user?.email || null;
+  const session = await getSession();
+  
+  if (!session) {
+    return NextResponse.json({ user: null, allowed: false });
+  }
+
   return NextResponse.json({
-    signedIn: !!session,
-    allowed: isAllowedEmail(email),
+    user: session,
+    allowed: isAllowedEmail(session.email),
   });
 }
+
+export const dynamic = 'force-dynamic';

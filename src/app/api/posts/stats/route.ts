@@ -1,17 +1,15 @@
 // src/app/api/posts/stats/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
+import { getSession } from '@/lib/auth-utils';
 import { isReviewer } from '@/lib/roles';
 import { prisma } from '@/lib/db';
-import type { ExtendedSession } from '@/types/auth';
 
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions) as ExtendedSession;
+    const session = await getSession();
 
     // Check if user is authenticated and is a reviewer
-    if (!session || !isReviewer(session.user?.role)) {
+    if (!session || !isReviewer(session.role)) {
       return NextResponse.json(
         { error: 'Unauthorized - Reviewer access required' },
         { status: 403 }

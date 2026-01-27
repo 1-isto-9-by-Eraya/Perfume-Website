@@ -1,20 +1,17 @@
 // src/app/api/posts/approve/[id]/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/lib/auth";
+import { getSession } from "@/lib/auth-utils";
 import { prisma } from "@/lib/db";
 import { isReviewer } from "@/lib/roles";
-import type { ExtendedSession } from "@/types/auth";
 
 export async function POST(
   _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = (await getServerSession(authOptions)) as ExtendedSession | null;
+    const session = await getSession();
 
-    // Narrow both session and user before using user.id
-    if (!session || !session.user || !isReviewer(session.user.role)) {
+    if (!session || !isReviewer(session.role)) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -28,7 +25,7 @@ export async function POST(
       data: {
         status: "APPROVED",
         reviewedAt: new Date(),
-        reviewedById: session.user.id, // now safe
+        reviewedById: session.id,
         reviewComments: null,
         published: true,
       },

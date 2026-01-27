@@ -270,7 +270,7 @@ export function useCreatePost() {
         keywords: cleanedKeywords,
       };
 
-      const response = await fetch('/api/posts', {
+      const response = await fetch('/1isto9-perfumery/api/posts', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

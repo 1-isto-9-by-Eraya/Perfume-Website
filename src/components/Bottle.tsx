@@ -111,12 +111,16 @@ function useLeatherMatKTX2() {
   const [albedo, normal, roughness] = useLoader(
     KTX2Loader as any,
     [
-      "/textures/leather_albedo1.ktx2",
-      "/textures/leather_normal.ktx2",
-      "/textures/leather-roughness.ktx2",
+      // "/textures/leather_albedo1.ktx2",
+      // "/textures/leather_normal.ktx2",
+      // "/textures/leather-roughness.ktx2",
+      `${process.env.__NEXT_ROUTER_BASEPATH || ''}/textures/leather_albedo1.ktx2`,
+      `${process.env.__NEXT_ROUTER_BASEPATH || ''}/textures/leather_normal.ktx2`,
+      `${process.env.__NEXT_ROUTER_BASEPATH || ''}/textures/leather-roughness.ktx2`,
     ],
     (loader: KTX2Loader) => {
-      loader.setTranscoderPath("/basis/").detectSupport(gl);
+      const basePath = process.env.__NEXT_ROUTER_BASEPATH || '';
+      loader.setTranscoderPath(`${basePath}/basis/`).detectSupport(gl);
     }
   ) as [
     THREE.CompressedTexture,
@@ -161,9 +165,13 @@ function useLeatherMatKTX2() {
 
 /* ---- Emboss textures ---- */
 function useEmbossTextures() {
-  const one = useTexture("/textures/one.png") as THREE.Texture;
-  const colon = useTexture("/textures/colon.png") as THREE.Texture;
-  const nine = useTexture("/textures/nine.png") as THREE.Texture;
+  // const one = useTexture("/textures/onet.png") as THREE.Texture;
+  // const one = useTexture("/textures/one.png") as THREE.Texture;
+  // const one = useTexture("/textures/colon.png") as THREE.Texture;
+  // const nine = useTexture("/textures/nine.png") as THREE.Texture;
+  const one = useTexture(`${process.env.__NEXT_ROUTER_BASEPATH || ''}/textures/onet.png`) as THREE.Texture;
+  const colon = useTexture(`${process.env.__NEXT_ROUTER_BASEPATH || ''}/textures/colon.png`) as THREE.Texture;
+  const nine = useTexture(`${process.env.__NEXT_ROUTER_BASEPATH || ''}/textures/ninet.png`) as THREE.Texture;
 
   [one, colon, nine].forEach((t) => {
     t.colorSpace = THREE.LinearSRGBColorSpace;
@@ -306,7 +314,8 @@ const Bottle3D = forwardRef<Bottle3DRef, Bottle3DProps>(
     },
     ref
   ) => {
-    const fbx = useFBX("/models/bottle.fbx");
+    // const fbx = useFBX("/models/bottle.fbx");
+    const fbx = useFBX(`${process.env.__NEXT_ROUTER_BASEPATH || ''}/models/bottle.fbx`);
     const leatherMat = useLeatherMatKTX2();
     const embossTextures = useEmbossTextures();
     const embossMaterials = useGoldEmbossMaterials(embossTextures);
@@ -618,7 +627,8 @@ Bottle3D.displayName = "Bottle3D";
 export default memo(Bottle3D);
 
 // Preload the FBX
-useFBX.preload("/models/bottle.fbx");
+// useFBX.preload("/models/bottle.fbx");
+useFBX.preload(`${process.env.__NEXT_ROUTER_BASEPATH || ''}/models/bottle.fbx`);
 
 // Optional: cleanup caches on tab close
 if (typeof window !== "undefined") {

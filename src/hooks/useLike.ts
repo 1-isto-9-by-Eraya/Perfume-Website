@@ -50,7 +50,7 @@ export function useLike(postParam: string): UseLikeReturn {
       setIsLoading(true);
       setError(null);
 
-      const url = `/api/posts/${encodeURIComponent(postParam)}/likes`;
+      const url = `/1isto9-perfumery/api/posts/${encodeURIComponent(postParam)}/likes`;
       const response = await fetch(url, { method: 'GET', headers: { Accept: 'application/json' } });
 
       if (!response.ok) {
@@ -98,7 +98,7 @@ export function useLike(postParam: string): UseLikeReturn {
         } catch {}
       }
 
-      const response = await fetch(`/api/posts/${encodeURIComponent(postParam)}/likes`, {
+      const response = await fetch(`/1isto9-perfumery/api/posts/${encodeURIComponent(postParam)}/likes`, {
         method: 'POST',
         headers: { Accept: 'application/json' }
       });

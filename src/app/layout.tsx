@@ -4,14 +4,15 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import { Playfair_Display, Inter } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
-import Providers from "@/components/Providers";
+// import Providers from "@/components/Providers";
 import Footer from "@/components/Footer";
 import Preloader from "@/components/Preloader";
 import ScrollTriggerProvider from "@/components/ScrollTriggerProvider";
+import { ServiceWorkerRegistration } from "./register-sw";
 
 export const metadata: Metadata = {
-  title: "1:9 by Eraya",
-  description: "Next.js + Three.js + Auth + Prisma + Vercel",
+  title: "1:9 Perfumery by Eraya",
+  description: "Superior quality fragrances crafted for young achievers in urban India, blending luxury with authenticity.",
 };
 
 const playfairDisplay = Playfair_Display({
@@ -38,14 +39,17 @@ export default function RootLayout({
     >
       <body>
         <ScrollTriggerProvider>
-          <Providers>
-            <Preloader>
-              <Navbar />
-              <main className="mx-0 max-w-full relative z-10">{children}</main>
-              <Footer />
-              <Analytics />
-            </Preloader>
-          </Providers>
+          {/* <Providers> */}
+          <Preloader>
+            <Navbar />
+            <main className="mx-0 max-w-full relative z-10">
+              <ServiceWorkerRegistration />
+              {children}
+            </main>
+            <Footer />
+            <Analytics />
+          </Preloader>
+          {/* </Providers> */}
         </ScrollTriggerProvider>
       </body>
     </html>

@@ -1,20 +1,17 @@
 // src/app/api/posts/reject/[id]/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth/next';
-import { authOptions } from '@/lib/auth';
+import { getSession } from '@/lib/auth-utils';
 import { prisma } from '@/lib/db';
 import { isReviewer } from '@/lib/roles';
-import type { ExtendedSession } from '@/types/auth';
 
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await getServerSession(authOptions) as ExtendedSession;
+    const session = await getSession();
     
-    // Enhanced session validation to ensure user exists
-    if (!session || !session.user || !isReviewer(session.user.role)) {
+    if (!session || !isReviewer(session.role)) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -36,9 +33,8 @@ export async function POST(
       return NextResponse.json({ error: 'Post not found' }, { status: 404 });
     }
 
-    // Log the rejection (optional - you might want to keep a record)
-    // Now we can safely access session.user.email since we validated it above
-    console.log(`Post "${post.title}" by ${post.author.email} rejected by ${session.user.email}. Reason: ${reason}`);
+    // Log the rejection
+    console.log(`Post "${post.title}" by ${post.author.email} rejected by ${session.email}. Reason: ${reason}`);
 
     // Delete the post completely
     await prisma.post.delete({
